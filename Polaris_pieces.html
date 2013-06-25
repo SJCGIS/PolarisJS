@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7, IE=9, IE=10">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title></title>
+
+    <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/tundra/tundra.css">
+    <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
+    <style>
+    html, body { height: 100%; width: 100%; margin: 0; padding: 0; }
+    #map{ margin: 0; padding: 0; }
+    #controls {
+      position: absolute;
+      height: 80px;
+      font-family: arial;
+      bottom: 10px;
+      margin: 5px;
+      padding: 5px;
+      z-index: 40;
+      background: #fff;
+      color: #444;
+      width: 440px;
+      left: 10px;
+      -moz-box-shadow: 0 0 5px #888;
+      -webkit-box-shadow: 0 0 5px #888;
+      box-shadow: 0 0 5px #888;
+    }
+    h3 { margin: 0 0 5px 0; border-bottom: 1px solid #444; }
+    .label { display: inline-block; width: 140px; }
+    </style>
+
+    <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/"></script>
+    <script>
+
+    var map;
+
+    require([
+      "dojo/_base/connect", 
+      "dojo/_base/Color", "dojo/dom",
+      "esri/config", "esri/map", "esri/geometry/Extent",
+      "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol",
+      "esri/layers/ArcGISDynamicMapServiceLayer",
+      "esri/layers/ArcGISTiledMapServiceLayer",
+      "esri/tasks/IdentifyParameters", "esri/tasks/IdentifyTask",
+      "esri/tasks/IdentifyResult",
+      "dijit/layout/TabContainer", "dijit/layout/ContentPane",
+      "dijit/form/Button",
+      "dojo/domReady!"
+    ], function(
+        connect, 
+        Color, dom,
+        config, Map, Extent,
+        SimpleFillSymbol, SimpleLineSymbol,
+        ArcGISDynamicMapServiceLayer, 
+        ArcGISTiledMapServiceLayer,
+        IdentifyParameters, IdentifyTask,
+        IdentifyResult
+      ) {
+        // create layout dijits
+        /* parser.parse(); */
+        // specify proxy for request with URL lengths > 2k characters
+        /* esriconfig.defaults.io.proxyUrl = "/proxy"; */
+        map = new Map("map", {
+          extent: new esri.geometry.Extent(1053827.68909551,515293.874014814,1185179.1932883,666710.730399649,
+                                           new esri.SpatialReference(2282))
+        });
+        
+        var identifyTask, identifyParams, symbol;
+        var layer2results, layer3results, layer4results;
+        
+        var dem = new ArcGISTiledMapServiceLayer("http://sjcgis.org/Polaris/rest/services/DEM/MapServer");
+        var aerials = new ArcGISTiledMapServiceLayer("http://sjcgis.org/Polaris/rest/services/New_Aerial1/MapServer");
+        var mapContents = new ArcGISDynamicMapServiceLayer("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer");
+        map.addLayers([aerials,dem,mapContents]);
+
+        identifyTask = new esri.tasks.IdentifyTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer");
+        
+        identifyParams = new esri.tasks.IdentifyParameters();
+        identifyParams.tolerance = 3;
+        identifyParams.returnGeometry = true;
+        identifyParams.layerIds = [8,27];
+        identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
+        identifyParams.width = map.width;
+        identifyParams.height = map.height;
+
+        map.infoWindow.resize(415,200);
+        map.infoWindow.setContent(dijit.byId("tabs").domNode);
+        map.infoWindows.setTitle("Identify Results");
+
+        symbol = SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, SimpleLineSymbol(SimpleLineSymbol.SOLID, Color([255,0,0]), 2), Color([255,255,0,0.25]));
+
+        function doIdentify(evt) {
+          map.graphics.clear();
+          identifyParams.geometry = evt.mapPoint;
+          identifyParams.mapExtent = map.extent;
+          identifyTask.execute(identifyParams, function(idResults) { addToMap(idResults, evt);});
+        }
+        
+        function addToMap(idResults, evt) {
+          roadResults = {displayFieldName:null,features:[]};
+          parcelResults = {displayFieldName:null,features:[]};
+
+          for (var i=0, il=idResults.length; i<il; i++) {
+            var idResult = idResults[i];
+            if (idResult.layerId === 27) {
+              if (!roadResults.displayFieldName) {roadResults.displayFieldName = idResult.displayFieldName};
+              roadResults.features.push(idResult.feature);
+            }
+            else if (idResult.layerId===8) {
+              if (!parcelResults.displayFieldName) {parcelResults.displayFieldName = idResults.displayFieldName};
+              parcelResults.features.push(idResult.feature);
+            };
+          }
+          dijit.byId("parcelTab").setContent(layerTabContent(parcelResults,"parcelResults"));
+          dijit.byId("roaddTab").setContent(layerTabContent(roadResults,"roadResults"));
+
+          map.infoWindow.show(evt.screenPoint, map.getInfoWindowAnchor(evt.screenPoint));
+        }
+
+        function layerTabContent(layerResults, layerName) {
+          var content = "";
+          switch (layerName) {
+            case "parcelResults":
+              content = "<i>Total records returned: " + layerResults.features.length + "</i>";
+              content += "<table border='1'><tr>"
+
+          };
+        };     
+      })
+    </script>
+  </head>
+  
+  <body class="tundra">
+    <div id="mapDiv" style="width:800px; height:600px; border:1px solid #000;"></div>
+    <!-- info window tabs -->
+    <div id="tabs" dojoType="dijit.layout.TabContainer" style="width:385px;height:150px;">
+      <div id="roadTab" dojoType="dijit.layout.ContentPane" title="Buildings"></div>
+      <div id="parcelTab" dojoType="dijit.layout.ContentPane" title="Tax Parcels"></div>
+    </div>
+  </body>
+</html>

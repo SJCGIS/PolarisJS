@@ -6,7 +6,7 @@
     <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
     on iOS devices-->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Identify with Popup</title>
+    <title>Cassiopeia - San Juan County WA</title>
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
 
@@ -26,6 +26,26 @@
       width:100%;
       overflow:hidden;
     }
+    #rightPane {
+      width: 175px;
+      margin: 0;
+      padding: 0;
+    }
+    #paneHeader {
+      background: url(images/header.png) repeat-x;
+      color: white;
+      border-bottom: solid 1px #B5BCC7;
+      text-align: center;
+      height: 30px;
+      margin: 0;
+      overflow: hidden;
+      font-size: 16px;
+      padding: 8px 5px;
+    }
+    .esriLegendServiceLabel {
+      display:none;
+      }
+
     </style>
 
     <script>var dojoConfig = { parseOnLoad: true }</script>
@@ -34,6 +54,8 @@
 
     dojo.require("esri.map");
     dojo.require("esri.dijit.Popup");
+    dojo.require("esri.dijit.BasemapGallery");
+    dojo.require("esri.dijit.Legend");
     dojo.require("dijit.layout.ContentPane");
     dojo.require("dijit.layout.BorderContainer");
     dojo.require("dijit.layout.AccordionContainer");
@@ -57,13 +79,163 @@
         extent: mapExtent
       });
 
+      createBasemapGallery();
+
       dojo.connect(map, "onLoad", mapReady);
+    }
+
+    function createBasemapGallery() {
+      //manually create basemaps to add to basemap gallery
+      var basemaps = [];
+
+      var featureLabels = new esri.dijit.BasemapLayer({
+        url: "http://www.sjcgis.org/Polaris/rest/services/Feature_Labels/MapServer",
+        isReference: true
+      });
+
+      var aerial = new esri.dijit.BasemapLayer({
+        url: "http://www.sjcgis.org/Polaris/rest/services/New_Aerial1/MapServer"
+      });
+
+      var dem = new esri.dijit.BasemapLayer({
+        url: "http://www.sjcgis.org/Polaris/rest/services/DEM/MapServer"
+      });
+
+      var aerialBasemap = new esri.dijit.Basemap({
+        layers:[dem,featureLabels,aerial],
+        title: "DEM/Aerial",
+        thumbnailUrl:"images/waterThumb.png"
+      });
+
+      basemaps.push(aerialBasemap);
+
+      var bareEarth = new esri.dijit.BasemapLayer({
+        url: "http://www.sjcgis.org/Polaris/rest/services/Bare_Earth/MapServer",
+        opacity: 0.40
+      });
+
+      var shoreLines = new esri.dijit.BasemapLayer({
+        url:"http://www.sjcgis.org/Polaris/rest/services/Shore2/MapServer"
+      });
+
+      var contours = new esri.dijit.BasemapLayer({
+        url:"http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+        visibleLayers:[6,44]
+      });
+
+      var slopeLayer = new esri.dijit.BasemapLayer({
+        url:"http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+        visibleLayers:[45,46,47]
+      });
+
+      var slopeGeoHazard = new esri.dijit.Basemap({
+        layers      :[bareEarth,slopeLayer,contours,shoreLines,featureLabels],
+        title       :"GeoHazards-Slopes",
+        thumbnailUrl:"images/waterThumb.png"
+      });
+      basemaps.push(slopeGeoHazard);
+
+      var erosionLayer = new esri.dijit.BasemapLayer({
+        url:"http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+        visibleLayers:[48]
+      });
+
+      var erosionGeoHazard = new esri.dijit.Basemap({
+        layers: [bareEarth,erosionLayer,contours,shoreLines,featureLabels],
+        title: "GeoHazards-Erosion",
+        thumbnailUrl:"images/waterThumb.png"
+      });
+      basemaps.push(erosionGeoHazard);
+
+      var comprehensivePlanLayer = new esri.dijit.BasemapLayer({
+        url:"http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+        visibleLayers:[53,54]
+      });
+
+      var comprehensivePlanBasemap = new esri.dijit.Basemap({
+        layers: [bareEarth,comprehensivePlanLayer,shoreLines,featureLabels],
+        title: "Comprehensive Plan",
+        thumbnailUrl:"images/waterThumb.png"
+      });
+      basemaps.push(comprehensivePlanBasemap);
+
+      var wetlandsPossible = new esri.dijit.BasemapLayer({
+        url:"http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+        visibleLayers: [38,39]
+      });
+
+      var wetlandsPossibleBasemap = new esri.dijit.Basemap({
+        layers: [bareEarth, wetlandsPossible,contours,shoreLines,featureLabels],
+        title: "Possible Wetlands",
+        thumbnailUrl:"images/waterThumb.png"
+      });
+      basemaps.push(wetlandsPossibleBasemap);
       
-      var demLayer = new esri.layers.ArcGISTiledMapServiceLayer("http://sjcgis.org/Polaris/rest/services/DEM/MapServer");
-      var aerialsLayer = new esri.layers.ArcGISTiledMapServiceLayer("http://sjcgis.org/Polaris/rest/services/New_Aerial1/MapServer");
-      var mapContents = new esri.layers.ArcGISDynamicMapServiceLayer("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer");
+      var wetlandsOld = new esri.dijit.BasemapLayer({
+        url:"http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+        visibleLayers: [42]
+      });
+
+      var wetlandsOldBasemap = new esri.dijit.Basemap({
+        layers      :[bareEarth,wetlandsOld,contours,shoreLines,featureLabels],
+        title       :"Wetlands (Before 2010)",
+        thumbnailUrl:"images/safetyThumb.png"
+      });
+      basemaps.push(wetlandsOldBasemap);
+
+      var uplandHabitat = new esri.dijit.BasemapLayer({
+        url:"http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+        visibleLayers: [30]
+      });
+
+      var uplandHabitatBasemap = new esri.dijit.Basemap({
+        layers:[bareEarth,uplandHabitat,contours,shoreLines,featureLabels],
+        title: "Upland Habitats",
+        thumbnailUrl:"images/safetyThumb.png"
+      });
+      basemaps.push(uplandHabitatBasemap);
+
+      var floodZones = new esri.dijit.BasemapLayer({
+        url:"http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+        visibleLayers: [40,41]
+      });
+
+      var floodZonesBasemap = new esri.dijit.Basemap({
+        layers:[bareEarth,floodZones,contours,shoreLines,featureLabels],
+        title: "Flood Zones",
+        thumbnailUrl:"images/safetyThumb.png"
+      });
+      basemaps.push(floodZonesBasemap);
+
+      var basemapGallery = new esri.dijit.BasemapGallery({
+        showArcGISBasemaps:false,
+        basemaps          :basemaps,
+        map               :map
+      }, "basemapGallery");
       
-      map.addLayers([aerialsLayer,demLayer,mapContents]);
+      var selectionHandler = dojo.connect(basemapGallery, "onSelectionChange", function(){
+        dojo.disconnect(selectionHandler);
+        
+        // add the map contents to the map        
+        var mapContents = new esri.layers.ArcGISDynamicMapServiceLayer("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer");
+        mapContents.setVisibleLayers([2,3,4,5,8,9,12,13,15,16,18,19,26,27,28,29]);
+        map.addLayer(mapContents);
+
+        console.log(basemapGallery.getSelected());
+
+        var legend = new esri.dijit.Legend({
+          map:map,
+          layerInfos: [{layer:mapContents,hideLayers:[0,7,10,35,43]}]
+          }, "legend");
+        legend.startup();
+      });
+      
+      
+      basemapGallery.startup();
+
+      dojo.connect(basemapGallery, "onError", function (error) {
+        console.log(error)
+      });
     }
     
     function mapReady(map){
@@ -207,26 +379,43 @@
   <body class="claro">
     <div id="borderContainerTwo" data-dojo-type="dijit.layout.BorderContainer"
          data-dojo-props="gutters:true, liveSplitters:false">
-      <div id="leftPane" data-dojo-type="dijit.layout.ContentPane" 
+      <div id="topPane" data-dojo-type="dijit.layout.ContentPane" 
            data-dojo-props="region:'top', splitter:false">
         <h1>Cassiopeia</h1>
       </div>
       <div id="map" data-dojo-type="dijit.layout.ContentPane"
            data-dojo-props="region:'center'">
-        <div id="tabs" data-dojo-type="dijit.layout.TabContainer" style="width:385px;height:180px;">
-          <div id="bldgTab" data-dojo-type="dijit.layout.ContentPane" title="Buildings"></div>
-          <div id="taxParcelTab" data-dojo-type="dijit.layout.ContentPane" title="Tax Parcels"></div>
-          <div id="legalParcelTab" data-dojo-type="dijit.layout.ContentPane" title="Legal Parcels"></div>
-        </div>
+        <!-- <div id="tabs" data-dojo-type="dijit.layout.TabContainer" style="width:385px;height:180px;">
+        <div id="bldgTab" data-dojo-type="dijit.layout.ContentPane" title="Buildings"></div>
+        <div id="taxParcelTab" data-dojo-type="dijit.layout.ContentPane" title="Tax Parcels"></div>
+        <div id="legalParcelTab" data-dojo-type="dijit.layout.ContentPane" title="Legal Parcels"></div>
+        </div> -->
       </div>
       <div data-dojo-type="dijit.layout.AccordionContainer"
            data-dojo-props="minSize:20, region:'leading', splitter:true"
            style="width:400px;" id="leftAccordion">
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Map Contents" selected="true">
+        <div data-dojo-type="dijit.layout.AccordionPane" title="Legend" selected="true">
+          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
+            <div id="legend"></div>
+          </div>
         </div>
         <div data-dojo-type="dijit.layout.AccordionPane" title="Overview Map">
         </div>
         <div data-dojo-type="dijit.layout.AccordionPane" title="Saved Maps">
+        </div>
+      </div>
+      <div id="rightPane" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'right'">
+        <div data-dojo-type="dijit.layout.BorderContainer"
+             data-dojo.props="design:'headline', gutters:false"
+             style="width:100%;height:100%;">
+          <div id="paneHeader" data-dojo-type="dijit.layout.ContentPane"
+          data-dojo-props="region:'top'">
+            <span>Select Basemap</span>
+          </div>
+          <div data-dojo-type="dijit.layout.ContentPane"
+               data-dojo-props="region:'center'">
+            <div id="basemapGallery"></div>
+          </div>
         </div>
       </div>
     </div>

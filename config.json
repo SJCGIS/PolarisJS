@@ -1,0 +1,228 @@
+"basemaps": [
+    {
+	"layers": [
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/DEM/MapServer",
+		"isReference": false
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Feature_Labels/MapServer",
+		"isReference": true
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/New_Aerial1/MapServer",
+		"isReference": false
+	    }
+	],
+	"title": "DEM/Aerial",
+	"thumbnailUrl": "images/waterThumb.png",
+	"legend": {
+	    "srcNodeRef": "legend",
+	    "params": {
+		"layerInfos": [
+		    
+		]
+	    }
+	}
+    },
+    {
+	"layers": [
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Bare_Earth/MapServer",
+		"isReference": false,
+		"opacity": 0.4
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    45,
+		    46,
+		    47
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    6,
+		    44
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Shore2/MapServer",
+		"isReference": false
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Feature_Labels/MapServer",
+		"isReference": true
+	    }
+	],
+	"title": "GeoHazards-Slopes",
+	"thumbnailUrl": "images/waterThumb.png"
+    },
+    {
+	"layers": [
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Bare_Earth/MapServer",
+		"isReference": false,
+		"opacity": 0.4
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    48
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    6,
+		    44
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Shore2/MapServer",
+		"isReference": false
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Feature_Labels/MapServer",
+		"isReference": true
+	    }
+	],
+	"title": "GeoHazards-Erosion",
+	"thumbnailUrl": "images/waterThumb.png"
+    },
+    {
+	"layers": [
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Bare_Earth/MapServer",
+		"isReference": false,
+		"opacity": 0.4
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    53,
+		    54
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Shore2/MapServer",
+		"isReference": false
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Feature_Labels/MapServer",
+		"isReference": true
+	    }
+	],
+	"title": "Comprehensive Plan",
+	"thumbnailUrl": "images/waterThumb.png"
+    },
+    {
+	"layers": [
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Bare_Earth/MapServer",
+		"isReference": false,
+		"opacity": 0.4
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    38,
+		    39
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    6,
+		    44
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Shore2/MapServer",
+		"isReference": false
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Feature_Labels/MapServer",
+		"isReference": true
+	    }
+	],
+	"title": "Possible Wetlands",
+	"thumbnailUrl": "images/waterThumb.png"
+    },
+    {
+	"layers": [
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Bare_Earth/MapServer",
+		"isReference": false,
+		"opacity": 0.4
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    42
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    6,
+		    44
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Shore2/MapServer",
+		"isReference": false
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Feature_Labels/MapServer",
+		"isReference": true
+	    }
+	],
+	"title": "Wetlands (Before 2010)",
+	"thumbnailUrl": "images/safetyThumb.png"
+    },
+    {
+	"layers": [
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Bare_Earth/MapServer",
+		"isReference": false,
+		"opacity": 0.4
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    30
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Map_Contents/MapServer",
+		"isReference": false,
+		"visibleLayers": [
+		    6,
+		    44
+		]
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Shore2/MapServer",
+		"isReference": false
+	    },
+	    {
+		"url": "http://www.sjcgis.org/Polaris/rest/services/Feature_Labels/MapServer",
+		"isReference": true
+	    }
+	],
+	"title": "Upland Habitats",
+	"thumbnailUrl": "images/safetyThumb.png"
+    }
+]

@@ -6,7 +6,7 @@
     <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
     on iOS devices-->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Cassiopeia - San Juan County WA</title>
+    <title>Polaris - San Juan County WA</title>
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
 
@@ -52,7 +52,7 @@
       parseOnLoad: true,
       packages: [{
         "name":"agsjs",
-        "location": "/GISApps/agsjs"
+        "location": "/GISApps/2.03/agsjs/src/agsjs"
       }]
     }
     </script>
@@ -64,6 +64,7 @@
     dojo.require("esri.dijit.Popup");
     dojo.require("esri.dijit.BasemapGallery");
     dojo.require("esri.dijit.Legend");
+    dojo.require("esri.dijit.OverviewMap");
     dojo.require("dijit.layout.ContentPane");
     dojo.require("dijit.layout.BorderContainer");
     dojo.require("dijit.layout.AccordionContainer");
@@ -76,7 +77,7 @@
     var map;
     function init() {
       var mapDeferred = esri.arcgis.utils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
-      geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
+        geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
       });
       mapDeferred.then(function(response) {
         console.log(response.itemInfo.item.title);
@@ -90,13 +91,19 @@
           var toc = new agsjs.dijit.TOC({
             map: map,
             layerInfos: layerInfo
-            }, "legend");
+          }, "legend");
           toc.startup();
         });
+
+        var overviewMap = new esri.dijit.OverviewMap({
+          map: map
+        }, dojo.byId("overviewMap"));
+        overviewMap.startup();
       },function(error) {
           console.log("Map creation failed: ", error);
         });
       }
+
       dojo.ready(init);
     </script>
   </head>
@@ -106,7 +113,7 @@
          data-dojo-props="gutters:true, liveSplitters:false">
       <div id="topPane" data-dojo-type="dijit.layout.ContentPane" 
            data-dojo-props="region:'top', splitter:false">
-        <h1>Cassiopeia</h1>
+        <h1>Polaris</h1>
       </div>
       <div id="map" data-dojo-type="dijit.layout.ContentPane"
            data-dojo-props="region:'center'">
@@ -120,22 +127,11 @@
           </div>
         </div>
         <div data-dojo-type="dijit.layout.AccordionPane" title="Overview Map">
+          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">
+            <div id="overviewMap"></div>
+          </div>
         </div>
         <div data-dojo-type="dijit.layout.AccordionPane" title="Saved Maps">
-        </div>
-      </div>
-      <div id="rightPane" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'right'">
-        <div data-dojo-type="dijit.layout.BorderContainer"
-             data-dojo.props="design:'headline', gutters:false"
-             style="width:100%;height:100%;">
-          <div id="paneHeader" data-dojo-type="dijit.layout.ContentPane"
-               data-dojo-props="region:'top'">
-            <span>Select Basemap</span>
-          </div>
-          <div data-dojo-type="dijit.layout.ContentPane"
-               data-dojo-props="region:'center'">
-            <div id="basemapGallery"></div>
-          </div>
         </div>
       </div>
     </div>

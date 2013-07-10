@@ -9,8 +9,15 @@
     <title>Polaris - San Juan County WA</title>
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
+    <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dojox/grid/resources/Grid.css">
+    <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dojox/grid/resources/claroGrid.css">
+
 
     <style>
+    .dojoxGrid table {
+      margin: 0;
+    }
+
     html, body {
       height:100%;
       width:100%;
@@ -25,6 +32,9 @@
       height:100%;
       width:100%;
       overflow:hidden;
+    }
+    .layersDiv {
+      background: #3d5d72;
     }
     #rightPane {
       width: 175px;
@@ -52,7 +62,7 @@
       parseOnLoad: true,
       packages: [{
         "name":"agsjs",
-        "location": "/GISApps/2.03/agsjs/src/agsjs"
+        "location": "/GISApps/2.04/agsjs/src/agsjs"
       }]
     }
     </script>
@@ -65,6 +75,8 @@
     dojo.require("esri.dijit.BasemapGallery");
     dojo.require("esri.dijit.Legend");
     dojo.require("esri.dijit.OverviewMap");
+    dojo.require("esri.layers.ArcGISDynamicMapServiceLayer");
+    dojo.require("esri.tasks.find");
     dojo.require("dijit.layout.ContentPane");
     dojo.require("dijit.layout.BorderContainer");
     dojo.require("dijit.layout.AccordionContainer");
@@ -72,9 +84,13 @@
     dojo.require("dijit.layout.TabContainer");
     dojo.require("dijit.layout.LayoutContainer");
     dojo.require("dijit.form.Button");
+    dojo.require("dojox.grid.DataGrid");
+    dojo.require("dojo.data.ItemFileReadStore");
     dojo.require("agsjs.dijit.TOC");
     
     var map;
+    var findTask, findParams;
+
     function init() {
       var mapDeferred = esri.arcgis.utils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
         geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
@@ -86,24 +102,83 @@
         var layerInfo = dojo.map(layers, function(layer,index) {
           return {layer:layer.layerObject,title:layer.title};
         });
+
+        findTask = new esri.tasks.FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
+
+        // Create find parameters
+        findParams = new esri.tasks.FindParameters();
+        findParams.returnGeometry = true;
+        findParams.layerIds = [2,8,27];
+        findParams.searchFields = ["PIN", "ADDRESS", "NAME"];
+        findParams.outSpatialReference = map.spatialReference;
         
         dojo.connect(map,"onLayersAddResult",function(results){
           var toc = new agsjs.dijit.TOC({
             map: map,
             layerInfos: layerInfo
-          }, "legend");
+          }, "legendDiv");
           toc.startup();
         });
+        
+        var ovMapBaseLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
 
         var overviewMap = new esri.dijit.OverviewMap({
-          map: map
-        }, dojo.byId("overviewMap"));
+          map: map,
+          height: 200,
+          width: 200,
+          baseLayer: ovMapBaseLayer,
+        }, dojo.byId("overviewMapDiv"));
         overviewMap.startup();
       },function(error) {
           console.log("Map creation failed: ", error);
         });
       }
 
+      function doSearch(searchText) {
+        // Set search text to value in box
+        findParams.searchText = searchText;
+        findTask.execute(findParams,showResults);
+      }
+
+      function showResults(results) {
+        //Show the results of FindTask using the FindResult returned by the doFind function
+        map.graphics.clear(); //Clear existing graphics from map
+        var polygonSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new
+                                                             esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([98,194,204]), 2),
+                                                             new dojo.Color([98,194,204,0.5]));
+        var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                                          new dojo.Color([98,194,204]),1);
+        var markerSymbol = new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_CIRCLE, 10, new
+                                                              esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([98,194,204]),1),
+                                                              new dojo.Color([0,255,0,0.25]));
+        //Create array of result attributes and add graphics to map
+        var dataForGrid  = [];
+        dojo.forEach(results, function(result, id){
+          console.log(result.value, "at index", id);
+          var graphic = result.feature;
+          dataForGrid.push([result.foundFieldName, result.value]);
+          switch (graphic.geometry.type) {
+            case "point":
+              graphic.setSymbol(markerSymbol);
+              break;
+            case "polyline":
+              graphic.setSymbol(lineSymbol);
+              break;
+            case "polygon":
+              graphic.setSymbol(polygonSymbol);
+              break;
+          }
+          map.graphics.add(graphic);
+        });
+        var data = {
+          items: dataForGrid
+        };
+        var store = new dojo.data.ItemFileReadStore({
+          data: data
+        });
+        grid.setStore(store);
+      }
+        
       dojo.ready(init);
     </script>
   </head>
@@ -123,17 +198,28 @@
            style="width:400px;" id="leftAccordion">
         <div data-dojo-type="dijit.layout.AccordionPane" title="Legend" selected="true">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
-            <div id="legend"></div>
+            <div id="legendDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Overview Map">
-          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">
-            <div id="overviewMap"></div>
+        <div data-dojo-type="dijit.layout.AccordionPane" title="Search">
+          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
+            Enter an Address or Parcel Number to Search:
+            <input type="text" id="searchText" value="350 Court St" />
+            <input type="button" value="Search" onclick="doSearch(dojo.byId('searchText').value);" />
           </div>
-        </div>
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Saved Maps">
+          <table data-dojo-type="dojox.grid.DataGrid" jsid="grid" id="grid">
+            <thead>
+              <tr>
+                <th field="0">Layer</th>
+                <th field="1">Value</th>
+              </tr>
+            </thead>
+          </table>
         </div>
       </div>
+      <div data-dojo-type="dijit.layout.AccordionPane" title="Saved Maps">
+      </div>
+    </div>
     </div>
   </body>
 </html>

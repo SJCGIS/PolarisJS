@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" />
+        <!--The viewport meta tag is used to improve the presentation and behavior of the samples
+        on iOS devices-->
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.0/js/dojo/dijit/themes/claro/claro.css">
+        <script type="text/javascript">
+           var djConfig = {
+              parseOnLoad: true,
+              packages: [{
+                "name": "agsjs",
+                "location": location.pathname.replace(/\/[^/]+$/, "")+'/../build/agsjs'
+               //"location": 'http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/2.02/xbuild/agsjs' // for xdomain load
+              }]
+            };
+        </script>
+        <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.0">
+        </script>
+        <script type="text/javascript">
+            dojo.require("esri.map");
+            dojo.require("agsjs.dijit.GlowingRipple");
+            var map;
+            var ripple;
+            
+            function init() {
+              var initExtent = new esri.geometry.Extent({
+                "xmin": -13646149,
+                "ymin": 3606604,
+                "xmax": -12393805,
+                "ymax": 4232776,
+                "spatialReference": {
+                  "wkid": 102100
+                }
+              });
+              map = new esri.Map("map", {
+                extent: initExtent
+              });
+              
+              map.addLayer(new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer"));
+              ripple = new agsjs.dijit.GlowingRipple({
+                map: map,
+                //maxSize:50,
+               // minSize:10,
+               // stepSize:4,
+                interval:100
+              });
+              dojo.connect(map, "onClick", function(evt) {
+                ripple.show(evt.mapPoint);
+              });
+              
+            }
+            
+            
+            
+            
+            dojo.addOnLoad(init);
+        </script>
+    </head>
+    <body class="claro">
+        <div style="width:100%">
+            Click on map for a ripple, and 
+            <button onclick="ripple.hide()">
+                Hide
+            </button>
+        </div>
+        <div id="map" style="width:100%px; height:512px; border:1px solid #000;">
+        </div>
+    </body>
+</html>

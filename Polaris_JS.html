@@ -83,15 +83,19 @@
     dojo.require("dijit.layout.AccordionPane");
     dojo.require("dijit.layout.TabContainer");
     dojo.require("dijit.layout.LayoutContainer");
+    dojo.require("dijit.form.Form");
+    dojo.require("dijit.form.ValidationTextBox");
     dojo.require("dijit.form.Button");
     dojo.require("dojox.grid.DataGrid");
     dojo.require("dojo.data.ItemFileReadStore");
     dojo.require("agsjs.dijit.TOC");
     
-    var map;
+    var map, initialExtent;
     var findTask, findParams;
+    var findGraphicsLayer, hoverGraphicsLayer;
 
     function init() {
+      dojo.connect(grid, "onRowClick", onRowClickHandler);
       var mapDeferred = esri.arcgis.utils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
         geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
       });
@@ -103,6 +107,10 @@
           return {layer:layer.layerObject,title:layer.title};
         });
 
+        initialExtent = map.extent;
+        findGraphicsLayer = new esri.layers.GraphicsLayer();
+        map.addLayer(findGraphicsLayer);
+        
         findTask = new esri.tasks.FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
 
         // Create find parameters
@@ -111,7 +119,7 @@
         findParams.layerIds = [2,8,27];
         findParams.searchFields = ["PIN", "ADDRESS", "NAME"];
         findParams.outSpatialReference = map.spatialReference;
-        
+
         dojo.connect(map,"onLayersAddResult",function(results){
           var toc = new agsjs.dijit.TOC({
             map: map,
@@ -119,6 +127,12 @@
           }, "legendDiv");
           toc.startup();
         });
+
+        var measurement = new esri.dijit.Measurement({
+          map: map,
+          defaultAreaUnit: esri.Units.SQUARE_MILES,
+            defaultLengthUnit: esri.Units.MILES
+        }, dojo.byId('measurementDiv'));
         
         var ovMapBaseLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
 
@@ -142,43 +156,83 @@
 
       function showResults(results) {
         //Show the results of FindTask using the FindResult returned by the doFind function
-        map.graphics.clear(); //Clear existing graphics from map
+        findGraphicsLayer.clear(); //Clear existing graphics from map
         var polygonSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new
-                                                             esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([98,194,204]), 2),
-                                                             new dojo.Color([98,194,204,0.5]));
+                                                             esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,255,0]), 2),
+                                                             new dojo.Color([255,255,0,0.25]));
         var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                                           new dojo.Color([98,194,204]),1);
-        var markerSymbol = new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_CIRCLE, 10, new
-                                                              esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([98,194,204]),1),
-                                                              new dojo.Color([0,255,0,0.25]));
+        var markerSymbol = new esri.symbol.PictureMarkerSymbol({
+          "url": "images/pin-red-28x28.png",
+          "height": 20,
+          "width": 20,
+          "type": "picturemarkersymbol"
+        });
         //Create array of result attributes and add graphics to map
-        var dataForGrid  = [];
-        dojo.forEach(results, function(result, id){
-          console.log(result.value, "at index", id);
+        var items = dojo.map(results, function(result, id){
           var graphic = result.feature;
-          dataForGrid.push([result.foundFieldName, result.value]);
+          var marker;
           switch (graphic.geometry.type) {
             case "point":
               graphic.setSymbol(markerSymbol);
+              marker = new esri.Graphic(graphic.geometry, markerSymbol);
               break;
             case "polyline":
               graphic.setSymbol(lineSymbol);
+              marker = new esri.Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
               break;
             case "polygon":
               graphic.setSymbol(polygonSymbol);
+              marker = new esri.Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
               break;
           }
-          map.graphics.add(graphic);
+          findGraphicsLayer.add(marker);
+          var attribs = result.feature.attributes;
+          attribs.identifier = id;
+          attribs.foundFieldName = result.foundFieldName;
+          attribs.value = result.value;
+          attribs.layerName = result.layerName;
+          attribs.graphic = graphic;
+          attribs.marker = marker;
+          return attribs;
         });
         var data = {
-          items: dataForGrid
+          identifier: "identifier",
+          items: items
         };
         var store = new dojo.data.ItemFileReadStore({
           data: data
         });
         grid.setStore(store);
+
+        //Zoom back to initial map extent
+        map.setExtent(initialExtent);
+      }
+
+      function clearSearch(){
+        findGraphicsLayer.clear();
+        dojo.byId('searchText').value = "";
+        store = new dojo.data.ItemFileReadStore({data:{identifier:"", items:[]}});
+        grid.setStore(store);
       }
         
+
+      function onRowHoverHandler(evt){
+        var hoverRowGraphic = grid.getItem(focus.rowIndex).graphic[0];
+      }
+      
+
+      function onRowClickHandler(evt){
+        findGraphicsLayer.clear();
+        var clickedRowGraphic = grid.getItem(evt.rowIndex).graphic[0];
+        findGraphicsLayer.add(clickedRowGraphic);
+        if(clickedRowGraphic.geometry.type == "point") {
+          map.centerAndZoom(clickedRowGraphic.geometry,8);
+        } else {
+          var screenPoint = clickedRowGraphic.geometry.getExtent().getCenter();
+          map.centerAndZoom(screenPoint,8);
+        }
+      }
       dojo.ready(init);
     </script>
   </head>
@@ -203,15 +257,22 @@
         </div>
         <div data-dojo-type="dijit.layout.AccordionPane" title="Search">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
-            Enter an Address or Parcel Number to Search:
-            <input type="text" id="searchText" value="350 Court St" />
-            <input type="button" value="Search" onclick="doSearch(dojo.byId('searchText').value);" />
+            <div data-dojo-type="dijit.form.Form" id="searchForm" data-dojo-id="searchForm" action=""
+                 method="">
+              <label for="searchText">Enter an Address or Parcel Number to Search:</label>
+              <input type="text" id="searchText" size=15 name="searchText" required="true"
+                     data-dojo-type="dijit.form.ValidationTextBox" /><br />
+              <button data-dojo-type="dijit.form.Button" type="button" name="searchButton" onClick="doSearch(dojo.byId('searchText').value);">Search</button>
+              <button data-dojo-type="dijit.form.Button" type="button" name="clearButton"
+                      onClick="clearSearch();">Clear</button>
+            </div>
           </div>
-          <table data-dojo-type="dojox.grid.DataGrid" jsid="grid" id="grid">
+          <table data-dojo-type="dojox.grid.DataGrid" jsid="grid" id="grid"
+                 selectionMode="single" data-dojo-props="summary: 'Search Results:'">
             <thead>
               <tr>
-                <th field="0">Layer</th>
-                <th field="1">Value</th>
+                <th field="foundFieldName" width="100px">Type</th>
+                <th field="value" width="200px">Value</th>
               </tr>
             </thead>
           </table>

@@ -11,7 +11,11 @@
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dojox/grid/resources/Grid.css">
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dojox/grid/resources/claroGrid.css">
-
+    <style type="text/css">
+    @import "dojox/layout/resources/FloatingPane.css";
+    @import "dojox/layout/resources/ResizeHandle.css";
+    </style>
+    
 
     <style>
     .dojoxGrid table {
@@ -55,6 +59,22 @@
     .esriLegendServiceLabel {
       display:none;
     }
+    .navToolbarButton {
+      background: url(images/csg-51e0975dc237a.png) no-repeat top left;
+    }
+    
+    .navToolbarButton-annotate{ background-position: 0 0; width: 25px; height: 25px; } 
+    .navToolbarButton-fullExtent{ background-position: -75px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-identity{ background-position: -150px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-measure{ background-position: -225px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-nextExtent .disabled{ background-position: -300px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-nextExtent{ background-position: -375px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-pan{ background-position: -450px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-prevExtent .disabled{ background-position: -525px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-prevExtent{ background-position: -600px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-print{ background-position: -675px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-zoomIn{ background-position: -750px 0; width: 25px; height: 25px; } 
+    .navToolbarButton-zoomOut{ background-position: -825px 0; width: 25px; height: 25px; }
 
     </style>
 
@@ -75,8 +95,11 @@
     dojo.require("esri.dijit.BasemapGallery");
     dojo.require("esri.dijit.Legend");
     dojo.require("esri.dijit.OverviewMap");
+    dojo.require("esri.dijit.Measurement");
     dojo.require("esri.layers.ArcGISDynamicMapServiceLayer");
     dojo.require("esri.tasks.find");
+    dojo.require("esri.toolbars.navigation");
+    dojo.require("dijit.Dialog");
     dojo.require("dijit.layout.ContentPane");
     dojo.require("dijit.layout.BorderContainer");
     dojo.require("dijit.layout.AccordionContainer");
@@ -86,13 +109,16 @@
     dojo.require("dijit.form.Form");
     dojo.require("dijit.form.ValidationTextBox");
     dojo.require("dijit.form.Button");
+    dojo.require("dijit.Toolbar");
     dojo.require("dojox.grid.DataGrid");
+    dojo.require("dojox.layout.FloatingPane");
     dojo.require("dojo.data.ItemFileReadStore");
     dojo.require("agsjs.dijit.TOC");
     
-    var map, initialExtent;
+    var map, initialExtent, navToolbar;
     var findTask, findParams;
     var findGraphicsLayer, hoverGraphicsLayer;
+    var zoomSymbol
 
     function init() {
       dojo.connect(grid, "onRowClick", onRowClickHandler);
@@ -103,6 +129,10 @@
         console.log(response.itemInfo.item.title);
         map = response.map;
         var layers = response.itemInfo.itemData.operationalLayers;
+        var baseMap = response.itemInfo.itemData.baseMap;
+        console.log(baseMap);
+        var lods = baseMap.baseMapLayers[0].resourceInfo.tileInfo.lods;
+        console.log(lods);
         var layerInfo = dojo.map(layers, function(layer,index) {
           return {layer:layer.layerObject,title:layer.title};
         });
@@ -127,24 +157,32 @@
           }, "legendDiv");
           toc.startup();
         });
+        
+        zoomSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,new                                                           esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("black"), 2),
+                                                      new dojo.Color([255,255,255,0.5]));
+        navToolbar = new esri.toolbars.Navigation(map);
+        navToolbar.setZoomSymbol(zoomSymbol);
+        dojo.connect(navToolbar, "onExtentHistoryChange", extentHistoryChangeHandler);
 
         var measurement = new esri.dijit.Measurement({
           map: map,
           defaultAreaUnit: esri.Units.SQUARE_MILES,
             defaultLengthUnit: esri.Units.MILES
-        }, dojo.byId('measurementDiv'));
-        
-        var ovMapBaseLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
+        }, dojo.byId("measurementDiv"));
+          measurement.startup();
+          console.log(measurement);
+          
+          var ovMapBaseLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
 
-        var overviewMap = new esri.dijit.OverviewMap({
-          map: map,
-          height: 200,
-          width: 200,
-          baseLayer: ovMapBaseLayer,
+          var overviewMap = new esri.dijit.OverviewMap({
+            map: map,
+            height: 200,
+            width: 200,
+            baseLayer: ovMapBaseLayer,
         }, dojo.byId("overviewMapDiv"));
-        overviewMap.startup();
+          overviewMap.startup();
       },function(error) {
-          console.log("Map creation failed: ", error);
+            console.log("Map creation failed: ", error);
         });
       }
 
@@ -215,10 +253,11 @@
         store = new dojo.data.ItemFileReadStore({data:{identifier:"", items:[]}});
         grid.setStore(store);
       }
-        
+      
 
-      function onRowHoverHandler(evt){
-        var hoverRowGraphic = grid.getItem(focus.rowIndex).graphic[0];
+      function extentHistoryChangeHandler() {
+        dijit.byId("prevExtent").disabled = navToolbar.isFirstExtent();
+        dijit.byId("nextExtent").disabled = navToolbar.isLastExtent();
       }
       
 
@@ -233,22 +272,46 @@
           map.centerAndZoom(screenPoint,8);
         }
       }
+
+      /* function basicToggler(node){
+      toggler = new dojo.fx.Toggler({
+      node: node,
+      showFunc: dojo.fx.wipeIn,
+      hideFunc: dojo.fx.wipeOut
+      })
+      } */
       dojo.ready(init);
     </script>
   </head>
   
   <body class="claro">
+    
     <div id="borderContainerTwo" data-dojo-type="dijit.layout.BorderContainer"
          data-dojo-props="gutters:true, liveSplitters:false">
       <div id="topPane" data-dojo-type="dijit.layout.ContentPane" 
-           data-dojo-props="region:'top', splitter:false">
+           data-dojo-props="region:'top', splitter:false, layoutPriority:1">
         <h1>Polaris</h1>
       </div>
-      <div id="map" data-dojo-type="dijit.layout.ContentPane"
-           data-dojo-props="region:'center'">
+      <div id="toolBarPane" data-dojo-type="dijit.layout.ContentPane"
+           data-dojo-props="region:'top', splitter:false, layoutPriority:2">
+        <div id="navToolbar" data-dojo-type="dijit.Toolbar">
+          <div data-dojo-type="dijit.form.Button" id="zoomIn" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomIn',
+               onClick:function(){navToolbar.activate(esri.toolbars.Navigation.ZOOM_IN);}"></div>
+          <div data-dojo-type="dijit.form.Button" id="zoomOut" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomOut',
+               onClick:function(){navToolbar.activate(esri.toolbars.Navigation.ZOOM_OUT);}"></div>
+          <div data-dojo-type="dijit.form.Button" id="fullExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-fullExtent',
+               onClick:function(){navToolbar.zoomToFullExtent();}"></div>
+          <div data-dojo-type="dijit.form.Button" id="prevExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-prevExtent',
+               onClick:function(){navToolbar.zoomToPrevExtent();}"></div>
+          <div data-dojo-type="dijit.form.Button" id="nextExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-nextExtent',
+               onClick:function(){navToolbar.zoomToNextExtent();}"></div>
+          <div data-dojo-type="dijit.form.Button" id="pan" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-pan',
+               onClick:function(){navToolbar.activate(esri.toolbars.Navigation.PAN);}"></div>
+          <div data-dojo-type="dijit.form.Button" id="measure" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-measure', onClick:function(){dijit.byId('measurePane').show();}"></div>
+        </div>
       </div>
       <div data-dojo-type="dijit.layout.AccordionContainer"
-           data-dojo-props="minSize:20, region:'leading', splitter:true"
+           data-dojo-props="minSize:20, region:'leading', splitter:true, layoutPriority:3"
            style="width:400px;" id="leftAccordion">
         <div data-dojo-type="dijit.layout.AccordionPane" title="Legend" selected="true">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
@@ -277,10 +340,16 @@
             </thead>
           </table>
         </div>
+        <div data-dojo-type="dijit.layout.AccordionPane" title="Saved Maps">
+        </div>
       </div>
-      <div data-dojo-type="dijit.layout.AccordionPane" title="Saved Maps">
+      <div id="map" data-dojo-type="dijit.layout.ContentPane"
+           data-dojo-props="region:'center'">
       </div>
     </div>
+    <div data-dojo-type="dojox.layout.FloatingPane" id="measurePane" title="Measurements"
+         data-dojo-props="resizable:true, dockable:true" 
+         style="position:absolute;top:200;left:400;width:100px;height:100px;visibility:hidden;">Lorem ipsum...
     </div>
   </body>
 </html>

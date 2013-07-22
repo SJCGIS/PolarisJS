@@ -98,6 +98,7 @@
     dojo.require("esri.dijit.Measurement");
     dojo.require("esri.layers.ArcGISDynamicMapServiceLayer");
     dojo.require("esri.tasks.find");
+    dojo.require("esri.tasks.geometry");
     dojo.require("esri.toolbars.navigation");
     dojo.require("dijit.Dialog");
     dojo.require("dijit.layout.ContentPane");
@@ -128,6 +129,7 @@
       mapDeferred.then(function(response) {
         console.log(response.itemInfo.item.title);
         map = response.map;
+        esri.config.defaults.geometryService = new esri.tasks.GeometryService("http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer");
         var layers = response.itemInfo.itemData.operationalLayers;
         var baseMap = response.itemInfo.itemData.baseMap;
         console.log(baseMap);
@@ -166,9 +168,9 @@
 
         var measurement = new esri.dijit.Measurement({
           map: map,
-          defaultAreaUnit: esri.Units.SQUARE_MILES,
-            defaultLengthUnit: esri.Units.MILES
-        }, dojo.byId("measurementDiv"));
+          defaultAreaUnit: esri.Units.ACRES,
+            defaultLengthUnit: esri.Units.FEET,
+        }, dojo.byId("measureDiv"));
           measurement.startup();
           console.log(measurement);
           
@@ -272,7 +274,12 @@
           map.centerAndZoom(screenPoint,8);
         }
       }
-
+      
+      function identifyHandler() {
+        if (identifyTool == 'false') {
+          map.infoWindow.hide();
+        }
+      }
       /* function basicToggler(node){
       toggler = new dojo.fx.Toggler({
       node: node,
@@ -313,12 +320,12 @@
       <div data-dojo-type="dijit.layout.AccordionContainer"
            data-dojo-props="minSize:20, region:'leading', splitter:true, layoutPriority:3"
            style="width:400px;" id="leftAccordion">
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Legend" selected="true">
+        <div data-dojo-type="dijit.layout.AccordionPane" title="Map Contents" selected="true" id="mapContentsPane">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
             <div id="legendDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Search">
+        <div data-dojo-type="dijit.layout.AccordionPane" title="Search" id="searchPane">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
             <div data-dojo-type="dijit.form.Form" id="searchForm" data-dojo-id="searchForm" action=""
                  method="">
@@ -340,16 +347,17 @@
             </thead>
           </table>
         </div>
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Saved Maps">
+        <div data-dojo-type="dijit.layout.AccordionPane" title="Measure" id="measurePane">
+          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
+            <div id="measureDiv"></div>
+          </div>
+        </div>
+        <div data-dojo-type="dijit.layout.AccordionPane" title="Saved Maps" id="savedMapsPane">
         </div>
       </div>
       <div id="map" data-dojo-type="dijit.layout.ContentPane"
            data-dojo-props="region:'center'">
       </div>
-    </div>
-    <div data-dojo-type="dojox.layout.FloatingPane" id="measurePane" title="Measurements"
-         data-dojo-props="resizable:true, dockable:true" 
-         style="position:absolute;top:200;left:400;width:100px;height:100px;visibility:hidden;">Lorem ipsum...
     </div>
   </body>
 </html>

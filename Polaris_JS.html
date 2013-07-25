@@ -117,9 +117,9 @@
     dojo.require("agsjs.dijit.TOC");
     
     var map, initialExtent, navToolbar;
-    var findTask, findParams;
+    var findTask, findParams, measurement;
     var findGraphicsLayer, hoverGraphicsLayer;
-    var zoomSymbol
+    var zoomSymbol;
 
     function init() {
       dojo.connect(grid, "onRowClick", onRowClickHandler);
@@ -128,8 +128,11 @@
       });
       mapDeferred.then(function(response) {
         console.log(response.itemInfo.item.title);
+        console.dir(response);
         map = response.map;
-        esri.config.defaults.geometryService = new esri.tasks.GeometryService("http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer");
+        /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
+        geometry server doesn't work well with the measurement widget */
+        esri.config.defaults.geometryService = new esri.tasks.GeometryService("http://sampleserver3.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer");
         var layers = response.itemInfo.itemData.operationalLayers;
         var baseMap = response.itemInfo.itemData.baseMap;
         console.log(baseMap);
@@ -166,13 +169,23 @@
         navToolbar.setZoomSymbol(zoomSymbol);
         dojo.connect(navToolbar, "onExtentHistoryChange", extentHistoryChangeHandler);
 
-        var measurement = new esri.dijit.Measurement({
+          measurement = new esri.dijit.Measurement({
           map: map,
           defaultAreaUnit: esri.Units.ACRES,
             defaultLengthUnit: esri.Units.FEET,
         }, dojo.byId("measureDiv"));
           measurement.startup();
           console.log(measurement);
+          measurement.hide();
+
+          dojo.connect(measurement, "show", function() {
+            dojo.disconnect(response.clickEventHandle);
+            console.log("Popups should be disabled");
+          });
+          dojo.connect(measurement, "hide", function() {
+            dojo.connect(map, "onClick", response.clickEventListener);
+            console.log("Popups should be enabled");
+          });
           
           var ovMapBaseLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
 
@@ -274,11 +287,30 @@
           map.centerAndZoom(screenPoint,8);
         }
       }
-      
-      function identifyHandler() {
-        if (identifyTool == 'false') {
-          map.infoWindow.hide();
-        }
+
+      function showMeasureTool() {
+        measurement.clearResult();
+        measurement.show();
+        console.log("Measure tool is showing");
+      }
+
+      function hideMeasureTool() {
+        /* We need to deactivate the current tool, but as far as I can see,
+        there is no way to find the currently active tool. So we set the active tool
+        to location then deactivate the location tool. */
+        measurement.clearResult();
+        measurement.setTool("location", true);
+        measurement.setTool("location", false);
+        measurement.hide();
+        console.log("Measure tool is hidden");
+      }
+
+      function disablePopups(response) {
+        dojo.disconnect(response.clickEventHandle);
+      }
+
+      function enablePopups(response) {
+        dojo.connect(map, "onClick", response.clickEventListener);
       }
       /* function basicToggler(node){
       toggler = new dojo.fx.Toggler({
@@ -314,18 +346,17 @@
                onClick:function(){navToolbar.zoomToNextExtent();}"></div>
           <div data-dojo-type="dijit.form.Button" id="pan" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-pan',
                onClick:function(){navToolbar.activate(esri.toolbars.Navigation.PAN);}"></div>
-          <div data-dojo-type="dijit.form.Button" id="measure" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-measure', onClick:function(){dijit.byId('measurePane').show();}"></div>
         </div>
       </div>
       <div data-dojo-type="dijit.layout.AccordionContainer"
            data-dojo-props="minSize:20, region:'leading', splitter:true, layoutPriority:3"
            style="width:400px;" id="leftAccordion">
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Map Contents" selected="true" id="mapContentsPane">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Map Contents" id="mapContentsPane">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
             <div id="legendDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Search" id="searchPane">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Search" id="searchPane" selected="true">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
             <div data-dojo-type="dijit.form.Form" id="searchForm" data-dojo-id="searchForm" action=""
                  method="">
@@ -347,12 +378,12 @@
             </thead>
           </table>
         </div>
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Measure" id="measurePane">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Measure" id="measurePane" data-dojo-props="onShow:showMeasureTool, onHide:hideMeasureTool">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
             <div id="measureDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit.layout.AccordionPane" title="Saved Maps" id="savedMapsPane">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Saved Maps" id="savedMapsPane">
         </div>
       </div>
       <div id="map" data-dojo-type="dijit.layout.ContentPane"

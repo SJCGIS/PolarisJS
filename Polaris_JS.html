@@ -56,6 +56,9 @@
       font-size: 16px;
       padding: 8px 5px;
     }
+    .esriScalebarLabel {
+      color: white;
+    }
     .esriLegendServiceLabel {
       display:none;
     }
@@ -75,6 +78,15 @@
     .navToolbarButton-print{ background-position: -675px 0; width: 25px; height: 25px; } 
     .navToolbarButton-zoomIn{ background-position: -750px 0; width: 25px; height: 25px; } 
     .navToolbarButton-zoomOut{ background-position: -825px 0; width: 25px; height: 25px; }
+
+    #topPane {
+      background-image: url("images/TitleBanner.gif");
+      background-repeat: no-repeat;
+      background-color: #42688C;
+      color: white;
+      height: 50px;
+      text-align: right;
+    }
 
     </style>
 
@@ -96,6 +108,7 @@
     dojo.require("esri.dijit.Legend");
     dojo.require("esri.dijit.OverviewMap");
     dojo.require("esri.dijit.Measurement");
+    dojo.require("esri.dijit.Scalebar");
     dojo.require("esri.layers.ArcGISDynamicMapServiceLayer");
     dojo.require("esri.tasks.find");
     dojo.require("esri.tasks.geometry");
@@ -143,23 +156,47 @@
         });
 
         initialExtent = map.extent;
-        findGraphicsLayer = new esri.layers.GraphicsLayer();
+        findGraphicsLayer = new esri.layers.GraphicsLayer({
+          spatialReference:  map.spatialReference
+        });
         map.addLayer(findGraphicsLayer);
-        
-        findTask = new esri.tasks.FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
 
+        /* Now that the map has loaded, let's add a scalebar */
+        var scaleBar = new esri.dijit.Scalebar({
+          map: map,
+          scalebarUnit: 'english'
+        });
+        
+        /* Let's create a Finder for locating features in the map layers */
+        findTask = new esri.tasks.FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
         // Create find parameters
         findParams = new esri.tasks.FindParameters();
         findParams.returnGeometry = true;
+        /* Enter the id number of the layers to search  */
         findParams.layerIds = [2,8,27];
+        /* Enter the names of the fields to search over the layers */
         findParams.searchFields = ["PIN", "ADDRESS", "NAME"];
         findParams.outSpatialReference = map.spatialReference;
 
+        /* Do we have a URL parameter to search for? If so, send it to the findTask */
+        var urlObject = esri.urlToObject(document.location.href);
+        if(urlObject.query){
+          dojo.byId('searchText').value=urlObject.query.find;
+          doSearch(urlObject.query.find)
+        }
+
+        /* After all map layers have been added, construct the table of contents
+        and legend*/
         dojo.connect(map,"onLayersAddResult",function(results){
+          var legend = new esri.dijit.Legend({
+            map: map,
+            layerInfos: layerInfo
+            },"legendDiv");
           var toc = new agsjs.dijit.TOC({
             map: map,
             layerInfos: layerInfo
-          }, "legendDiv");
+          }, "tocDiv");
+          legend.startup();
           toc.startup();
         });
         
@@ -205,6 +242,7 @@
         // Set search text to value in box
         findParams.searchText = searchText;
         findTask.execute(findParams,showResults);
+        dojo.byId('grid').style.visibility="visible";
       }
 
       function showResults(results) {
@@ -258,12 +296,27 @@
         });
         grid.setStore(store);
 
-        //Zoom back to initial map extent
-        map.setExtent(initialExtent);
+        /* Now we want to zoom to the found features. But when there is only 
+        one result from the find, the esriGraphicsExtent is null. This may be
+         a bug. So we form a switch based on the number of found features and
+         handle it differently if the number is 0, 1 or more than 1. */
+        switch (findGraphicsLayer.graphics.length) {
+          case 0:
+            map.setExtent(initialExtent);
+            break;
+          case 1:
+            findGraphicsLayer.clear();
+            zoomToSelectedRow(grid.getItem(0).graphic[0]);
+            break;
+          default:
+            var foundFeaturesExtent = esri.graphicsExtent(findGraphicsLayer.graphics);
+            map.setExtent(foundFeaturesExtent);
+        }
       }
 
       function clearSearch(){
         findGraphicsLayer.clear();
+        dojo.byId('grid').style.visibility="hidden";
         dojo.byId('searchText').value = "";
         store = new dojo.data.ItemFileReadStore({data:{identifier:"", items:[]}});
         grid.setStore(store);
@@ -279,6 +332,10 @@
       function onRowClickHandler(evt){
         findGraphicsLayer.clear();
         var clickedRowGraphic = grid.getItem(evt.rowIndex).graphic[0];
+        zoomToSelectedRow(clickedRowGraphic);
+      }
+
+      function zoomToSelectedRow(clickedRowGraphic){
         findGraphicsLayer.add(clickedRowGraphic);
         if(clickedRowGraphic.geometry.type == "point") {
           map.centerAndZoom(clickedRowGraphic.geometry,8);
@@ -327,7 +384,7 @@
     
     <div id="borderContainerTwo" data-dojo-type="dijit.layout.BorderContainer"
          data-dojo-props="gutters:true, liveSplitters:false">
-      <div id="topPane" data-dojo-type="dijit.layout.ContentPane" 
+      <div id="topPane" class="titleBar" data-dojo-type="dijit.layout.ContentPane" 
            data-dojo-props="region:'top', splitter:false, layoutPriority:1">
         <h1>Polaris</h1>
       </div>
@@ -351,9 +408,14 @@
       <div data-dojo-type="dijit.layout.AccordionContainer"
            data-dojo-props="minSize:20, region:'leading', splitter:true, layoutPriority:3"
            style="width:400px;" id="leftAccordion">
-        <div data-dojo-type="dijit.layout.ContentPane" title="Map Contents" id="mapContentsPane">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Legend" id="legendPane">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
             <div id="legendDiv"></div>
+          </div>
+        </div>
+        <div data-dojo-type="dijit.layout.ContentPane" title="Map Contents" id="mapContentsPane">
+          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
+            <div id="tocDiv"></div>
           </div>
         </div>
         <div data-dojo-type="dijit.layout.ContentPane" title="Search" id="searchPane" selected="true">
@@ -369,7 +431,7 @@
             </div>
           </div>
           <table data-dojo-type="dojox.grid.DataGrid" jsid="grid" id="grid"
-                 selectionMode="single" data-dojo-props="summary: 'Search Results:'">
+                 selectionMode="single" noDataMessage="No results found" data-dojo-props="summary: 'Search Results:'" style="visibility:hidden;">
             <thead>
               <tr>
                 <th field="foundFieldName" width="100px">Type</th>
@@ -382,8 +444,6 @@
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
             <div id="measureDiv"></div>
           </div>
-        </div>
-        <div data-dojo-type="dijit.layout.ContentPane" title="Saved Maps" id="savedMapsPane">
         </div>
       </div>
       <div id="map" data-dojo-type="dijit.layout.ContentPane"

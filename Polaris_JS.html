@@ -12,381 +12,387 @@
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dojox/grid/resources/Grid.css">
     <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dojox/grid/resources/claroGrid.css">
     <style type="text/css">
-    @import "dojox/layout/resources/FloatingPane.css";
-    @import "dojox/layout/resources/ResizeHandle.css";
+     @import "dojox/layout/resources/FloatingPane.css";
+     @import "dojox/layout/resources/ResizeHandle.css";
     </style>
     
 
     <style>
-    .dojoxGrid table {
-      margin: 0;
-    }
+     .dojoxGrid table {
+       margin: 0;
+     }
 
-    html, body {
-      height:100%;
-      width:100%;
-      margin:0;
-      padding:0;
-    }
-    #borderContainerTwo {
-      width:100%;
-      height:100%;
-    }
-    #map {
-      height:100%;
-      width:100%;
-      overflow:hidden;
-    }
-    .layersDiv {
-      background: #3d5d72;
-    }
-    #rightPane {
-      width: 175px;
-      margin: 0;
-      padding: 0;
-    }
-    #paneHeader {
-      background: url(images/header.png) repeat-x;
-      color: white;
-      border-bottom: solid 1px #B5BCC7;
-      text-align: center;
-      height: 30px;
-      margin: 0;
-      overflow: hidden;
-      font-size: 16px;
-      padding: 8px 5px;
-    }
-    .esriScalebarLabel {
-      color: white;
-    }
-    .esriLegendServiceLabel {
-      display:none;
-    }
-    .navToolbarButton {
-      background: url(images/csg-51e0975dc237a.png) no-repeat top left;
-    }
-    
-    .navToolbarButton-annotate{ background-position: 0 0; width: 25px; height: 25px; } 
-    .navToolbarButton-fullExtent{ background-position: -75px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-identity{ background-position: -150px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-measure{ background-position: -225px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-nextExtent .disabled{ background-position: -300px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-nextExtent{ background-position: -375px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-pan{ background-position: -450px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-prevExtent .disabled{ background-position: -525px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-prevExtent{ background-position: -600px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-print{ background-position: -675px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-zoomIn{ background-position: -750px 0; width: 25px; height: 25px; } 
-    .navToolbarButton-zoomOut{ background-position: -825px 0; width: 25px; height: 25px; }
+     html, body {
+       height:100%;
+       width:100%;
+       margin:0;
+       padding:0;
+     }
+     #borderContainerTwo {
+       width:100%;
+       height:100%;
+     }
+     #map {
+       height:100%;
+       width:100%;
+       overflow:hidden;
+     }
+     .layersDiv {
+       background: #3d5d72;
+     }
+     #rightPane {
+       width: 175px;
+       margin: 0;
+       padding: 0;
+     }
+     #paneHeader {
+       background: url(images/header.png) repeat-x;
+       color: white;
+       border-bottom: solid 1px #B5BCC7;
+       text-align: center;
+       height: 30px;
+       margin: 0;
+       overflow: auto;
+       font-size: 16px;
+       padding: 8px 5px;
+     }
+     .esriScalebarLabel {
+       color: white;
+     }
+     .esriLegendServiceLabel {
+       display:none;
+     }
+     .navToolbarButton {
+       background: url(images/csg-51e0975dc237a.png) no-repeat top left;
+     }
+     
+     .navToolbarButton-annotate{ background-position: 0 0; width: 25px; height: 25px; } 
+     .navToolbarButton-fullExtent{ background-position: -75px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-identity{ background-position: -150px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-measure{ background-position: -225px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-nextExtent .disabled{ background-position: -300px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-nextExtent{ background-position: -375px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-pan{ background-position: -450px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-prevExtent .disabled{ background-position: -525px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-prevExtent{ background-position: -600px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-print{ background-position: -675px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-zoomIn{ background-position: -750px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-zoomOut{ background-position: -825px 0; width: 25px; height: 25px; }
 
-    #topPane {
-      background-image: url("images/TitleBanner.gif");
-      background-repeat: no-repeat;
-      background-color: #42688C;
-      color: white;
-      height: 50px;
-      text-align: right;
-    }
+     #topPane {
+       color: white;
+       text-align: right;
+       font-family: Arial;
+       font-size: 10px;
+       font-style: italic;
+       background: url('images/bluemarble.gif') no-repeat left top, #1e5799; /* Old browsers */
+       /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+       background: url('images/bluemarble.gif') no-repeat left top, url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFlNTc5OSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDIwMDA1IiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iNzUlIiBzdG9wLWNvbG9yPSIjNDI2ODhjIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+       background: url('images/bluemarble.gif') no-repeat left top, -moz-linear-gradient(left, #1e5799 0%, #020005 0%, #42688c 75%); /* FF3.6+ */
+       background: url('images/bluemarble.gif') no-repeat left top, -webkit-gradient(linear, left top, right top, color-stop(0%,#1e5799), color-stop(0%,#020005), color-stop(75%,#42688c)); /* Chrome,Safari4+ */
+       background: url('images/bluemarble.gif') no-repeat left top, -webkit-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* Chrome10+,Safari5.1+ */
+       background: url('images/bluemarble.gif') no-repeat left top, -o-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* Opera 11.10+ */
+       background: url('images/bluemarble.gif') no-repeat left top, -ms-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* IE10+ */
+       background: url('images/bluemarble.gif') no-repeat left top, linear-gradient(to right, #1e5799 0%,#020005 0%,#42688c 75%); /* W3C */
+       filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#42688c',GradientType=1 ); /* IE6-8 */
+     }
 
     </style>
 
     <script>var dojoConfig = {
-      parseOnLoad: true,
-      packages: [{
-        "name":"agsjs",
-        "location": "/GISApps/2.04/agsjs/src/agsjs"
-      }]
-    }
+       parseOnLoad: true,
+       packages: [{
+         "name":"agsjs",
+         "location": "/GISApps/2.04/agsjs/src/agsjs"
+       }]
+     }
     </script>
     <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/"></script>
     <script>  
 
-    dojo.require("esri.map");
-    dojo.require("esri.arcgis.utils");
-    dojo.require("esri.dijit.Popup");
-    dojo.require("esri.dijit.BasemapGallery");
-    dojo.require("esri.dijit.Legend");
-    dojo.require("esri.dijit.OverviewMap");
-    dojo.require("esri.dijit.Measurement");
-    dojo.require("esri.dijit.Scalebar");
-    dojo.require("esri.layers.ArcGISDynamicMapServiceLayer");
-    dojo.require("esri.tasks.find");
-    dojo.require("esri.tasks.geometry");
-    dojo.require("esri.toolbars.navigation");
-    dojo.require("dijit.Dialog");
-    dojo.require("dijit.layout.ContentPane");
-    dojo.require("dijit.layout.BorderContainer");
-    dojo.require("dijit.layout.AccordionContainer");
-    dojo.require("dijit.layout.AccordionPane");
-    dojo.require("dijit.layout.TabContainer");
-    dojo.require("dijit.layout.LayoutContainer");
-    dojo.require("dijit.form.Form");
-    dojo.require("dijit.form.ValidationTextBox");
-    dojo.require("dijit.form.Button");
-    dojo.require("dijit.Toolbar");
-    dojo.require("dojox.grid.DataGrid");
-    dojo.require("dojox.layout.FloatingPane");
-    dojo.require("dojo.data.ItemFileReadStore");
-    dojo.require("agsjs.dijit.TOC");
-    
-    var map, initialExtent, navToolbar;
-    var findTask, findParams, measurement;
-    var findGraphicsLayer, hoverGraphicsLayer;
-    var zoomSymbol;
+     dojo.require("esri.map");
+     dojo.require("esri.arcgis.utils");
+     dojo.require("esri.dijit.Popup");
+     dojo.require("esri.dijit.BasemapGallery");
+     dojo.require("esri.dijit.Legend");
+     dojo.require("esri.dijit.OverviewMap");
+     dojo.require("esri.dijit.Measurement");
+     dojo.require("esri.dijit.Scalebar");
+     dojo.require("esri.layers.ArcGISDynamicMapServiceLayer");
+     dojo.require("esri.tasks.find");
+     dojo.require("esri.tasks.geometry");
+     dojo.require("esri.toolbars.navigation");
+     dojo.require("dijit.Dialog");
+     dojo.require("dijit.layout.ContentPane");
+     dojo.require("dijit.layout.BorderContainer");
+     dojo.require("dijit.layout.AccordionContainer");
+     dojo.require("dijit.layout.AccordionPane");
+     dojo.require("dijit.layout.TabContainer");
+     dojo.require("dijit.layout.LayoutContainer");
+     dojo.require("dijit.form.Form");
+     dojo.require("dijit.form.ValidationTextBox");
+     dojo.require("dijit.form.Button");
+     dojo.require("dijit.Toolbar");
+     dojo.require("dojox.grid.DataGrid");
+     dojo.require("dojox.layout.FloatingPane");
+     dojo.require("dojo.data.ItemFileReadStore");
+     dojo.require("agsjs.dijit.TOC");
+     
+     var map, initialExtent, navToolbar;
+     var findTask, findParams, measurement;
+     var findGraphicsLayer, hoverGraphicsLayer;
+     var zoomSymbol;
 
-    function init() {
-      dojo.connect(grid, "onRowClick", onRowClickHandler);
-      var mapDeferred = esri.arcgis.utils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
-        geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
-      });
-      mapDeferred.then(function(response) {
-        console.log(response.itemInfo.item.title);
-        console.dir(response);
-        map = response.map;
-        /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
-        geometry server doesn't work well with the measurement widget */
-        esri.config.defaults.geometryService = new esri.tasks.GeometryService("http://sampleserver3.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer");
-        var layers = response.itemInfo.itemData.operationalLayers;
-        var baseMap = response.itemInfo.itemData.baseMap;
-        console.log(baseMap);
-        var lods = baseMap.baseMapLayers[0].resourceInfo.tileInfo.lods;
-        console.log(lods);
-        var layerInfo = dojo.map(layers, function(layer,index) {
-          return {layer:layer.layerObject,title:layer.title};
-        });
+     function init() {
+       dojo.connect(grid, "onRowClick", onRowClickHandler);
+       var mapDeferred = esri.arcgis.utils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
+         geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
+       });
+       mapDeferred.then(function(response) {
+         map = response.map;
+         /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
+         geometry server doesn't work well with the measurement widget */
+         esri.config.defaults.geometryService = new esri.tasks.GeometryService("http://sampleserver3.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer");
+         var layers = response.itemInfo.itemData.operationalLayers;
+         var baseMap = response.itemInfo.itemData.baseMap;
+         var lods = baseMap.baseMapLayers[0].resourceInfo.tileInfo.lods;
+         /* var layerInfo = dojo.map(layers, function(layer,index) {
+         return {layer:layer.layerObject,title:layer.title};
+         }); */
+         var layerInfo = esri.arcgis.utils.getLegendLayers(response);
+         
+         initialExtent = map.extent;
+         findGraphicsLayer = new esri.layers.GraphicsLayer({
+           spatialReference:  map.spatialReference
+         });
+         map.addLayer(findGraphicsLayer);
 
-        initialExtent = map.extent;
-        findGraphicsLayer = new esri.layers.GraphicsLayer({
-          spatialReference:  map.spatialReference
-        });
-        map.addLayer(findGraphicsLayer);
+         /* Now that the map has loaded, let's add a scalebar */
+         var scaleBar = new esri.dijit.Scalebar({
+           map: map,
+           scalebarUnit: 'english'
+         });
+         
+         /* Let's create a Finder for locating features in the map layers */
+         findTask = new esri.tasks.FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
+         // Create find parameters
+         findParams = new esri.tasks.FindParameters();
+         findParams.returnGeometry = true;
+         /* Enter the id number of the layers to search  */
+         findParams.layerIds = [2,8];
+         /* Enter the names of the fields to search over the layers */
+         findParams.searchFields = ["PIN", "ADDRESS", "NAME"];
+         findParams.outSpatialReference = map.spatialReference;
 
-        /* Now that the map has loaded, let's add a scalebar */
-        var scaleBar = new esri.dijit.Scalebar({
-          map: map,
-          scalebarUnit: 'english'
-        });
-        
-        /* Let's create a Finder for locating features in the map layers */
-        findTask = new esri.tasks.FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
-        // Create find parameters
-        findParams = new esri.tasks.FindParameters();
-        findParams.returnGeometry = true;
-        /* Enter the id number of the layers to search  */
-        findParams.layerIds = [2,8,27];
-        /* Enter the names of the fields to search over the layers */
-        findParams.searchFields = ["PIN", "ADDRESS", "NAME"];
-        findParams.outSpatialReference = map.spatialReference;
+         /* Do we have a URL parameter to search for? If so, send it to the findTask */
+         var params = esri.urlToObject(document.location.href);
+         if(params.query){
+           dojo.byId('searchText').value=params.query.find;
+           doSearch(params.query.find);
+         }
 
-        /* Do we have a URL parameter to search for? If so, send it to the findTask */
-        var urlObject = esri.urlToObject(document.location.href);
-        if(urlObject.query){
-          dojo.byId('searchText').value=urlObject.query.find;
-          doSearch(urlObject.query.find)
-        }
+         /* After all map layers have been added, construct the table of contents
+         and legend*/
+         dojo.connect(map,"onLayersAddResult",function(results){
+           var legend = new esri.dijit.Legend({
+             map: map,
+             layerInfos: layerInfo
+           },"legendDiv");
+           var toc = new agsjs.dijit.TOC({
+             map: map,
+             layerInfos: layerInfo
+           }, "tocDiv");
+           legend.startup();
+           toc.startup();
+         });
+         
+         zoomSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,new                                                           esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("black"), 2),
+                                                       new dojo.Color([255,255,255,0.5]));
+         navToolbar = new esri.toolbars.Navigation(map);
+         navToolbar.setZoomSymbol(zoomSymbol);
+         dojo.connect(navToolbar, "onExtentHistoryChange", extentHistoryChangeHandler);
 
-        /* After all map layers have been added, construct the table of contents
-        and legend*/
-        dojo.connect(map,"onLayersAddResult",function(results){
-          var legend = new esri.dijit.Legend({
-            map: map,
-            layerInfos: layerInfo
-            },"legendDiv");
-          var toc = new agsjs.dijit.TOC({
-            map: map,
-            layerInfos: layerInfo
-          }, "tocDiv");
-          legend.startup();
-          toc.startup();
-        });
-        
-        zoomSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,new                                                           esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("black"), 2),
-                                                      new dojo.Color([255,255,255,0.5]));
-        navToolbar = new esri.toolbars.Navigation(map);
-        navToolbar.setZoomSymbol(zoomSymbol);
-        dojo.connect(navToolbar, "onExtentHistoryChange", extentHistoryChangeHandler);
+         measurement = new esri.dijit.Measurement({
+           map: map,
+           defaultAreaUnit: esri.Units.ACRES,
+             defaultLengthUnit: esri.Units.FEET,
+         }, dojo.byId("measureDiv"));
+           measurement.startup();
 
-          measurement = new esri.dijit.Measurement({
-          map: map,
-          defaultAreaUnit: esri.Units.ACRES,
-            defaultLengthUnit: esri.Units.FEET,
-        }, dojo.byId("measureDiv"));
-          measurement.startup();
-          console.log(measurement);
-          measurement.hide();
+           var popupHandler = response.clickEventHandle;
 
-          dojo.connect(measurement, "show", function() {
-            dojo.disconnect(response.clickEventHandle);
-            console.log("Popups should be disabled");
-          });
-          dojo.connect(measurement, "hide", function() {
-            dojo.connect(map, "onClick", response.clickEventListener);
-            console.log("Popups should be enabled");
-          });
-          
-          var ovMapBaseLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
+           dojo.connect(dijit.byId("measurePane"), "onShow", function() {
+             dojo.disconnect(popupHandler);
+             console.log("Popups should be disabled");
+         });
+           dojo.connect(dijit.byId("measurePane"), "onHide", function() {
+             popupHandler = dojo.connect(map, "onClick", response.clickEventListener);
+             console.log("Popups should be enabled");
+         });
+           
+           var ovMapBaseLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
 
-          var overviewMap = new esri.dijit.OverviewMap({
-            map: map,
-            height: 200,
-            width: 200,
-            baseLayer: ovMapBaseLayer,
-        }, dojo.byId("overviewMapDiv"));
-          overviewMap.startup();
-      },function(error) {
-            console.log("Map creation failed: ", error);
-        });
-      }
+           var overviewMap = new esri.dijit.OverviewMap({
+             map: map,
+             height: 200,
+             width: 200,
+             baseLayer: ovMapBaseLayer,
+         }, dojo.byId("overviewMapDiv"));
+           overviewMap.startup();
+       },function(error) {
+             console.log("Map creation failed: ", error);
+         });
+     }
 
-      function doSearch(searchText) {
-        // Set search text to value in box
-        findParams.searchText = searchText;
-        findTask.execute(findParams,showResults);
-        dojo.byId('grid').style.visibility="visible";
-      }
+     function doSearch(searchText) {
+       // Set search text to value in box
+       findParams.searchText = searchText;
+       findTask.execute(findParams,showResults);
+       dojo.byId('grid').style.visibility="visible";
+     }
 
-      function showResults(results) {
-        //Show the results of FindTask using the FindResult returned by the doFind function
-        findGraphicsLayer.clear(); //Clear existing graphics from map
-        var polygonSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new
-                                                             esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,255,0]), 2),
-                                                             new dojo.Color([255,255,0,0.25]));
-        var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                                                          new dojo.Color([98,194,204]),1);
-        var markerSymbol = new esri.symbol.PictureMarkerSymbol({
-          "url": "images/pin-red-28x28.png",
-          "height": 20,
-          "width": 20,
-          "type": "picturemarkersymbol"
-        });
-        //Create array of result attributes and add graphics to map
-        var items = dojo.map(results, function(result, id){
-          var graphic = result.feature;
-          var marker;
-          switch (graphic.geometry.type) {
-            case "point":
-              graphic.setSymbol(markerSymbol);
-              marker = new esri.Graphic(graphic.geometry, markerSymbol);
-              break;
-            case "polyline":
-              graphic.setSymbol(lineSymbol);
-              marker = new esri.Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
-              break;
-            case "polygon":
-              graphic.setSymbol(polygonSymbol);
-              marker = new esri.Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
-              break;
-          }
-          findGraphicsLayer.add(marker);
-          var attribs = result.feature.attributes;
-          attribs.identifier = id;
-          attribs.foundFieldName = result.foundFieldName;
-          attribs.value = result.value;
-          attribs.layerName = result.layerName;
-          attribs.graphic = graphic;
-          attribs.marker = marker;
-          return attribs;
-        });
-        var data = {
-          identifier: "identifier",
-          items: items
-        };
-        var store = new dojo.data.ItemFileReadStore({
-          data: data
-        });
-        grid.setStore(store);
+     function showResults(results) {
+       //Show the results of FindTask using the FindResult returned by the doFind function
+       findGraphicsLayer.clear(); //Clear existing graphics from map
+       var polygonSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new
+                                                            esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,255,0]), 2),
+                                                            new dojo.Color([255,255,0,0.25]));
+       var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                                         new dojo.Color([98,194,204]),1);
+       var markerSymbol = new esri.symbol.PictureMarkerSymbol({
+         "url": "images/pin-red-28x28.png",
+         "height": 20,
+         "width": 20,
+         "type": "picturemarkersymbol"
+       });
+       //Create array of result attributes and add graphics to map
+       var items = dojo.map(results, function(result, id){
+         var graphic = result.feature;
+         var marker;
+         switch (graphic.geometry.type) {
+           case "point":
+             graphic.setSymbol(markerSymbol);
+             marker = new esri.Graphic(graphic.geometry, markerSymbol);
+             break;
+           case "polyline":
+             graphic.setSymbol(lineSymbol);
+             marker = new esri.Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
+             break;
+           case "polygon":
+             graphic.setSymbol(polygonSymbol);
+             marker = new esri.Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
+             break;
+         }
+         findGraphicsLayer.add(marker);
+         var attribs = result.feature.attributes;
+         attribs.identifier = id;
+         attribs.foundFieldName = result.foundFieldName;
+         attribs.value = result.value;
+         attribs.layerName = result.layerName;
+         attribs.graphic = graphic;
+         attribs.marker = marker;
+         return attribs;
+       });
+       var data = {
+         identifier: "identifier",
+         items: items
+       };
+       var store = new dojo.data.ItemFileReadStore({
+         data: data
+       });
+       grid.setStore(store);
 
-        /* Now we want to zoom to the found features. But when there is only 
-        one result from the find, the esriGraphicsExtent is null. This may be
-         a bug. So we form a switch based on the number of found features and
-         handle it differently if the number is 0, 1 or more than 1. */
-        switch (findGraphicsLayer.graphics.length) {
-          case 0:
-            map.setExtent(initialExtent);
-            break;
-          case 1:
-            findGraphicsLayer.clear();
-            zoomToSelectedRow(grid.getItem(0).graphic[0]);
-            break;
-          default:
-            var foundFeaturesExtent = esri.graphicsExtent(findGraphicsLayer.graphics);
-            map.setExtent(foundFeaturesExtent);
-        }
-      }
+       /* Now we want to zoom to the found features. But when there is only 
+       one result from the find, the esriGraphicsExtent is null. This may be
+       a bug. So we form a switch based on the number of found features and
+       handle it differently if the number is 0, 1 or more than 1. */
+       switch (findGraphicsLayer.graphics.length) {
+         case 0:
+           map.setExtent(initialExtent);
+           break;
+         case 1:
+           findGraphicsLayer.clear();
+           zoomToSelectedRow(grid.getItem(0).graphic[0]);
+           break;
+         default:
+           var foundFeaturesExtent = esri.graphicsExtent(findGraphicsLayer.graphics);
+           map.setExtent(foundFeaturesExtent);
+       }
+     }
 
-      function clearSearch(){
-        findGraphicsLayer.clear();
-        dojo.byId('grid').style.visibility="hidden";
-        dojo.byId('searchText').value = "";
-        store = new dojo.data.ItemFileReadStore({data:{identifier:"", items:[]}});
-        grid.setStore(store);
-      }
-      
+     function clearSearch(){
+       findGraphicsLayer.clear();
+       dojo.byId('grid').style.visibility="hidden";
+       dojo.byId('searchText').value = "";
+       store = new dojo.data.ItemFileReadStore({data:{identifier:"", items:[]}});
+       grid.setStore(store);
+     }
+     
 
-      function extentHistoryChangeHandler() {
-        dijit.byId("prevExtent").disabled = navToolbar.isFirstExtent();
-        dijit.byId("nextExtent").disabled = navToolbar.isLastExtent();
-      }
-      
+     function extentHistoryChangeHandler() {
+       dijit.byId("prevExtent").disabled = navToolbar.isFirstExtent();
+       dijit.byId("nextExtent").disabled = navToolbar.isLastExtent();
+     }
+     
 
-      function onRowClickHandler(evt){
-        findGraphicsLayer.clear();
-        var clickedRowGraphic = grid.getItem(evt.rowIndex).graphic[0];
-        zoomToSelectedRow(clickedRowGraphic);
-      }
+     function onRowClickHandler(evt){
+       findGraphicsLayer.clear();
+       var clickedRowGraphic = grid.getItem(evt.rowIndex).graphic[0];
+       zoomToSelectedRow(clickedRowGraphic);
+     }
 
-      function zoomToSelectedRow(clickedRowGraphic){
-        findGraphicsLayer.add(clickedRowGraphic);
-        if(clickedRowGraphic.geometry.type == "point") {
-          map.centerAndZoom(clickedRowGraphic.geometry,8);
-        } else {
-          var screenPoint = clickedRowGraphic.geometry.getExtent().getCenter();
-          map.centerAndZoom(screenPoint,8);
-        }
-      }
+     function zoomToSelectedRow(clickedRowGraphic){
+       findGraphicsLayer.add(clickedRowGraphic);
+       if(clickedRowGraphic.geometry.type == "point") {
+         map.centerAndZoom(clickedRowGraphic.geometry,8);
+       } else {
+         var screenPoint = clickedRowGraphic.geometry.getExtent().getCenter();
+         map.centerAndZoom(screenPoint,8);
+       }
+     }
 
-      function showMeasureTool() {
-        measurement.clearResult();
-        measurement.show();
-        console.log("Measure tool is showing");
-      }
+     function showMeasureTool() {
+       measurement.clearResult();
+       measurement.show();
+       console.log("Measure tool is showing");
+     }
 
-      function hideMeasureTool() {
-        /* We need to deactivate the current tool, but as far as I can see,
-        there is no way to find the currently active tool. So we set the active tool
-        to location then deactivate the location tool. */
-        measurement.clearResult();
-        measurement.setTool("location", true);
-        measurement.setTool("location", false);
-        measurement.hide();
-        console.log("Measure tool is hidden");
-      }
+     function hideMeasureTool() {
+       /* We need to deactivate the current tool, but as far as I can see,
+       there is no way to find the currently active tool. So we set the active tool
+       to location then deactivate the location tool. */
+       measurement.clearResult();
+       measurement.setTool("location", true);
+       measurement.setTool("location", false);
+       measurement.hide();
+       console.log("Measure tool is hidden");
+     }
 
-      function disablePopups(response) {
-        dojo.disconnect(response.clickEventHandle);
-      }
+     function disablePopups(response) {
+       dojo.disconnect(response.clickEventHandle);
+     }
 
-      function enablePopups(response) {
-        dojo.connect(map, "onClick", response.clickEventListener);
-      }
-      /* function basicToggler(node){
-      toggler = new dojo.fx.Toggler({
-      node: node,
-      showFunc: dojo.fx.wipeIn,
-      hideFunc: dojo.fx.wipeOut
-      })
-      } */
-      dojo.ready(init);
+     function enablePopups(response) {
+       dojo.connect(map, "onClick", response.clickEventListener);
+     }
+     /* function basicToggler(node){
+     toggler = new dojo.fx.Toggler({
+     node: node,
+     showFunc: dojo.fx.wipeIn,
+     hideFunc: dojo.fx.wipeOut
+     })
+     } */
+     dojo.ready(init);
     </script>
   </head>
   
   <body class="claro">
     
     <div id="borderContainerTwo" data-dojo-type="dijit.layout.BorderContainer"
-         data-dojo-props="gutters:true, liveSplitters:false">
+         data-dojo-props="gutters:false, liveSplitters:false">
       <div id="topPane" class="titleBar" data-dojo-type="dijit.layout.ContentPane" 
            data-dojo-props="region:'top', splitter:false, layoutPriority:1">
-        <h1>Polaris</h1>
+        <h1>San Juan County - Polaris Property Search</h1>
       </div>
       <div id="toolBarPane" data-dojo-type="dijit.layout.ContentPane"
            data-dojo-props="region:'top', splitter:false, layoutPriority:2">
@@ -440,7 +446,7 @@
             </thead>
           </table>
         </div>
-        <div data-dojo-type="dijit.layout.ContentPane" title="Measure" id="measurePane" data-dojo-props="onShow:showMeasureTool, onHide:hideMeasureTool">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Measure" id="measurePane">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
             <div id="measureDiv"></div>
           </div>

@@ -117,10 +117,14 @@
      dojo.require("esri.dijit.Legend");
      dojo.require("esri.dijit.OverviewMap");
      dojo.require("esri.dijit.Measurement");
+     dojo.require("esri.dijit.Print");
      dojo.require("esri.dijit.Scalebar");
      dojo.require("esri.layers.ArcGISDynamicMapServiceLayer");
      dojo.require("esri.tasks.find");
      dojo.require("esri.tasks.geometry");
+     dojo.require("esri.tasks.PrintParameters");
+     dojo.require("esri.tasks.PrintTask");
+     dojo.require("esri.tasks.PrintTemplate");
      dojo.require("esri.toolbars.navigation");
      dojo.require("dijit.Dialog");
      dojo.require("dijit.layout.ContentPane");
@@ -140,19 +144,17 @@
      
      var map, initialExtent, navToolbar;
      var findTask, findParams, measurement;
+     var print;
      var findGraphicsLayer, hoverGraphicsLayer;
      var zoomSymbol;
 
      function init() {
        dojo.connect(grid, "onRowClick", onRowClickHandler);
-       var mapDeferred = esri.arcgis.utils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
-         geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
+       var mapDeferred = esri.arcgis.utils.createMap("af74a72ec69648f48b460318a402b3bc", "map", {
        });
        mapDeferred.then(function(response) {
          map = response.map;
-         /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
-         geometry server doesn't work well with the measurement widget */
-         esri.config.defaults.geometryService = new esri.tasks.GeometryService("http://sampleserver3.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer");
+         esri.config.defaults.geometryService = new esri.tasks.GeometryService("http://arcgis-polaris1-866023393.us-west-1.elb.amazonaws.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
          var layers = response.itemInfo.itemData.operationalLayers;
          var baseMap = response.itemInfo.itemData.baseMap;
          var lods = baseMap.baseMapLayers[0].resourceInfo.tileInfo.lods;
@@ -172,9 +174,23 @@
            map: map,
            scalebarUnit: 'english'
          });
+
+         /* Let's create an export web map task using the Print Task tool */
+           /* printTask = new esri.tasks.PrintTask("http://arcgis-polaris1-866023393.us-west-1.elb.amazonaws.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
+           printTemplate = new esri.tasks.PrintTemplate();
+           printTemplate.layout = "Letter ANSI A Landscape";
+           printTemplate.layoutOptions = {
+           "titleText": "San Juan County - Polaris Property Search",
+           "legendLayers": layerInfo,
+           "scalebarUnit": "Feet"
+           };
+           printParams = new esri.tasks.PrintParameters();
+           printParams.map = map;
+           printParams.template = printTemplate; */
+         
          
          /* Let's create a Finder for locating features in the map layers */
-         findTask = new esri.tasks.FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
+         findTask = new esri.tasks.FindTask("http://arcgis-polaris1-866023393.us-west-1.elb.amazonaws.com/arcgis/rest/services/Map_Contents/MapServer/");
          // Create find parameters
          findParams = new esri.tasks.FindParameters();
          findParams.returnGeometry = true;
@@ -229,6 +245,21 @@
              popupHandler = dojo.connect(map, "onClick", response.clickEventListener);
              console.log("Popups should be enabled");
          });
+
+         print = new esri.dijit.Print({
+             map: map,
+             templates: [{
+               label: "Printout",
+               format: "jpg",
+               layout: "Letter ANSI A Landscape",
+               layoutOptions: {
+                 titleText: dojo.byId('printTitle').value,
+                 scalebarUnit: "Feet"
+               }
+             }],
+             url: "http://arcgis-polaris1-866023393.us-west-1.elb.amazonaws.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+           },dojo.byId("printButton"));
+           print.startup();
            
            var ovMapBaseLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
 
@@ -449,6 +480,15 @@
         <div data-dojo-type="dijit.layout.ContentPane" title="Measure" id="measurePane">
           <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
             <div id="measureDiv"></div>
+          </div>
+        </div>
+        <div data-dojo-type="dijit.layout.ContentPane" title="Print" id="printPane">
+          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
+            <div data-dojo-type="dijit.form.Form" id="printForm" data-dojo-id="printForm" action="" method="">
+              <label for="printTitle">Enter a Title for Your Map:</label>
+              <input type="text" id="printTitle" size=15 name="printTitle" />
+              <div id="printButton"></div>
+            </div>
           </div>
         </div>
       </div>

@@ -7,10 +7,10 @@
     on iOS devices-->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Polaris - San Juan County WA</title>
-    <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css">
-    <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dojox/grid/resources/Grid.css">
-    <link rel="stylesheet" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dojox/grid/resources/claroGrid.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.6/js/dojo/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.6/js/esri/css/esri.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.6/js/dojo/dojox/grid/resources/Grid.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.6/js/dojo/dojox/grid/resources/claroGrid.css">
     <style type="text/css">
      @import "dojox/layout/resources/FloatingPane.css";
      @import "dojox/layout/resources/ResizeHandle.css";
@@ -100,334 +100,377 @@
     </style>
 
     <script>var dojoConfig = {
-       parseOnLoad: true,
        packages: [{
          "name":"agsjs",
-         "location": "/Polaris/2.04/agsjs/src/agsjs"
+         "location": "/Polaris/agsjs/src/agsjs"
        }]
      }
     </script>
-    <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/"></script>
+    <script src="http://js.arcgis.com/3.6/"></script>
     <script>  
 
-     dojo.require("esri.map");
-     dojo.require("esri.arcgis.utils");
-     dojo.require("esri.dijit.Popup");
-     dojo.require("esri.dijit.Legend");
-     dojo.require("esri.dijit.OverviewMap");
-     dojo.require("esri.dijit.Measurement");
-     dojo.require("esri.dijit.Scalebar");
-     dojo.require("esri.layers.ArcGISDynamicMapServiceLayer");
-     dojo.require("esri.tasks.find");
-     dojo.require("esri.tasks.geometry");
-     dojo.require("esri.toolbars.navigation");
-     dojo.require("dijit.layout.ContentPane");
-     dojo.require("dijit.layout.BorderContainer");
-     dojo.require("dijit.layout.AccordionContainer");
-     dojo.require("dijit.form.Form");
-     dojo.require("dijit.form.ValidationTextBox");
-     dojo.require("dijit.form.Button");
-     dojo.require("dijit.Toolbar");
-     dojo.require("dojox.grid.DataGrid");
-     dojo.require("dojo.data.ItemFileReadStore");
-     dojo.require("agsjs.dijit.TOC");
-     
      var map, initialExtent, navToolbar;
-     var findTask, findParams, measurement;
-     var findGraphicsLayer, hoverGraphicsLayer;
+     var findTask, findParams, grid, measurement;
+     var findGraphicsLayer;
      var zoomSymbol;
+     var response, popupHandler;
 
-     function init() {
-       dojo.connect(grid, "onRowClick", onRowClickHandler);
-       var mapDeferred = esri.arcgis.utils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
-         geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
-       });
-       mapDeferred.then(function(response) {
-         map = response.map;
-         /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
-         geometry server doesn't work well with the measurement widget */
-         esri.config.defaults.geometryService = new esri.tasks.GeometryService("http://sampleserver3.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer");
-         var layers = response.itemInfo.itemData.operationalLayers;
-         var baseMap = response.itemInfo.itemData.baseMap;
-         var lods = baseMap.baseMapLayers[0].resourceInfo.tileInfo.lods;
-         /* var layerInfo = dojo.map(layers, function(layer,index) {
-         return {layer:layer.layerObject,title:layer.title};
-         }); */
-         var layerInfo = esri.arcgis.utils.getLegendLayers(response);
-         
-         initialExtent = map.extent;
-         findGraphicsLayer = new esri.layers.GraphicsLayer({
-           spatialReference:  map.spatialReference
+     require([
+       "dojo/aspect",
+       "dojo/dom",
+       "dojo/on",
+       "dojo/parser",
+       "dojo/ready",
+       "dojo/_base/Color",
+       "esri/map",
+       "esri/arcgis/utils",
+       "esri/config",
+       "esri/dijit/Legend",
+       "esri/dijit/Measurement",
+       "esri/dijit/OverviewMap",
+       "esri/dijit/Scalebar",
+       "esri/graphic",
+       "esri/units",
+       "esri/layers/ArcGISDynamicMapServiceLayer",
+       "esri/layers/GraphicsLayer",
+       "esri/symbols/PictureMarkerSymbol",
+       "esri/symbols/SimpleLineSymbol",
+       "esri/symbols/SimpleMarkerSymbol",
+       "esri/symbols/SimpleFillSymbol",
+       "esri/tasks/FindTask",
+       "esri/tasks/FindParameters",
+       "esri/tasks/GeometryService",
+       "esri/toolbars/navigation",
+       "esri/urlUtils",
+       "dijit/layout/ContentPane",
+       "dijit/layout/BorderContainer",
+       "dijit/layout/AccordionContainer",
+       "dijit/form/Form",
+       "dijit/form/ValidationTextBox",
+       "dijit/form/Button",
+       "dijit/registry",
+       "dijit/Toolbar",
+       "dojox/grid/DataGrid",
+       "dojo/data/ItemFileReadStore",
+       "agsjs/dijit/TOC",
+       "dojo/domReady!"],
+             function(
+         aspect,
+         dom,
+         on,
+         parser,
+         ready,
+         Color,
+         Map,
+         arcgisUtils,
+         config,
+         Legend,
+         Measurement,
+         OverviewMap,
+         Scalebar,
+         Graphic,
+         Units,
+         ArcGISDynamicMapServiceLayer,
+         GraphicsLayer,
+         PictureMarkerSymbol,
+         SimpleLineSymbol,
+         SimpleMarkerSymbol,
+         SimpleFillSymbol,
+         FindTask,
+         FindParameters,
+         GeometryService,
+         Navigation,
+         urlUtils,
+         ContentPane,
+         BorderContainer,
+         AccordionContainer,
+         Form,
+         ValidationTextBox,
+         Button,
+         registry,
+         Toolbar,
+         DataGrid,
+         ItemFileReadStore,
+         TOC) {
+         ready(function(){
+           parser.parse();
+           /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
+           geometry server doesn't work well with the measurement widget */
+           config.defaults.geometryService = new GeometryService("http://sampleserver3.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer");
+             
+             var mapDeferred = arcgisUtils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
+               geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
+           });
+             mapDeferred.then(function(appResponse) {
+               response = appResponse;
+               map = response.map;
+
+               /* Let's create a Finder for locating features in the map layers */
+               constructFindTask();
+
+               /* Do we have a URL parameter to search for? If so, send it to the findTask */
+               var params = urlUtils.urlToObject(document.location.href);
+               if(params.query && params.query.find){
+                 console.log("URL Query Find found");
+                 dom.byId('searchText').value=params.query.find;
+                 doSearch(params.query.find);
+             }
+               
+               /* When the basemap has loaded, let's add scalebar and overview map */
+               map.on("load", constructMapElements());
+               
+               
+               /* After all map layers have been added, let's create the navigation toolbar and side panels */
+               map.on("layers-add-result", constructNavToolbar());
+               map.on("layers-add-result", constructSidePanels(response));
+               
+               /* Zoom to feature when row is clicked on Search grid */
+               grid.on("onRowClick", onRowClickHandler);
+
+               /* We need to disable popups when the measure tools are shown */
+               popupHandler = response.clickEventHandle;
+
+           });
          });
-         map.addLayer(findGraphicsLayer);
 
-         /* Now that the map has loaded, let's add a scalebar */
-         var scaleBar = new esri.dijit.Scalebar({
-           map: map,
-           scalebarUnit: 'english'
-         });
-         
-         /* Let's create a Finder for locating features in the map layers */
-         findTask = new esri.tasks.FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
-         // Create find parameters
-         findParams = new esri.tasks.FindParameters();
-         findParams.returnGeometry = true;
-         /* Enter the id number of the layers to search  */
-         findParams.layerIds = [2,8];
-         /* Enter the names of the fields to search over the layers */
-         findParams.searchFields = ["PIN", "ADDRESS", "NAME"];
-         findParams.outSpatialReference = map.spatialReference;
-
-         /* Do we have a URL parameter to search for? If so, send it to the findTask */
-         var params = esri.urlToObject(document.location.href);
-         if(params.query){
-           dojo.byId('searchText').value=params.query.find;
-           doSearch(params.query.find);
+           function constructSidePanels(response){
+             constructLegend(response);
+             constructToc(response);
+             constructMeasure(response);
          }
 
-         /* After all map layers have been added, construct the table of contents
-         and legend*/
-         dojo.connect(map,"onLayersAddResult",function(results){
-           var legend = new esri.dijit.Legend({
-             map: map,
-             layerInfos: layerInfo
+
+           function constructNavToolbar(){
+             zoomSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,new                                                           SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color("black"), 2),
+                                               new Color([255,255,255,0.5]));
+             navToolbar = new Navigation(map);
+             navToolbar.setZoomSymbol(zoomSymbol);
+             navToolbar.on("extent-history-change", extentHistoryChangeHandler);
+         }
+
+           function constructLegend(response){
+             var layerInfo = arcgisUtils.getLegendLayers(response);
+             var legend = new Legend({
+               map:map,
+               layerInfos: layerInfo
            },"legendDiv");
-           var toc = new agsjs.dijit.TOC({
-             map: map,
-             layerInfos: layerInfo
-           }, "tocDiv");
-           legend.startup();
-           toc.startup();
-         });
-         
-         zoomSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,new                                                           esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color("black"), 2),
-                                                       new dojo.Color([255,255,255,0.5]));
-         navToolbar = new esri.toolbars.Navigation(map);
-         navToolbar.setZoomSymbol(zoomSymbol);
-         dojo.connect(navToolbar, "onExtentHistoryChange", extentHistoryChangeHandler);
-
-         measurement = new esri.dijit.Measurement({
-           map: map,
-           defaultAreaUnit: esri.Units.ACRES,
-             defaultLengthUnit: esri.Units.FEET,
-         }, dojo.byId("measureDiv"));
-           measurement.startup();
-
-           var popupHandler = response.clickEventHandle;
-
-           dojo.connect(dijit.byId("measurePane"), "onShow", function() {
-             dojo.disconnect(popupHandler);
-             console.log("Popups should be disabled");
-         });
-           dojo.connect(dijit.byId("measurePane"), "onHide", function() {
-             popupHandler = dojo.connect(map, "onClick", response.clickEventListener);
-             console.log("Popups should be enabled");
-         });
-           
-           var ovMapBaseLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
-
-           var overviewMap = new esri.dijit.OverviewMap({
-             map: map,
-             height: 200,
-             width: 200,
-             baseLayer: ovMapBaseLayer,
-         }, dojo.byId("overviewMapDiv"));
-           overviewMap.startup();
-       },function(error) {
-             console.log("Map creation failed: ", error);
-         });
-     }
-
-     function doSearch(searchText) {
-       // Set search text to value in box
-       findParams.searchText = searchText;
-       findTask.execute(findParams,showResults);
-       dojo.byId('grid').style.visibility="visible";
-     }
-
-     function showResults(results) {
-       //Show the results of FindTask using the FindResult returned by the doFind function
-       findGraphicsLayer.clear(); //Clear existing graphics from map
-       var polygonSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new
-                                                            esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255,255,0]), 2),
-                                                            new dojo.Color([255,255,0,0.25]));
-       var lineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                                                         new dojo.Color([98,194,204]),1);
-       var markerSymbol = new esri.symbol.PictureMarkerSymbol({
-         "url": "images/pin-red-28x28.png",
-         "height": 20,
-         "width": 20,
-         "type": "picturemarkersymbol"
-       });
-       //Create array of result attributes and add graphics to map
-       var items = dojo.map(results, function(result, id){
-         var graphic = result.feature;
-         var marker;
-         switch (graphic.geometry.type) {
-           case "point":
-             graphic.setSymbol(markerSymbol);
-             marker = new esri.Graphic(graphic.geometry, markerSymbol);
-             break;
-           case "polyline":
-             graphic.setSymbol(lineSymbol);
-             marker = new esri.Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
-             break;
-           case "polygon":
-             graphic.setSymbol(polygonSymbol);
-             marker = new esri.Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
-             break;
+             legend.startup();
          }
-         findGraphicsLayer.add(marker);
-         var attribs = result.feature.attributes;
-         attribs.identifier = id;
-         attribs.foundFieldName = result.foundFieldName;
-         attribs.value = result.value;
-         attribs.layerName = result.layerName;
-         attribs.graphic = graphic;
-         attribs.marker = marker;
-         return attribs;
-       });
-       var data = {
-         identifier: "identifier",
-         items: items
-       };
-       var store = new dojo.data.ItemFileReadStore({
-         data: data
-       });
-       grid.setStore(store);
+           function constructToc(response){
+             var layerInfo = arcgisUtils.getLegendLayers(response);
+             var toc = new TOC({
+               map:map,
+               layerInfos: layerInfo
+           }, "tocDiv");
+             toc.startup();
+         }
 
-       /* Now we want to zoom to the found features. But when there is only 
-       one result from the find, the esriGraphicsExtent is null. This may be
-       a bug. So we form a switch based on the number of found features and
-       handle it differently if the number is 0, 1 or more than 1. */
-       switch (findGraphicsLayer.graphics.length) {
-         case 0:
-           map.setExtent(initialExtent);
-           break;
-         case 1:
-           findGraphicsLayer.clear();
-           zoomToSelectedRow(grid.getItem(0).graphic[0]);
-           break;
-         default:
-           var foundFeaturesExtent = esri.graphicsExtent(findGraphicsLayer.graphics);
-           map.setExtent(foundFeaturesExtent);
-       }
-     }
+           function constructMeasure(response){
+             measurement = new Measurement({
+               map: map,
+               defaultAreaUnit: Units.ACRES,
+               defaultLengthUnit: Units.FEET,
+           }, dom.byId("measureDiv"));
+             measurement.startup();
+         }
 
-     function clearSearch(){
-       findGraphicsLayer.clear();
-       dojo.byId('grid').style.visibility="hidden";
-       dojo.byId('searchText').value = "";
-       store = new dojo.data.ItemFileReadStore({data:{identifier:"", items:[]}});
-       grid.setStore(store);
+           function constructMapElements(){
+             var scaleBar = new Scalebar({
+               map: map,
+               scalebarUnit: 'english'
+           });
+             var ovMapBaseLayer = new ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
+             var overviewMap = new OverviewMap({
+               map: map,
+               height: 200,
+               width: 200,
+               baseLayer: ovMapBaseLayer,
+           }, dom.byId("overviewMapDiv"));
+             overviewMap.startup();
+         }
+           
+           function constructFindTask(){
+             findGraphicsLayer = new GraphicsLayer({
+               spatialReference:  map.spatialReference
+           });
+             map.addLayer(findGraphicsLayer);
+             findTask = new FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
+             // Create find parameters
+             findParams = new FindParameters();
+             findParams.returnGeometry = true;
+             /* Enter the id number of the layers to search  */
+             findParams.layerIds = [2,8];
+             /* Enter the names of the fields to search over the layers */
+             findParams.searchFields = ["PIN", "ADDRESS", "NAME"];
+             findParams.outSpatialReference = map.spatialReference;
+         }
+
+           function doSearch(searchText) {
+             // Set search text to value in box
+             findParams.searchText = searchText;
+             findTask.execute(findParams,showResults);
+             dom.byId('grid').style.visibility="visible";
+         }
+
+           function showResults(results) {
+             //Show the results of FindTask using the FindResult returned by the doFind function
+             findGraphicsLayer.clear(); //Clear existing graphics from map
+             var polygonSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new
+                                                      SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 2),
+                                                      new Color([255,255,0,0.25]));
+             var lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                                                   new Color([98,194,204]),1);
+             var markerSymbol = new PictureMarkerSymbol({
+               "url": "images/pin-red-28x28.png",
+               "height": 20,
+               "width": 20,
+               "type": "picturemarkersymbol"
+           });
+             //Create array of result attributes and add graphics to map
+             var items = dojo.map(results, function(result, id){
+               var graphic = result.feature;
+               var marker;
+               switch (graphic.geometry.type) {
+               case "point":
+                 graphic.setSymbol(markerSymbol);
+                 marker = new Graphic(graphic.geometry, markerSymbol);
+                 break;
+               case "polyline":
+                 graphic.setSymbol(lineSymbol);
+                 marker = new Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
+                 break;
+               case "polygon":
+                 graphic.setSymbol(polygonSymbol);
+                 marker = new Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
+                 break;
+             }
+               findGraphicsLayer.add(marker);
+               var attribs = result.feature.attributes;
+               attribs.identifier = id;
+               attribs.foundFieldName = result.foundFieldName;
+               attribs.value = result.value;
+               attribs.layerName = result.layerName;
+               attribs.graphic = graphic;
+               attribs.marker = marker;
+               return attribs;
+           });
+             var data = {
+               identifier: "identifier",
+               items: items
+           };
+             var store = new ItemFileReadStore({
+               data: data
+           });
+             grid.setStore(store);
+
+             /* Now we want to zoom to the found features. But when there is only 
+             one result from the find, the esriGraphicsExtent is null. This may be
+             a bug. So we form a switch based on the number of found features and
+             handle it differently if the number is 0, 1 or more than 1. */
+             switch (findGraphicsLayer.graphics.length) {
+             case 0:
+               map.setExtent(initialExtent);
+               break;
+             case 1:
+               findGraphicsLayer.clear();
+               zoomToSelectedRow(grid.getItem(0).graphic[0]);
+               break;
+               default:
+               var foundFeaturesExtent = esri.graphicsExtent(findGraphicsLayer.graphics);
+               map.setExtent(foundFeaturesExtent);
+           }
+         }
+
+           function clearSearch(){
+             findGraphicsLayer.clear();
+             dom.byId('grid').style.visibility="hidden";
+             dom.byId('searchText').value = "";
+             store = new ItemFileReadStore({data:{identifier:"", items:[]}});
+             grid.setStore(store);
+         }
+           
+
+           function extentHistoryChangeHandler() {
+             dom.byId("prevExtent").disabled = navToolbar.isFirstExtent();
+             dom.byId("nextExtent").disabled = navToolbar.isLastExtent();
+         }
+           
+
+           function onRowClickHandler(evt){
+             findGraphicsLayer.clear();
+             var clickedRowGraphic = grid.getItem(evt.rowIndex).graphic[0];
+             zoomToSelectedRow(clickedRowGraphic);
+         }
+
+           function zoomToSelectedRow(clickedRowGraphic){
+             findGraphicsLayer.add(clickedRowGraphic);
+             if(clickedRowGraphic.geometry.type == "point") {
+               map.centerAndZoom(clickedRowGraphic.geometry,8);
+           } else {
+               var screenPoint = clickedRowGraphic.geometry.getExtent().getCenter();
+               map.centerAndZoom(screenPoint,8);
+           }
+         }
+       });
+       function disablePopups(){
+         popupHandler.remove();
+         console.log("Popups should be disabled");
      }
      
-
-     function extentHistoryChangeHandler() {
-       dijit.byId("prevExtent").disabled = navToolbar.isFirstExtent();
-       dijit.byId("nextExtent").disabled = navToolbar.isLastExtent();
+     function enablePopups(){
+       popupHandler = map.on("click", response.clickEventListener);
+       console.log("Popups should be enabled");
      }
-     
-
-     function onRowClickHandler(evt){
-       findGraphicsLayer.clear();
-       var clickedRowGraphic = grid.getItem(evt.rowIndex).graphic[0];
-       zoomToSelectedRow(clickedRowGraphic);
-     }
-
-     function zoomToSelectedRow(clickedRowGraphic){
-       findGraphicsLayer.add(clickedRowGraphic);
-       if(clickedRowGraphic.geometry.type == "point") {
-         map.centerAndZoom(clickedRowGraphic.geometry,8);
-       } else {
-         var screenPoint = clickedRowGraphic.geometry.getExtent().getCenter();
-         map.centerAndZoom(screenPoint,8);
-       }
-     }
-
-     function showMeasureTool() {
-       measurement.clearResult();
-       measurement.show();
-       console.log("Measure tool is showing");
-     }
-
-     function hideMeasureTool() {
-       /* We need to deactivate the current tool, but as far as I can see,
-       there is no way to find the currently active tool. So we set the active tool
-       to location then deactivate the location tool. */
-       measurement.clearResult();
-       measurement.setTool("location", true);
-       measurement.setTool("location", false);
-       measurement.hide();
-       console.log("Measure tool is hidden");
-     }
-
-     function disablePopups(response) {
-       dojo.disconnect(response.clickEventHandle);
-     }
-
-     function enablePopups(response) {
-       dojo.connect(map, "onClick", response.clickEventListener);
-     }
-     /* function basicToggler(node){
-     toggler = new dojo.fx.Toggler({
-     node: node,
-     showFunc: dojo.fx.wipeIn,
-     hideFunc: dojo.fx.wipeOut
-     })
-     } */
-     dojo.ready(init);
     </script>
   </head>
   
   <body class="claro">
     
-    <div id="borderContainerTwo" data-dojo-type="dijit.layout.BorderContainer"
+    <div id="borderContainerTwo" data-dojo-type="dijit/layout/BorderContainer"
          data-dojo-props="gutters:false, liveSplitters:false">
-      <div id="topPane" class="titleBar" data-dojo-type="dijit.layout.ContentPane" 
+      <div id="topPane" class="titleBar" data-dojo-type="dijit/layout/ContentPane" 
            data-dojo-props="region:'top', splitter:false, layoutPriority:1">
         <h1>San Juan County - Polaris Property Search</h1>
       </div>
-      <div id="toolBarPane" data-dojo-type="dijit.layout.ContentPane"
+      <div id="toolBarPane" data-dojo-type="dijit/layout/ContentPane"
            data-dojo-props="region:'top', splitter:false, layoutPriority:2">
-        <div id="navToolbar" data-dojo-type="dijit.Toolbar">
-          <div data-dojo-type="dijit.form.Button" id="zoomIn" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomIn',
+        <div id="navToolbar" data-dojo-type="dijit/Toolbar">
+          <div data-dojo-type="dijit/form/Button" id="zoomIn" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomIn',
                onClick:function(){navToolbar.activate(esri.toolbars.Navigation.ZOOM_IN);}"></div>
-          <div data-dojo-type="dijit.form.Button" id="zoomOut" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomOut',
+          <div data-dojo-type="dijit/form/Button" id="zoomOut" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomOut',
                onClick:function(){navToolbar.activate(esri.toolbars.Navigation.ZOOM_OUT);}"></div>
-          <div data-dojo-type="dijit.form.Button" id="fullExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-fullExtent',
+          <div data-dojo-type="dijit/form/Button" id="fullExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-fullExtent',
                onClick:function(){navToolbar.zoomToFullExtent();}"></div>
-          <div data-dojo-type="dijit.form.Button" id="prevExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-prevExtent',
+          <div data-dojo-type="dijit/form/Button" id="prevExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-prevExtent',
                onClick:function(){navToolbar.zoomToPrevExtent();}"></div>
-          <div data-dojo-type="dijit.form.Button" id="nextExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-nextExtent',
+          <div data-dojo-type="dijit/form/Button" id="nextExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-nextExtent',
                onClick:function(){navToolbar.zoomToNextExtent();}"></div>
-          <div data-dojo-type="dijit.form.Button" id="pan" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-pan',
+          <div data-dojo-type="dijit/form/Button" id="pan" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-pan',
                onClick:function(){navToolbar.activate(esri.toolbars.Navigation.PAN);}"></div>
         </div>
       </div>
-      <div data-dojo-type="dijit.layout.AccordionContainer"
+      <div data-dojo-type="dijit/layout/AccordionContainer"
            data-dojo-props="minSize:20, region:'leading', splitter:true, layoutPriority:3"
            style="width:400px;" id="leftAccordion">
-        <div data-dojo-type="dijit.layout.ContentPane" title="Legend" id="legendPane">
-          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
+        <div data-dojo-type="dijit/layout/ContentPane" title="Legend" id="legendPane">
+          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div id="legendDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit.layout.ContentPane" title="Map Contents" id="mapContentsPane">
-          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
+        <div data-dojo-type="dijit/layout/ContentPane" title="Map Contents" id="mapContentsPane">
+          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div id="tocDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit.layout.ContentPane" title="Search" id="searchPane" selected="true">
-          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
-            <div data-dojo-type="dijit.form.Form" id="searchForm" data-dojo-id="searchForm" action=""
+        <div data-dojo-type="dijit/layout/ContentPane" title="Search" id="searchPane" selected="true">
+          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+            <div data-dojo-type="dijit/form/Form" id="searchForm" data-dojo-id="searchForm" action=""
                  method="">
               <label for="searchText">Enter an Address or Parcel Number to Search:</label>
               <input type="text" id="searchText" size=15 name="searchText" required="true"
-                     data-dojo-type="dijit.form.ValidationTextBox" /><br />
-              <button data-dojo-type="dijit.form.Button" type="button" name="searchButton" onClick="doSearch(dojo.byId('searchText').value);">Search</button>
-              <button data-dojo-type="dijit.form.Button" type="button" name="clearButton"
-                      onClick="clearSearch();">Clear</button>
+                     data-dojo-type="dijit/form/ValidationTextBox" /><br />
+              <button data-dojo-type="dijit/form/Button" data-dojo-id="searchButton" type="button" name="searchButton">Search</button>
+              <button data-dojo-type="dijit/form/Button" data-dojo-id="clearButton" type="button" name="clearButton">Clear</button>
             </div>
           </div>
           <table data-dojo-type="dojox.grid.DataGrid" jsid="grid" id="grid"
@@ -440,13 +483,13 @@
             </thead>
           </table>
         </div>
-        <div data-dojo-type="dijit.layout.ContentPane" title="Measure" id="measurePane">
-          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
+        <div data-dojo-type="dijit/layout/ContentPane" title="Measure" data-dojo-id="measurePane" onShow="disablePopups()" onHide="enablePopups()">
+          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div id="measureDiv"></div>
           </div>
         </div>
       </div>
-      <div id="map" data-dojo-type="dijit.layout.ContentPane"
+      <div id="map" data-dojo-type="dijit/layout/ContentPane"
            data-dojo-props="region:'center'">
       </div>
     </div>

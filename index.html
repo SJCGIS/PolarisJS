@@ -303,6 +303,14 @@
              /* Enter the names of the fields to search over the layers */
              findParams.searchFields = ["PIN", "ADDRESS", "NAME"];
              findParams.outSpatialReference = map.spatialReference;
+             var searchButton = new Button({
+               label: "Search",
+               onClick: function(){doSearch(dom.byId('searchText').value);}
+           }, "searchButton");
+             var clearButton = new Button({
+               label: "Clear",
+               onClick: function(){clearSearch();}
+           }, "clearButton");
          }
 
            function doSearch(searchText) {
@@ -469,8 +477,8 @@
               <label for="searchText">Enter an Address or Parcel Number to Search:</label>
               <input type="text" id="searchText" size=15 name="searchText" required="true"
                      data-dojo-type="dijit/form/ValidationTextBox" /><br />
-              <button data-dojo-type="dijit/form/Button" data-dojo-id="searchButton" type="button" name="searchButton">Search</button>
-              <button data-dojo-type="dijit/form/Button" data-dojo-id="clearButton" type="button" name="clearButton">Clear</button>
+              <button id="searchButton" type="Submit"</button><button id="clearButton" type="Reset"></button>
+              <div>&nbsp</div>
             </div>
           </div>
           <table data-dojo-type="dojox.grid.DataGrid" jsid="grid" id="grid"

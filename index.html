@@ -22,6 +22,14 @@
        margin: 0;
      }
 
+     .dgrid {
+       height: 15em;
+     }
+
+     .dgrid-scroller {
+       overflow:auto !important;
+     }
+
      html, body {
        height:100%;
        width:100%;
@@ -122,6 +130,11 @@
        "dojo/parser",
        "dojo/ready",
        "dojo/_base/Color",
+       "dojo/_base/declare",
+       "dojo/data/ItemFileReadStore",
+       "dojo/store/Memory",
+       "dgrid/OnDemandGrid",
+       "dgrid/Selection",
        "esri/map",
        "esri/arcgis/utils",
        "esri/config",
@@ -151,7 +164,6 @@
        "dijit/registry",
        "dijit/Toolbar",
        "dojox/grid/DataGrid",
-       "dojo/data/ItemFileReadStore",
        "agsjs/dijit/TOC",
        "dojo/domReady!"],
              function(
@@ -161,6 +173,11 @@
          parser,
          ready,
          Color,
+         declare,
+         ItemFileReadStore,
+         Memory,
+         Grid,
+         Selection,
          Map,
          arcgisUtils,
          config,
@@ -190,13 +207,25 @@
          registry,
          Toolbar,
          DataGrid,
-         ItemFileReadStore,
          TOC) {
          ready(function(){
            parser.parse();
            /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
            geometry server doesn't work well with the measurement widget */
            config.defaults.geometryService = new GeometryService("http://sampleserver3.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer");
+
+             grid = new (declare([Grid, Selection]))({
+               // use infinity so that all data is available in the grid
+               selectionMode: "single",
+               noDataMessage: "No Results Found",
+               loadingMessage: "Searching...",
+               columns: {
+                 "foundFieldName": "Type",
+                 "value": "Value"
+             }
+           }, "grid");
+
+             grid.on(".dgrid-row:click", function(event){onRowClickHandler(event);});
              
              var mapDeferred = arcgisUtils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
                geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
@@ -335,7 +364,7 @@
                "type": "picturemarkersymbol"
            });
              //Create array of result attributes and add graphics to map
-             var items = dojo.map(results, function(result, id){
+             var data = dojo.map(results, function(result, id){
                var graphic = result.feature;
                var marker;
                switch (graphic.geometry.type) {
@@ -354,7 +383,7 @@
              }
                findGraphicsLayer.add(marker);
                var attribs = result.feature.attributes;
-               attribs.identifier = id;
+               attribs.id = id;
                attribs.foundFieldName = result.foundFieldName;
                attribs.value = result.value;
                attribs.layerName = result.layerName;
@@ -362,11 +391,11 @@
                attribs.marker = marker;
                return attribs;
            });
-             var data = {
-               identifier: "identifier",
-               items: items
-           };
-             var store = new ItemFileReadStore({
+             /* var data = {
+             identifier: "identifier",
+             items: items
+             }; */
+             var store = new Memory({
                data: data
            });
              grid.setStore(store);
@@ -406,8 +435,14 @@
 
            function onRowClickHandler(evt){
              findGraphicsLayer.clear();
-             var clickedRowGraphic = grid.getItem(evt.rowIndex).graphic[0];
-             zoomToSelectedRow(clickedRowGraphic);
+             var clickedRowGraphic = grid.row(evt).data.graphic;
+             findGraphicsLayer.add(clickedRowGraphic);
+             if(clickedRowGraphic.geometry.type == "point") {
+               map.centerAndZoom(clickedRowGraphic.geometry,8);
+           } else {
+               var screenPoint = clickedRowGraphic.geometry.getExtent().getCenter();
+               map.centerAndZoom(screenPoint,8);
+           }
          }
 
            function zoomToSelectedRow(clickedRowGraphic){
@@ -478,18 +513,9 @@
               <input type="text" id="searchText" size=15 name="searchText" required="true"
                      data-dojo-type="dijit/form/ValidationTextBox" /><br />
               <button id="searchButton" type="Submit"</button><button id="clearButton" type="Reset"></button>
-              <div>&nbsp</div>
+              <div id="grid" style="visibility:hidden;"></div>
             </div>
           </div>
-          <table data-dojo-type="dojox.grid.DataGrid" jsid="grid" id="grid"
-                 selectionMode="single" noDataMessage="No results found" data-dojo-props="summary: 'Search Results:'" style="visibility:hidden;">
-            <thead>
-              <tr>
-                <th field="foundFieldName" width="100px">Type</th>
-                <th field="value" width="200px">Value</th>
-              </tr>
-            </thead>
-          </table>
         </div>
         <div data-dojo-type="dijit/layout/ContentPane" title="Measure" data-dojo-id="measurePane" onShow="disablePopups()" onHide="enablePopups()">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">

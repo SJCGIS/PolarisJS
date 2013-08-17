@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Google Maps Layer for ArcGIS Server JavaScript API v Reference</title>
+    <link rel="stylesheet" type="text/css" href="http://code.google.com/css/codesite.css"></link>
+    <link rel="stylesheet" type="text/css" href="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/util/docs/template/local_extensions.css"></link>
+  </head>
+  <body>
+    <h1>Google Maps Layer for ArcGIS Server JavaScript API</h1>
+    <p>
+<p>Use Google Maps in application built on ESRI ArcGIS Server JavaScript API. </p></p>
+    <p>For a description and examples of how to use this library, check out the <a href="examples.html">how-to</a>.</p>
+    
+      <h2><a name="GoogleMapsAPIOptions"></a>class GoogleMapsAPIOptions</h2>
+      <p>This is an object literal that specify the option to load Google Maps API V3. See <a href=http://code.google.com/apis/maps/documentation/javascript/basics.html>Google documentation</a> for more information.  There is no constructor for this class.  Instead, this class is instantiated as a javascript object literal.</p>
+      
+        <h3>Properties</h3>
+        <table summary="class GoogleMapsAPIOptions - Properties" width="90%">
+          
+          <tbody>
+            <tr>
+              <th>Properties</th>
+              
+                
+                  <th>Type</th>
+                
+              
+              <th>Description</th>
+            </tr>
+            
+              <tr class="odd">
+                <td><code>client</code></td>
+                
+                  
+                    <td><code>String</code></td>
+                  
+                
+                <td>client ID for Google Maps Premier license.</td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>dir</code></td>
+                
+                  
+                    <td><code>String</code></td>
+                  
+                
+                <td>Bi-directional (Bidi) text. rtl or ltr;</td>
+              </tr>
+            
+              <tr class="odd">
+                <td><code>language</code></td>
+                
+                  
+                    <td><code>String</code></td>
+                  
+                
+                <td>language to use for text such as the names for controls, etc, e.g. cn, ja</td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>libraries</code></td>
+                
+                  
+                    <td><code>String</code></td>
+                  
+                
+                <td>Additonal libraries (geometry|places|adsense);</td>
+              </tr>
+            
+              <tr class="odd">
+                <td><code>sensor</code></td>
+                
+                  
+                    <td><code>Boolean</code></td>
+                  
+                
+                <td>whether GPS device is used. default to false;</td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>v</code></td>
+                
+                  
+                    <td><code>Number</code></td>
+                  
+                
+                <td>API version, 3, 3.1 etc. default to 3.</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+    
+      <h2><a name="GoogleMapsLayer"></a>class GoogleMapsLayer</h2>
+      <p>This class allows Google Maps been used in ESRI ArcGIS JavaScript API.</p>
+      
+        <h3>Constructor</h3>
+        <table summary="class GoogleMapsLayer - Constructor" width="90%">
+          
+          <tbody>
+            <tr>
+              <th>Constructor</th>
+              
+              <th>Description</th>
+            </tr>
+            
+              <tr class="odd">
+                <td><code>GoogleMapsLayer(<span class="type">opts:GoogleMapsLayerOptions</span>)</code></td>
+                
+                <td>Create a GoogleMapsLayer using config <code><a href="reference.html#GoogleMapsLayerOptions">GoogleMapsLayerOptions</a></code></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3>Methods</h3>
+        <table summary="class GoogleMapsLayer - Methods" width="90%">
+          
+          <tbody>
+            <tr>
+              <th>Methods</th>
+              
+                
+                  <th>Return&nbsp;Value</th>
+                
+              
+              <th>Description</th>
+            </tr>
+            
+              <tr class="odd">
+                <td><code>getGoogleMapInstance()</code></td>
+                
+                  
+                    <td><code>google.maps.Map</code></td>
+                  
+                
+                <td>get the wrapped <code>google.maps.Map</code> for further customization.</td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>setMapStyle(<span class="type">styles:Object[]</span>)</code></td>
+                
+                  
+                    <td><code>None</code></td>
+                  
+                
+                <td>set map style for customized base map. The style specs are available at <a href="http://code.google.com/apis/maps/documentation/javascript/styling.html">Google Documentation</a>.This class privide a few pre-defined styles: MAP_STYLE_GRAY|MAP_STYLE_NIGHT.</td>
+              </tr>
+            
+              <tr class="odd">
+                <td><code>setMapTypeId(<span class="type">mapTypeId:String</span>)</code></td>
+                
+                  
+                    <td><code>None</code></td>
+                  
+                
+                <td>set map type id. e.g <code>GoogleMapsLayer.MAP_TYPE_ROADMAP</code></td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>setOpacity(<span class="type">opacity:Number</span>)</code></td>
+                
+                  
+                    <td><code>None</code></td>
+                  
+                
+                <td>Sets Opacity</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3>Events</h3>
+        <table summary="class GoogleMapsLayer - Events" width="90%">
+          
+          <tbody>
+            <tr>
+              <th>Events</th>
+              
+                
+                  <th>Arguments</th>
+                
+              
+              <th>Description</th>
+            </tr>
+            
+              <tr class="odd">
+                <td><code>onMapTypeChange</code></td>
+                
+                  
+                    <td><code><span class="type">mapTypeId:String</span></code></td>
+                  
+                
+                <td>Fired when Google Map Type (ROAD, SATERLLITE etc) changed</td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>onStreetViewVisibilityChange</code></td>
+                
+                  
+                    <td><code><span class="type">visibility:boolean</span></code></td>
+                  
+                
+                <td>Fired when Street View visibility changed.</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+    
+      <h2><a name="GoogleMapsLayerOptions"></a>class GoogleMapsLayerOptions</h2>
+      <p>This is an object literal that specify the option to construct a <code><a href="reference.html#GoogleMapsLayer">GoogleMapsLayer</a></code>.  There is no constructor for this class.  Instead, this class is instantiated as a javascript object literal.</p>
+      
+        <h3>Properties</h3>
+        <table summary="class GoogleMapsLayerOptions - Properties" width="90%">
+          
+          <tbody>
+            <tr>
+              <th>Properties</th>
+              
+                
+                  <th>Type</th>
+                
+              
+              <th>Description</th>
+            </tr>
+            
+              <tr class="odd">
+                <td><code>apiOptions</code></td>
+                
+                  
+                    <td><code>GoogleMapsAPIOptions</code></td>
+                  
+                
+                <td>The options to load Google API. Include property: v, client, sensor, language etc,see <code><a href="reference.html#GoogleMapsAPIOptions">GoogleMapsAPIOptions</a></code></td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>id</code></td>
+                
+                  
+                    <td><code>String</code></td>
+                  
+                
+                <td>layerId.</td>
+              </tr>
+            
+              <tr class="odd">
+                <td><code>mapOptions</code></td>
+                
+                  
+                    <td><code>google.maps.MapOptions</code></td>
+                  
+                
+                <td>optional. The options for construct Google Map instance. See <a href=http://code.google.com/apis/maps/documentation/javascript/reference.html#MapOptions>MapOptions</a>.</td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>opacity</code></td>
+                
+                  
+                    <td><code>Number</code></td>
+                  
+                
+                <td>opacity (0-1)</td>
+              </tr>
+            
+              <tr class="odd">
+                <td><code>visible</code></td>
+                
+                  
+                    <td><code>Boolean</code></td>
+                  
+                
+                <td>default visibility</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+    
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      _uacct = "UA-964209-4";
+      urchinTracker();
+    </script> 
+  </body>
+</html>

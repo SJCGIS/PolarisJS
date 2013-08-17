@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <title>Extruded Feature Layer for ArcGIS JavaScript API: Examples</title>
+        <link rel="stylesheet" type="text/css" href="http://code.google.com/css/codesite.css"/>
+        <link rel="stylesheet" type="text/css" href="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/util/docs/template/local_extensions.css"/>
+        <script type="text/javascript" src="http://code.google.com/js/prettify.js">
+        </script>
+    </head>
+    <body onload="prettyPrint()">
+        <div>
+            <a name="Top"></a>
+            <h1><a></a>Extruded Feature Layer for ArcGIS JavaScript API</h1>
+            <p>
+                <b><a href="reference.html">Class References</a> | <a href="../../examples/extrudedlayer.html"> Live example </a> </b>
+            </p>
+        </div>
+        <div>
+            <h2><a name="About"></a>About</h2>
+            <p>
+                This script lets you add ArcGIS Server feature layer with extruded 3D effects using values from an attribute field. It uses the <a target='_blank' href='http://osmbuildings.org'>Open Street Map Buildings</a> library. The primary use is for visualization. However it could be used in combination with <code>esri.layers.FeatureLayer</code> to access unline attribute data.
+                It takes the REST end point URL of a feature layer inside a map service, and use one of the attribute as height value. 
+                The rendering machanism is canvas, so it only works in newer browsers. It honors scale threshold set in the map service. 
+             </p>
+        </div>
+        <div>
+            <h2><a name="HowTo"></a>Include Scripts</h2>
+            <p>
+            The widget uses 
+            <code>
+                agsjs
+            </code>
+            as namespace. 
+            </code>Put the downloaded 
+            <code>
+                agsjs
+            </code>
+            folder under your application. 
+            In your HTML page, inside the section to define djConfig: (make sure the path to folder agsjs is correct)<pre class="prettyprint">
+            var djConfig = {
+              parseOnLoad: true,
+              packages: [{
+                "name": "agsjs",
+                "location": location.pathname.replace(/\/[^/]+$/, "")+'/path/to/agsjs'
+                //"location": 'http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/2.04/xbuild/agsjs' // for xdomain load
+              }]
+            };</pre>
+        </p>
+        <p>
+            Then in the require section:
+            <pre class="prettyprint">
+             ...
+            dojo.require("esri.map");
+            ...
+            dojo.require("agsjs.layers.ExtrudedFeatureLayer");
+              </pre>
+        </p>
+        </div>
+        <div>
+            <h2>Add Layer</h2>
+            <p>
+                After the script is loaded, you can simply add a feature layer in 
+                your application, after the map's load event is fired.
+                note, currently it only works with a tiled base map in web mercator coordinate system.
+                
+                The constructor takes a few parameters to customize the behavior. See <a href=reference.html>reference</a> doc for details. 
+            </p>
+            <pre class="prettyprint">
+         dojo.connect(map, 'onLoad', function(theMap) {
+            var buildings = new agsjs.layers.ExtrudedFeatureLayer('{url of arcgis server...}/MapServer/0', {
+              'heightAttribute': 'hgt'//required. name of the attribute for height;
+              //, defaultHeight:0 //default Height to use if the height value is 0. default=0;
+              //, heightScaleRatio: 1 //optional. number used to multiple the value from service. default=1;
+              //, extentScaleRatio: 1.0// optional. extra buffer on map extent to load features to reduce server traffic. default=1.5;
+              //, mode: agsjs.layers.ExtrudedFeatureLayer.MODE_ONDEMAND // optional. agsjs.layers.ExtrudedFeatureLayer.MODE_ONDEMAND | MODE_SNAPSHOT. default=ON_DEMAND
+              //, query: null // optional. query set on the feature layer for retrieving data.
+              //, style: {color:'#999999', roofColor:'#AAAAAA'}
+              // object with color, roofColor (#ffcc00' 'rgb(255,200,200)' 'rgba(255,200,200,0.9)), strokeRoofs (boolean)
+            });
+            map.addLayer(buildings);
+   ...   });
+        }
+
+        </pre>
+            <p>
+                <a href="../../examples/extrudedlayer.html">View example </a>
+            </p>
+        </div>
+       
+        
+    </body>
+</html>

@@ -126,6 +126,7 @@
      require([
        "dojo/aspect",
        "dojo/dom",
+       "dojo/json",
        "dojo/on",
        "dojo/parser",
        "dojo/ready",
@@ -142,6 +143,7 @@
        "esri/dijit/Measurement",
        "esri/dijit/OverviewMap",
        "esri/dijit/Scalebar",
+       "esri/geometry/Extent",
        "esri/graphic",
        "esri/units",
        "esri/layers/ArcGISDynamicMapServiceLayer",
@@ -169,6 +171,7 @@
              function(
          aspect,
          dom,
+         json,
          on,
          parser,
          ready,
@@ -185,6 +188,7 @@
          Measurement,
          OverviewMap,
          Scalebar,
+         Extent,
          Graphic,
          Units,
          ArcGISDynamicMapServiceLayer,
@@ -239,10 +243,8 @@
 
                /* Do we have a URL parameter to search for? If so, send it to the findTask */
                var params = urlUtils.urlToObject(document.location.href);
-               if(params.query && params.query.find){
-                 console.log("URL Query Find found");
-                 dom.byId('searchText').value=params.query.find;
-                 doSearch(params.query.find);
+               if(params.query){
+                 urlParamsHandler(params);
              }
                
                /* When the basemap has loaded, let's add scalebar and overview map */
@@ -262,6 +264,64 @@
            });
          });
 
+           function urlParamsHandler(params){
+             if(params.query.find){
+               dom.byId('searchText').value=params.query.find;
+               doSearch(params.query.find);
+           }
+             else {
+               var shareLinkOptions = ['extent', 'layers', 'mapContents', 'graphics'];
+               for (i=0; i<shareLinkOptions.length; i++){
+                 if(params.query.hasOwnProperty(shareLinkOptions[i]) && params.query[shareLinkOptions[i]] != ''){
+                   console.log('URL contains the ' + shareLinkOptions[i] + ' parameter');
+                   switch (shareLinkOptions[i]) {
+                     case "extent":
+                     /* Example extent URL: http://localhost:8000/Polaris/index.html?extent={%22xmin%22%3A1080904.15291119%2C%22ymin%22%3A597031.7763005221%2C%22xmax%22%3A1081882.27791119%2C%22ymax%22%3A597223.4429671889%2C%22spatialReference%22%3A{%22wkid%22%3A2285}} */
+                     var extent = new Extent(json.parse(decodeURIComponent(params.query.extent)));
+                     map.setExtent(extent);
+                     break;
+                     case "layers":
+                     array.forEach(params.query.layers, function(layer){
+                       mapLayer = map.getLayer(layer);
+                       mapLayer.visible = 'true';
+                   });
+                     break;
+                     case "mapContents":
+                     var mapContentsLayer = array.filter(params.query.layers, function(layer){
+                       mapLayer = map.getLayer(layer);
+                       return mapLayer.title == "Map Contents";
+                   });
+                     break;
+                     case "graphics":
+                     /* TODO */
+                     console.log("Graphics control not implemented yet");
+                     break;
+                 }                       
+               }
+             }
+           }
+         }
+               
+           function shareLinkHandler(params){
+             
+             console.log('shareLinkHandler loaded');
+         }
+
+/* require(['dojo/_base/array','dojo/store/Memory'], function(array, Memory){
+             var items = {'mapExtent': map.Extent, 'layers':[]};
+             mapConstructs = new Memory({data:items});
+             var layers = map.layerIds;
+             array.map(layers, function(layer){
+               mapLayer = map.getLayer(layer);
+               if(mapLayer.visible){
+                 console.log(layer + 'is visible');
+                 var subLayers = mapLayer.visibleLayers;
+                 {'id': mapLayer.id, 'visibleLayers': subLayers});
+                 }
+               });
+             }); */
+
+           
            function constructSidePanels(response){
              constructLegend(response);
              constructToc(response);
@@ -279,6 +339,7 @@
 
            function constructLegend(response){
              var layerInfo = arcgisUtils.getLegendLayers(response);
+             console.log(layerInfo);
              var legend = new Legend({
                map:map,
                layerInfos: layerInfo

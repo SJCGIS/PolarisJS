@@ -87,6 +87,13 @@
      .navToolbarButton-zoomIn{ background-position: -750px 0; width: 25px; height: 25px; } 
      .navToolbarButton-zoomOut{ background-position: -825px 0; width: 25px; height: 25px; }
 
+     /* .loadingIndicator {
+     position: absolute;
+     z-index: 1001;
+     top: 50%;
+     left: 50%;
+     } */
+
      #topPane {
        color: white;
        text-align: right;
@@ -138,6 +145,7 @@
        "esri/map",
        "esri/arcgis/utils",
        "esri/config",
+       "esri/domUtils",
        "esri/dijit/Legend",
        "esri/dijit/Measurement",
        "esri/dijit/OverviewMap",
@@ -181,6 +189,7 @@
          Map,
          arcgisUtils,
          config,
+         domUtils,
          Legend,
          Measurement,
          OverviewMap,
@@ -248,11 +257,19 @@
                /* When the basemap has loaded, let's add scalebar and overview map */
                map.on("load", constructMapElements());
                
-               
                /* After all map layers have been added, let's create the navigation toolbar and side panels */
                map.on("layers-add-result", constructNavToolbar());
                map.on("layers-add-result", constructSidePanels(response));
-               
+
+               /* Show loading icon while map and layers are loading */
+               map.on("update-start", showLoadingIndicator());
+               map.on("update-end", function(event){
+                 if (event.error != undefined){
+                   console.log("Update complete with error: " + event.error);
+                   }
+                 hideLoadingIndicator();
+             });
+                 
                /* Zoom to feature when row is clicked on Search grid */
                grid.on("onRowClick", onRowClickHandler);
 
@@ -454,6 +471,17 @@
                map.centerAndZoom(screenPoint,8);
            }
          }
+
+           function showLoadingIndicator(){
+             var loader = dom.byId("loader");
+             loader.style.top="50%";
+             loader.style.left="50%";
+         }
+           function hideLoadingIndicator(){
+             var loader = dom.byId("loader");
+             loader.style.top="-9999px";
+             loader.style.left="-9999px";
+         }
        });
        function disablePopups(){
          popupHandler.remove();
@@ -525,6 +553,7 @@
       </div>
       <div id="map" data-dojo-type="dijit/layout/ContentPane"
            data-dojo-props="region:'center'">
+        <div id="loader" class="loadingIndicator" style="display:block;position:absolute;top:50%;left:50%;"><img src="images/loader.gif"></div>
       </div>
     </div>
   </body>

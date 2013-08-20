@@ -120,7 +120,7 @@
      var map, initialExtent, navToolbar;
      var findTask, findParams, grid, measurement;
      var findGraphicsLayer;
-     var zoomSymbol;
+     var zoomSymbol, print;
      var response, popupHandler;
 
      require([
@@ -141,6 +141,7 @@
        "esri/dijit/Legend",
        "esri/dijit/Measurement",
        "esri/dijit/OverviewMap",
+       "esri/dijit/Print",
        "esri/dijit/Scalebar",
        "esri/graphic",
        "esri/units",
@@ -184,6 +185,7 @@
          Legend,
          Measurement,
          OverviewMap,
+         Print,
          Scalebar,
          Graphic,
          Units,
@@ -266,6 +268,7 @@
              constructLegend(response);
              constructToc(response);
              constructMeasure(response);
+             constructPrint();
          }
 
 
@@ -292,6 +295,23 @@
                layerInfos: layerInfo
            }, "tocDiv");
              toc.startup();
+         }
+
+           function constructPrint(){
+             print = new Print({
+               map: map,
+               templates: [{
+                 label: "Printout",
+                 format: "PDF",
+                 layout: "Letter ANSI A Landscape",
+                 layoutOptions: {
+                   titleText: dom.byId('printTitle').value,
+                   scalebarUnit: "Feet"
+               }
+             }],
+               url: "http://utility2.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+           }, dom.byId("printButton"));
+             print.startup();
          }
 
            function constructMeasure(response){
@@ -520,6 +540,15 @@
         <div data-dojo-type="dijit/layout/ContentPane" title="Measure" data-dojo-id="measurePane" onShow="disablePopups()" onHide="enablePopups()">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div id="measureDiv"></div>
+          </div>
+        </div>
+        <div data-dojo-type="dijit.layout.ContentPane" title="Print" id="printPane">
+          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
+            <div data-dojo-type="dijit.form.Form" id="printForm" data-dojo-id="printForm" action="" method="">
+              <label for="printTitle">Enter a Title for Your Map:</label>
+              <input type="text" id="printTitle" size=15 name="printTitle" />
+              <div id="printButton"></div>
+            </div>
           </div>
         </div>
       </div>

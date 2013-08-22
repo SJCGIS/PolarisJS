@@ -108,10 +108,16 @@
     </style>
 
     <script>var dojoConfig = {
-       packages: [{
-         "name":"agsjs",
-         "location": "/Polaris/agsjs/src/agsjs"
-       }]
+       packages: [
+         {
+           "name":"agsjs",
+           "location": "/Polaris/agsjs/src/agsjs"
+         },
+         {
+           "name":"configurableviewer",
+           "location": "/Polaris/ConfigurableViewerJSAPI"
+         }
+       ]
      }
     </script>
     <script src="http://js.arcgis.com/3.6/"></script>
@@ -126,6 +132,7 @@
      require([
        "dojo/aspect",
        "dojo/dom",
+       "dojo/dom-construct",
        "dojo/on",
        "dojo/parser",
        "dojo/ready",
@@ -141,7 +148,6 @@
        "esri/dijit/Legend",
        "esri/dijit/Measurement",
        "esri/dijit/OverviewMap",
-       "esri/dijit/Print",
        "esri/dijit/Scalebar",
        "esri/graphic",
        "esri/units",
@@ -166,10 +172,12 @@
        "dijit/Toolbar",
        "dojox/grid/DataGrid",
        "agsjs/dijit/TOC",
+       "configurableviewer/dijit/Print",
        "dojo/domReady!"],
              function(
          aspect,
          dom,
+         domConstruct,
          on,
          parser,
          ready,
@@ -185,7 +193,6 @@
          Legend,
          Measurement,
          OverviewMap,
-         Print,
          Scalebar,
          Graphic,
          Units,
@@ -209,7 +216,8 @@
          registry,
          Toolbar,
          DataGrid,
-         TOC) {
+         TOC,
+         Print) {
          ready(function(){
            parser.parse();
            /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
@@ -301,18 +309,14 @@
            function constructPrint(){
              print = new Print({
                map: map,
-               templates: [{
-                 label: "Printout",
-                 format: "PDF",
-                 layout: "Letter ANSI A Landscape",
-                 layoutOptions: {
-                   titleText: dom.byId('printTitle').value,
-                   scalebarUnit: "Feet"
-               }
-             }],
-               url: "http://utility2.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
-           }, dom.byId("printButton"));
-             print.startup();
+               printTaskURL: "http://utility2.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
+               authorText: "Printed from Polaris Property Search - San Juan County WA",
+               copyrightText: "This data has been compiled for San Juan County. Various official and unofficial sources were used to gather this information. Every effort was made to ensure the accuracy of this data, however, no guarantee is given or implied as to the accuracy of said data.",
+               defaultTitle: "My Map",
+               defaultFormat: "PDF",
+               defaultLayout: "Letter ANSI A Landscape"               
+           }, domConstruct.create("div"));
+             print.placeAt("printPane");
          }
 
            function constructMeasure(response){
@@ -544,13 +548,6 @@
           </div>
         </div>
         <div data-dojo-type="dijit.layout.ContentPane" title="Print" id="printPane">
-          <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
-            <div data-dojo-type="dijit.form.Form" id="printForm" data-dojo-id="printForm" action="" method="">
-              <label for="printTitle">Enter a Title for Your Map:</label>
-              <input type="text" id="printTitle" size=15 name="printTitle" />
-              <div id="printButton"></div>
-            </div>
-          </div>
         </div>
       </div>
       <div id="map" data-dojo-type="dijit/layout/ContentPane"

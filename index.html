@@ -126,7 +126,7 @@
      var map, initialExtent, navToolbar;
      var findTask, findParams, grid, measurement;
      var findGraphicsLayer;
-     var zoomSymbol, print;
+     var zoomSymbol, draw, print;
      var response, popupHandler;
 
      require([
@@ -173,6 +173,7 @@
        "dojox/grid/DataGrid",
        "agsjs/dijit/TOC",
        "configurableviewer/dijit/Print",
+       "configurableviewer/dijit/Draw",
        "dojo/domReady!"],
              function(
          aspect,
@@ -217,7 +218,8 @@
          Toolbar,
          DataGrid,
          TOC,
-         Print) {
+         Print,
+         Draw) {
          ready(function(){
            parser.parse();
            /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
@@ -278,6 +280,7 @@
              constructToc(response);
              constructMeasure(response);
              constructPrint();
+             constructDraw();
          }
 
 
@@ -317,6 +320,13 @@
                defaultLayout: "Letter ANSI A Landscape"               
            }, domConstruct.create("div"));
              print.placeAt("printPane");
+         }
+
+           function constructDraw(){
+             draw = new Draw({
+               map: map
+               }, domConstruct.create("div"));
+             draw.placeAt("drawPane");
          }
 
            function constructMeasure(response){
@@ -548,6 +558,8 @@
           </div>
         </div>
         <div data-dojo-type="dijit.layout.ContentPane" title="Print" id="printPane">
+        </div>
+        <div data-dojo-type="dijit.layout.ContentPane" title="Draw" id="drawPane" onShow="disablePopups()" onHide="enablePopups()">
         </div>
       </div>
       <div id="map" data-dojo-type="dijit/layout/ContentPane"

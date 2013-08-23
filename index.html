@@ -225,7 +225,7 @@
            /* We're not supposed to use the arcgisonline geometry service, but the 9.3.1 Polaris
            geometry server doesn't work well with the measurement widget */
            config.defaults.geometryService = new GeometryService("http://sampleserver3.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer");
-           config.defaults.io.proxyUrl = "/proxy.php";
+             config.defaults.io.proxyUrl = "/proxy/proxy.ashx";
 
              grid = new (declare([Grid, Selection]))({
                // use infinity so that all data is available in the grid
@@ -312,7 +312,7 @@
            function constructPrint(){
              print = new Print({
                map: map,
-               printTaskURL: "http://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
+               printTaskURL: "http://ec2-54-219-18-67.us-west-1.compute.amazonaws.com:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
                authorText: "Printed from Polaris Property Search - San Juan County WA",
                copyrightText: "This data has been compiled for San Juan County. Various official and unofficial sources were used to gather this information. Every effort was made to ensure the accuracy of this data, however, no guarantee is given or implied as to the accuracy of said data.",
                defaultTitle: "My Map",

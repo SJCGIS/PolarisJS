@@ -39,9 +39,9 @@
                 Print Settings
             </span>
             <div data-dojo-type="dijit.TooltipDialog">
-                <div style="width:240px;">
+                <div style="width:300px;">
                     <div style="font-weight:bold;">
-                        Map scale/extent:
+                        Map Scale/Extent:
                     </div>
                     <div data-dojo-type="dijit.form.Form" data-dojo-attach-point="preserveFormDijit">
                         <table cellspacing="5">
@@ -52,10 +52,10 @@
                                 <td>
                                     <input type="radio" data-dojo-type="dijit.form.RadioButton" data-dojo-props="name:'preserveScale',checked:true,value:'true'"
                                     />
-                                    map scale&nbsp;&nbsp;
+                                    Map Scale&nbsp;&nbsp;
                                     <input type="radio" data-dojo-type="dijit.form.RadioButton" data-dojo-props="name:'preserveScale',value:'false'"
                                     />
-                                    map extent
+                                    Map Extent
                                 </td>
                             </tr>
                         </table>
@@ -114,7 +114,7 @@
                         </table>
                     </div>
                     <div style="font-weight:bold;">
-                        MAP_ONLY options:
+                        Map Only options:
                     </div>
                     <div data-dojo-type="dijit.form.Form" data-dojo-attach-point="mapOnlyFormDijit">
                         <table cellspacing="5">
@@ -143,7 +143,7 @@
         </div>
         <div data-dojo-type="dijit.form.Button" data-dojo-props="busyLabel:'printing',iconClass:'printIcon'"
         data-dojo-attach-event="onClick:print" data-dojo-attach-point="printButtonDijit">
-            print
+            Print
         </div>
     </div>
     <div data-dojo-attach-point="printResultsNode" class="resultsContainer">

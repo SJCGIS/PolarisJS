@@ -136,6 +136,7 @@
        "dojo/on",
        "dojo/parser",
        "dojo/ready",
+       "dojo/_base/array",
        "dojo/_base/Color",
        "dojo/_base/declare",
        "dojo/data/ItemFileReadStore",
@@ -182,6 +183,7 @@
          on,
          parser,
          ready,
+         array,
          Color,
          declare,
          ItemFileReadStore,
@@ -302,6 +304,9 @@
          }
            function constructToc(response){
              var layerInfo = arcgisUtils.getLegendLayers(response);
+             array.map(layerInfo, function(layer){
+               layer.collapsed=true;
+           });
              var toc = new TOC({
                map:map,
                layerInfos: layerInfo
@@ -312,7 +317,7 @@
            function constructPrint(){
              print = new Print({
                map: map,
-               printTaskURL: "http://ec2-54-219-18-67.us-west-1.compute.amazonaws.com:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
+               printTaskURL: "http://50.18.118.2:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
                authorText: "Printed from Polaris Property Search - San Juan County WA",
                copyrightText: "This data has been compiled for San Juan County. Various official and unofficial sources were used to gather this information. Every effort was made to ensure the accuracy of this data, however, no guarantee is given or implied as to the accuracy of said data.",
                defaultTitle: "My Map",

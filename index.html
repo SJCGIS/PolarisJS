@@ -242,7 +242,7 @@
 
              grid.on(".dgrid-row:click", function(event){onRowClickHandler(event);});
              
-             var mapDeferred = arcgisUtils.createMap("15f2060ce9cc476c8156c5be5bea4726", "map", {
+             var mapDeferred = arcgisUtils.createMap("f78d6ef1e6ee4b709d1a94679fbff631", "map", {
                geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
            });
              mapDeferred.then(function(appResponse) {
@@ -307,6 +307,7 @@
              array.map(layerInfo, function(layer){
                layer.collapsed=true;
            });
+             layerInfo.reverse();
              var toc = new TOC({
                map:map,
                layerInfos: layerInfo
@@ -363,14 +364,14 @@
                spatialReference:  map.spatialReference
            });
              map.addLayer(findGraphicsLayer);
-             findTask = new FindTask("http://sjcgis.org/Polaris/rest/services/Map_Contents/MapServer/");
+             findTask = new FindTask("http://www.sjcgis.org/Polaris/rest/services/PolarisJS/LocationSearch/MapServer");
              // Create find parameters
              findParams = new FindParameters();
              findParams.returnGeometry = true;
              /* Enter the id number of the layers to search  */
-             findParams.layerIds = [2,8];
+             findParams.layerIds = [0,1,2,3,4];
              /* Enter the names of the fields to search over the layers */
-             findParams.searchFields = ["PIN", "ADDRESS", "NAME"];
+             findParams.searchFields = ["ADDRESS", "Road_Name", "PIN", "NAME"];
              findParams.outSpatialReference = map.spatialReference;
              var searchButton = new Button({
                label: "Search",
@@ -480,8 +481,8 @@
              if(clickedRowGraphic.geometry.type == "point") {
                map.centerAndZoom(clickedRowGraphic.geometry,8);
            } else {
-               var screenPoint = clickedRowGraphic.geometry.getExtent().getCenter();
-               map.centerAndZoom(screenPoint,8);
+               var graphicExtent = clickedRowGraphic.geometry.getExtent();
+               map.setExtent(graphicExtent, true);
            }
          }
 
@@ -490,8 +491,8 @@
              if(clickedRowGraphic.geometry.type == "point") {
                map.centerAndZoom(clickedRowGraphic.geometry,8);
            } else {
-               var screenPoint = clickedRowGraphic.geometry.getExtent().getCenter();
-               map.centerAndZoom(screenPoint,8);
+               var graphicExtent = clickedRowGraphic.geometry.getExtent();
+               map.setExtent(graphicExtent);
            }
          }
        });
@@ -549,7 +550,7 @@
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div data-dojo-type="dijit/form/Form" id="searchForm" data-dojo-id="searchForm" action=""
                  method="">
-              <label for="searchText">Enter an Address or Parcel Number to Search:</label>
+              <label for="searchText">Enter an Address, Parcel Number, Road or Island to Search:</label><br />
               <input type="text" id="searchText" size=15 name="searchText" required="true"
                      data-dojo-type="dijit/form/ValidationTextBox" /><br />
               <button id="searchButton" type="Submit"</button><button id="clearButton" type="Reset"></button>

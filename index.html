@@ -397,7 +397,7 @@
                                                       SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 2),
                                                       new Color([255,255,0,0.25]));
              var lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-                                                   new Color([98,194,204]),1);
+                                                   new Color([98,194,204]),2);
              var markerSymbol = new PictureMarkerSymbol({
                "url": "images/pin-red-28x28.png",
                "height": 20,
@@ -415,11 +415,11 @@
                  break;
                case "polyline":
                  graphic.setSymbol(lineSymbol);
-                 marker = new Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
+                 marker = new Graphic(result.feature.geometry, lineSymbol);
                  break;
                case "polygon":
                  graphic.setSymbol(polygonSymbol);
-                 marker = new Graphic(result.feature.geometry.getExtent().getCenter(), markerSymbol);
+                 marker = new Graphic(result.feature.geometry, polygonSymbol);
                  break;
              }
                findGraphicsLayer.add(marker);
@@ -455,7 +455,7 @@
                break;
                default:
                var foundFeaturesExtent = esri.graphicsExtent(findGraphicsLayer.graphics);
-               map.setExtent(foundFeaturesExtent);
+               map.setExtent(foundFeaturesExtent,true);
            }
          }
 

@@ -26,7 +26,7 @@ define([
 
     //anonymous function to load CSS files required for this module
     (function() {
-        var css = [require.toUrl("/Polaris/ConfigurableViewerJSAPI/dijit/Print/css/Print.css")];
+        var css = [require.toUrl("/PolarisJS/ConfigurableViewerJSAPI/dijit/Print/css/Print.css")];
         var head = document.getElementsByTagName("head").item(0),
             link;
         for(var i = 0, il = css.length; i < il; i++) {
@@ -51,8 +51,8 @@ define([
         defaultFormat: null,
         defaultLayout: null,
         baseClass: "gis_PrintDijit",
-        pdfIcon: require.toUrl("/Polaris/ConfigurableViewerJSAPI/dijit/Print/images/pdf.png"),
-        imageIcon: require.toUrl("/Polaris/ConfigurableViewerJSAPI/dijit/Print/images/image.png"),
+        pdfIcon: require.toUrl("/PolarisJS/ConfigurableViewerJSAPI/dijit/Print/images/pdf.png"),
+        imageIcon: require.toUrl("/PolarisJS/ConfigurableViewerJSAPI/dijit/Print/images/image.png"),
         printTaskURL: null,
         printTask: null,
         postCreate: function() {

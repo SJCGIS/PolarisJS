@@ -12,7 +12,7 @@ define([
 
     //anonymous function to load CSS files required for this module
     (function() {
-        var css = [require.toUrl("/Polaris/ConfigurableViewerJSAPI/dijit/Draw/css/Draw.css")];
+        var css = [require.toUrl("/PolarisJS/ConfigurableViewerJSAPI/dijit/Draw/css/Draw.css")];
         var head = document.getElementsByTagName("head").item(0),
             link;
         for(var i = 0, il = css.length; i < il; i++) {

@@ -274,6 +274,12 @@
                /* We need to disable popups when the measure tools are shown */
                popupHandler = response.clickEventHandle;
 
+               /* Bug workaround where measure location tool is deactivated after a point is measured.
+               We want the tool to remain active until the panel is closed.
+               measurement.on("measure-end", function(evt){
+               measurement.setTool(evt.toolName, true);
+               }); */
+
            });
          });
 

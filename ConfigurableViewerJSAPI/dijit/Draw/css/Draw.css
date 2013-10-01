@@ -22,6 +22,13 @@
     height: 16px;
 }
 
+.gis_DrawDijit .textIcon {
+    background-image: url(../images/toolbar_icons.png);
+    background-position: -306px 0;
+    width: 16px;
+    height: 16px;
+}
+
 .gis_DrawDijit .clearIcon {
     background-image: url(../images/clear.png);
     width: 16px;

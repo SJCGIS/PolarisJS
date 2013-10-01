@@ -10,6 +10,15 @@
             <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'polyIcon',showLabel:true" data-dojo-attach-event="onClick:drawPolygon">
                 Polygon
             </div>
+            <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'textIcon',showLabel:true" data-dojo-attach-event="onClick:drawText">
+              Text
+            </div>
+        </div>
+        <div id="drawOptions">
+          <div id="textAnnotation" style="display:none">
+            <label for="annoText">Text: </label>
+            <input type="text" name="annoText" data-dojo-type="dijit/form/TextBox" id="annoText" />
+          </div>
         </div>
     </div>
     <div class="buttonActionBar">

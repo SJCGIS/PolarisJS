@@ -7,8 +7,11 @@ define([
     "dojo/_base/lang",
     "dojo/_base/Color",
     "esri/toolbars/draw",
-    "dojo/text!./Draw/templates/Draw.html"
-    ], function(declare, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Button, lang, Color, draw, drawTemplate) {
+    "esri/symbols/Font",
+    "dojo/text!./Draw/templates/Draw.html",
+    "dojo/dom",
+    "dojo/dom-style"
+    ], function(declare, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Button, lang, Color, draw, Font, drawTemplate, dom, domStyle) {
 
     //anonymous function to load CSS files required for this module
     (function() {
@@ -30,6 +33,7 @@ define([
         templateString: drawTemplate,
         drawToolbar: null,
         graphics: null,
+	graphicType: null,
         postCreate: function() {
             this.inherited(arguments);
             this.drawToolbar = new esri.toolbars.Draw(this.map);
@@ -42,16 +46,28 @@ define([
         },
         drawPoint: function() {
             //this.disconnectMapClick();
+	    this.graphicType = "point";
+	    domStyle.set("textAnnotation", "display", "none");
             this.drawToolbar.activate(esri.toolbars.Draw.POINT);
         },
         drawLine: function() {
             //this.disconnectMapClick();
+	    this.graphicType = "polyline";
+	    domStyle.set("textAnnotation", "display", "none");
             this.drawToolbar.activate(esri.toolbars.Draw.POLYLINE);
         },
         drawPolygon: function() {
             //this.disconnectMapClick();
+	    this.graphicType = "polygon";
+	    domStyle.set("textAnnotation", "display", "none");
             this.drawToolbar.activate(esri.toolbars.Draw.POLYGON);
         },
+	drawText: function(){
+	    //this.disconnectMapClick();
+	    this.graphicType = "text";
+	    domStyle.set("textAnnotation", "display", "inline");	    
+	    this.drawToolbar.activate(esri.toolbars.Draw.POINT);
+	},
         disconnectMapClick: function() {
             dojo.disconnect(this.mapClickEventHandle);
             this.mapClickEventHandle = null;
@@ -65,7 +81,7 @@ define([
             this.drawToolbar.deactivate();
             //this.connectMapClick();
             var symbol;
-            switch(geometry.type) {
+            switch(this.graphicType) {
             case "point":
                 symbol = new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_CIRCLE, 10, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 1), new Color([255, 0, 0, 1.0]));
                 break;
@@ -75,13 +91,24 @@ define([
             case "polygon":
                 symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.0]));
                 break;
-            default:
+	    case "text":
+		var myText = dom.byId("annoText").value;
+		var font = new Font();
+		font.setSize("20");
+		font.setFamily("Arial");
+		font.setWeight(Font.WEIGHT_BOLDER)
+		symbol = new esri.symbol.TextSymbol(myText);
+		symbol.setFont(font);
+		symbol.setColor(new Color([255,0,0]));
+		break;	    
+	    default:
             }
             var graphic = new esri.Graphic(geometry, symbol);
             this.graphics.add(graphic);
         },
         clearGraphics: function() {
             this.graphics.clear();
+	    domStyle.set("textAnnotation", "display", "none");
             this.drawToolbar.deactivate();
             //this.connectMapClick();
         }

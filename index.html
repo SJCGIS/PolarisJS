@@ -30,6 +30,10 @@
        overflow:auto !important;
      }
 
+     .dijitButtonFocused {
+       border: 1px solid #769DC0;
+     }
+
      html, body {
        height:100%;
        width:100%;
@@ -134,11 +138,13 @@
        "dojo/dom",
        "dojo/dom-construct",
        "dojo/on",
+       "dojo/keys",
        "dojo/parser",
        "dojo/ready",
        "dojo/_base/array",
        "dojo/_base/Color",
        "dojo/_base/declare",
+       "dojo/_base/event",
        "dojo/data/ItemFileReadStore",
        "dojo/store/Memory",
        "dgrid/OnDemandGrid",
@@ -181,11 +187,13 @@
          dom,
          domConstruct,
          on,
+         keys,
          parser,
          ready,
          array,
          Color,
          declare,
+         event,
          ItemFileReadStore,
          Memory,
          Grid,
@@ -241,6 +249,12 @@
            }, "grid");
 
              grid.on(".dgrid-row:click", function(event){onRowClickHandler(event);});
+             on(dom.byId("searchText"), 'keydown', function(e){
+               if (e.keyCode == keys.ENTER) {
+                 doSearch(dom.byId('searchText').value);
+                 event.stop(e);
+             }
+           });
              
              var mapDeferred = arcgisUtils.createMap("f78d6ef1e6ee4b709d1a94679fbff631", "map", {
                geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
@@ -375,7 +389,7 @@
              findParams = new FindParameters();
              findParams.returnGeometry = true;
              /* Enter the id number of the layers to search  */
-             findParams.layerIds = [0,1,2,3,4];
+             findParams.layerIds = [4,1,0,2,3];
              /* Enter the names of the fields to search over the layers */
              findParams.searchFields = ["ADDRESS", "Road_Name", "PIN", "NAME"];
              findParams.outSpatialReference = map.spatialReference;
@@ -392,11 +406,13 @@
            function doSearch(searchText) {
              // Set search text to value in box
              findParams.searchText = searchText;
+             dom.byId('searchIndicator').style.visibility="visible";
              findTask.execute(findParams,showResults);
-             dom.byId('grid').style.visibility="visible";
          }
 
            function showResults(results) {
+             dom.byId('searchIndicator').style.visibility="hidden";
+             dom.byId('grid').style.visibility="visible";
              //Show the results of FindTask using the FindResult returned by the doFind function
              findGraphicsLayer.clear(); //Clear existing graphics from map
              var polygonSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new
@@ -438,10 +454,7 @@
                attribs.marker = marker;
                return attribs;
            });
-             /* var data = {
-             identifier: "identifier",
-             items: items
-             }; */
+
              var store = new Memory({
                data: data
            });
@@ -558,7 +571,9 @@
                  method="">
               <label for="searchText">Enter an Address, Parcel Number, Road or Island to Search:</label><br />
               <input type="text" id="searchText" size=15 name="searchText" required="true"
-                     data-dojo-type="dijit/form/ValidationTextBox" /><br />
+                     data-dojo-type="dijit/form/ValidationTextBox" />
+              <span id="searchIndicator" style="visibility:hidden;">Searching... <img src="images/loading.gif"></span>
+              <br />
               <button id="searchButton" type="Submit"</button><button id="clearButton" type="Reset"></button>
               <div id="grid" style="visibility:hidden;"></div>
             </div>

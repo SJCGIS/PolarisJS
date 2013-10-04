@@ -48,3 +48,17 @@
     text-align: right;
     width: 100%;
 }
+
+.gis_DrawDijit .drawOptions label {
+    float: left;
+    width: 75px;
+}
+
+.gis_DrawDijit .drawOptions select {
+    float: left;
+    width: 150px;
+}
+
+.gis_DrawDijit .drawOptions div {
+    clear: left;
+}

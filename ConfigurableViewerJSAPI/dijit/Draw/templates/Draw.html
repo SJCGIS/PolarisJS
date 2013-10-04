@@ -1,29 +1,100 @@
 <div class="gis_DrawDijit">
-    <div class="formContainer">
-        <div style="padding:5px;">
-            <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'pointIcon',showLabel:true" data-dojo-attach-event="onClick:drawPoint">
+  <div class="formContainer">
+    <div style="padding:5px;">
+      <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'pointIcon',showLabel:true" data-dojo-attach-event="onClick:drawPoint">
                 Point
-            </div>
-            <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'lineIcon',showLabel:true" data-dojo-attach-event="onClick:drawLine">
+      </div>
+      <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'lineIcon',showLabel:true" data-dojo-attach-event="onClick:drawLine">
                 Line
-            </div>
-            <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'polyIcon',showLabel:true" data-dojo-attach-event="onClick:drawPolygon">
+      </div>
+      <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'polyIcon',showLabel:true" data-dojo-attach-event="onClick:drawPolygon">
                 Polygon
-            </div>
-            <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'textIcon',showLabel:true" data-dojo-attach-event="onClick:drawText">
+      </div>
+      <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'textIcon',showLabel:true" data-dojo-attach-event="onClick:drawText">
               Text
+      </div>
+      <div id="drawTools">
+        <div id="colorSelector">
+          <div data-dojo-type="dijit/form/DropDownButton" id="drawColorButton">
+            <span>Color</span>
+            <div data-dojo-type="dijit/TooltipDialog">
+              <div data-dojo-type="dijit/ColorPalette" data-dojo-props="onChange:function(val){draw.color.setColor(val);}, palette:'3x4'" id="colorPalette"></div>
             </div>
+          </div>
         </div>
-        <div id="drawOptions">
-          <div id="textAnnotation" style="display:none">
+        <div id="drawPointOptions" style="display:none" class="drawOptions">
+          <div>
+            <label for="pointSizeSelect">Size: </label>
+            <input id="pointSizeSelect" data-dojo-type="dijit/form/NumberSpinner" value="10" data-dojo-props="smallDelta:1, constraints:{min:5,max:20,places:0}" style="width:150px;" name="pointSizeSelect"/>
+          </div>
+          <div>
+            <label for="pointSymbolSelect">Symbol: </label>
+            <select name="pointSymbolSelect" id="pointSymbolSelect" value="STYLE_CIRCLE" data-dojo-type="dijit/form/Select">
+              <option value="STYLE_CIRCLE">Circle</option>
+              <option value="STYLE_SQUARE">Square</option>
+              <option value="STYLE_DIAMOND">Diamond</option>
+              <option value="STYLE_CROSS">Cross</option>
+            </select>
+          </div>
+        </div>
+        <div id="drawLineOptions" style="display:none" class="drawOptions">
+          <div>
+            <label for="lineSizeSelect">Size: </label>
+            <input id="lineSizeSelect" data-dojo-type="dijit/form/NumberSpinner" value="2" data-dojo-props="smallDelta:1, constraints:{min:1,max:15,places:0}" style="width:150px;" name="lineSizeSelect"/>
+          </div>
+          <div>
+            <label for="lineStyleSelect">Style: </label>
+            <select name="lineStyleSelect" id="lineStyleSelect" value="STYLE_SOLID" data-dojo-type="dijit/form/Select">
+              <option value="STYLE_SOLID">Solid</option>
+              <option value="STYLE_DASH">Dash</option>
+              <option value="STYLE_DOT">Dot</option>
+              <option value="STYLE_DASHDOT">Dash Dot</option>
+              <option value="STYLE_DASHDOTDOT">Dash Dot Dot</option>
+            </select>
+          </div>
+        </div>
+        <div id="drawFillOptions" style="display:none" class="drawOptions">
+          <div>
+            <label for="fillTypeSelect">Fill Type: </label>
+            <select name="fillTypeSelect" id="fillTypeSelect" value="STYLE_NULL" data-dojo-type="dijit/form/Select">
+              <option value="STYLE_NULL">None</option>
+              <option value="STYLE_SOLID">Solid</option>
+              <option value="STYLE_BACKWARD_DIAGONAL">Backward Diagonal</option>
+              <option value="STYLE_FORWARD_DIAGONAL">Forward Diagonal</option>
+              <option value="STYLE_CROSS">Cross</option>
+              <option value="STYLE_DIAGONAL_CROSS">Diagonal Cross</option>
+              <option value="STYLE_HORIZONAL">Horizontal</option>
+              <option value="STYLE_VERTICAL">Vertical</option>
+            </select>
+          </div>
+        </div>
+        <div id="drawTextOptions" style="display:none" class="drawOptions">
+          <div>
+            <label for="textSizeOptions">Size: </label>
+            <input id="textSizeSelect" data-dojo-type="dijit/form/NumberSpinner" value="20" data-dojo-props="smallDelta:1, constraints:{min:10,max:36,places:0}" style="width:150px;" name="textSizeSelect"/>
+          </div>
+          <div>
+            <label for="textFontSelect">Font: </label>
+            <select id="textFontSelect" data-dojo-type="dijit/form/Select" value="Arial" name="textFontSelect">
+              <option value="Arial">Arial</option>
+              <option value="Arial Black">Arial Black</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Tahoma">Tahoma</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Verdana">Verdana</option>
+            </select>
+          </div>
+          <div>
             <label for="annoText">Text: </label>
             <input type="text" name="annoText" data-dojo-type="dijit/form/TextBox" id="annoText" />
           </div>
         </div>
+      </div>
     </div>
-    <div class="buttonActionBar">
-        <button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'clearIcon',showLabel:true" data-dojo-attach-event="onClick:clearGraphics">
-            Clear Drawing
-        </button>
-    </div>
+  </div>
+  <div class="buttonActionBar">
+    <button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'clearIcon',showLabel:true" data-dojo-attach-event="onClick:clearGraphics">
+             Clear Drawing
+    </button>
+  </div>
 </div>

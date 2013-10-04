@@ -57,7 +57,7 @@ define([
         printTask: null,
         postCreate: function() {
             this.inherited(arguments);
-            this.printTask = new esri.tasks.PrintTask(this.printTaskURL);
+            this.printTask = new esri.tasks.PrintTask(this.printTaskURL, {async:true});
             this.printparams = new esri.tasks.PrintParameters();
             this.printparams.map = this.map;
             this.printparams.outSpatialReference = this.map.spatialReference;

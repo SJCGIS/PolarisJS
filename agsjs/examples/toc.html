@@ -4,8 +4,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
         <title>TOC</title>
-        <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css">
-        <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css" />
+        <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.6/js/dojo/dijit/themes/claro/claro.css">
+        <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.6/js/esri/css/esri.css" />
        	<link rel="stylesheet" type="text/css" href="../src/agsjs/css/agsjs.css" />
 		<style>
             html, body {
@@ -50,7 +50,7 @@
         };
                     
         </script>
-        <script src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/">
+        <script src="//js.arcgis.com/3.6/">
         </script>
         <script type="text/javascript">
             
@@ -64,7 +64,7 @@
             dojo.require("agsjs.dijit.TOC");
         </script>
         <script type="text/javascript">
-            var map, toc, dynaLayer1, dynaLayer2, featLayer1;
+            var map, toc, basemap, dynaLayer1, dynaLayer2, featLayer1;
             function init(){
             
               var initialExtent = new esri.geometry.Extent({
@@ -80,7 +80,7 @@
                 extent: initialExtent
               });
               
-              var basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
+              basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
               map.addLayer(basemap);
               
               dynaLayer1 = new esri.layers.ArcGISDynamicMapServiceLayer("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/PublicSafety/PublicSafetyOperationalLayers/MapServer", {
@@ -113,7 +113,10 @@
                   dojo.connect(toc, 'onLoad', function(){
                     if (console) 
                       console.log('TOC loaded');
-                    dojo.byId("FindNodeByLayer").disabled = false;
+                   	dojo.byId("ChangeFeatureRenderer").disabled = false;
+					dojo.byId("SetVisibleLayersProgramatically").disabled = false;
+					dojo.byId("FindNodeByLayer").disabled = false;
+					dojo.byId("InsertNewLayer").disabled = false;
                   });
                   dojo.disconnect(h);
                 } catch (e) {
@@ -205,13 +208,13 @@
                     </li>
                     <li>
                         Click 
-                        <button onclick="testChangeFeatureLayerRenderer()">
+                        <button id="ChangeFeatureRenderer" disabled="disabled" onclick="testChangeFeatureLayerRenderer()">
                             ChangeFeatureRenderer
                         </button>, notice TOC refreshed to reflect the new renderer of FeatureLayer. 
                     </li>
                     <li>
                         Click 
-                        <button onclick="testSetVisibleLayersProgramatically()">
+                        <button id="SetVisibleLayersProgramatically" disabled="disabled" onclick="testSetVisibleLayersProgramatically()">
                             SetVisibleLayersProgramatically
                         </button>
                         to programatically turn layer on/off, notice TOC automatically sync with model(no refresh needed).
@@ -225,7 +228,7 @@
                     </li>
                     <li>
                         Click 
-                        <button onclick="testInsertNewLayer()">
+                        <button id="InsertNewLayer" disabled="disabled" onclick="testInsertNewLayer()">
                             InsertNewLayer
                         </button>
                         to programmtically insert a layer then refresh TOC.

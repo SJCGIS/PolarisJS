@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Extruded Feature Layer v Reference</title>
+    <link rel="stylesheet" type="text/css" href="http://code.google.com/css/codesite.css"></link>
+    <link rel="stylesheet" type="text/css" href="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/util/docs/template/local_extensions.css"></link>
+  </head>
+  <body>
+    <h1>Extruded Feature Layer</h1>
+    <p>
+A canvas based ESRI ArcGIS Server JavaScript API ported from Open Streem Map Buildings.(osmbuildings.org).</p>
+    <p>For a description and examples of how to use this library, check out the <a href="examples.html">how-to</a>.</p>
+    
+      <h2><a name="ExtrudedFeatureLayer"></a>class ExtrudedFeatureLayer</h2>
+      <p>This class is a ExtrudedFeatureLayer, such as a polygon feature layer with a height attribute.</p>
+      
+        <h3>Constructor</h3>
+        <table summary="class ExtrudedFeatureLayer - Constructor" width="90%">
+          
+          <tbody>
+            <tr>
+              <th>Constructor</th>
+              
+              <th>Description</th>
+            </tr>
+            
+              <tr class="odd">
+                <td><code>ExtrudedFeatureLayer(<span class="type">url:string||FeatureCollection</span>, <span class="type">opts:ExtrudedFeatureLayerOptions</span>)</code></td>
+                
+                <td>Create an ExtrudedFeatureLayer</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+    
+      <h2><a name="ExtrudedFeatureLayerOptions"></a>class ExtrudedFeatureLayerOptions</h2>
+      <p>This is an object literal that specify the options for each ExtrudedFeatureLayer.  There is no constructor for this class.  Instead, this class is instantiated as a javascript object literal.</p>
+      
+        <h3>Properties</h3>
+        <table summary="class ExtrudedFeatureLayerOptions - Properties" width="90%">
+          
+          <tbody>
+            <tr>
+              <th>Properties</th>
+              
+                
+                  <th>Type</th>
+                
+              
+              <th>Description</th>
+            </tr>
+            
+              <tr class="odd">
+                <td><code>defaultHeight</code></td>
+                
+                  
+                    <td><code>number</code></td>
+                  
+                
+                <td>optional. default Height to use if the height value is 0. default=0;</td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>extentScaleRatio</code></td>
+                
+                  
+                    <td><code>number</code></td>
+                  
+                
+                <td>optional. extra buffer on map extent to load features to reduce server traffic. default=1.5;</td>
+              </tr>
+            
+              <tr class="odd">
+                <td><code>heightAttribute</code></td>
+                
+                  
+                    <td><code>string</code></td>
+                  
+                
+                <td>required. name of the attribute for height;</td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>heightScaleRatio</code></td>
+                
+                  
+                    <td><code>number</code></td>
+                  
+                
+                <td>optional. number used to multiple the value from service. default=1;</td>
+              </tr>
+            
+              <tr class="odd">
+                <td><code>mode</code></td>
+                
+                  
+                    <td><code>int</code></td>
+                  
+                
+                <td>optional. agsjs.layers.ExtrudedFeatureLayer.MODE_ONDEMAND | MODE_SNAPSHOT. default=ON_DEMAND</td>
+              </tr>
+            
+              <tr class="even">
+                <td><code>query</code></td>
+                
+                  
+                    <td><code>esri.tasks.Query</code></td>
+                  
+                
+                <td>optional. query set on the feature layer for retrieving data.</td>
+              </tr>
+            
+              <tr class="odd">
+                <td><code>style</code></td>
+                
+                  
+                    <td><code>Object</code></td>
+                  
+                
+                <td>object with color, roofColor (#ffcc00' 'rgb(255,200,200)' 'rgba(255,200,200,0.9)), strokeRoofs (boolean)</td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+    
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      _uacct = "UA-964209-4";
+      urchinTracker();
+    </script> 
+  </body>
+</html>

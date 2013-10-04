@@ -5,9 +5,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" />
         <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
         <title>TOC</title>
-        <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css">
-        <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css" />
-        <link rel="stylesheet" type="text/css" href="http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/latest/build/agsjs/css/agsjs.css" />
+        <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.7/js/dojo/dijit/themes/claro/claro.css">
+        <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.7/js/esri/css/esri.css" />
+		<link rel="stylesheet" type="text/css" href="http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/latest/build/agsjs/css/agsjs.css" />
 		<style>
             html, body {
                 height: 98%;
@@ -24,41 +24,61 @@
             }
             
             /* this line hide layers when out of scale for the inline TOC */
-            #scaleDiv .agsjsTOCOutOfScale {
-                display: none;
+            .agsjsTOCOutOfScale {
+            /*  display: none;*/
             }
         </style>
         <script type="text/javascript">
-            var djConfig = {
-              parseOnLoad: false,
-              packages: [{
-                "name": "agsjs",
-                //if you want to host on your own server, download from
+        	// helpful for understanding dojoConfig.packages vs. dojoConfig.paths:
+      // http://www.sitepen.com/blog/2013/06/20/dojo-faq-what-is-the-difference-packages-vs-paths-vs-aliases/
+      var dojoConfig = { 
+        paths: {
+          //if you want to host on your own server, download from
                 //http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/
                 // and put in folders then use path like: 
-                //"location": location.pathname.replace(/\/[^/]+$/, '') + '/../src/agsjs' 
+                agsjs: location.pathname.replace(/\/[^/]+$/, '') + '/../src/agsjs' 
                 // use /src/ for debug and /build/ for production.
                 // you can also use online version using the following location, 
                 // however please noted googlecode.com is not a true CDN and is not fast and may not be available.
                 // also, it is recommended to use a particular version from /tags/agsjs/<version>/
                 // in a production app to avoid unexpected results.
-                //"location": "http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/2.06/build/agsjs"
-			    //"location": "http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/latest/build/agsjs"
-			    //"location": "http://gmaps-utility-gis.googlecode.com/svn/trunk/agsjs/build/agsjs"
-               "location": "http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/latest/build/agsjs"
-              }]
-            };
+                //"agsjs": "http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/2.06/build/agsjs"
+			    //"agsjs": "http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/latest/build/agsjs"
+			    //"agsjs": "http://gmaps-utility-gis.googlecode.com/svn/trunk/agsjs/build/agsjs"
+                //agsjs: "http://gmaps-utility-gis.googlecode.com/svn/tags/agsjs/latest/build/agsjs"
+        }
+      };
+           
         </script>
-        <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.5">
-        </script>
+        <script src="//js.arcgis.com/3.7/"></script>
         <script type="text/javascript">
             var map, toc, dynaLayer1, dynaLayer2, featLayer1;
             
-            require(["dojo/_base/connect", "dojo/parser", "agsjs/dijit/TOC", "dijit/layout/BorderContainer", "dijit/layout/ContentPane", "esri/map", "esri/layers/FeatureLayer", "dojo/fx", "dojo/domReady!"], function(connect, parser, TOC){
+            require([
+			"dojo/_base/connect", 
+			"dojo/parser", 
+			"agsjs/dijit/TOC", 
+			"esri/map",
+			"esri/geometry/Extent", 
+			"esri/layers/FeatureLayer", 
+			"esri/layers/ArcGISTiledMapServiceLayer",
+			"esri/layers/ArcGISDynamicMapServiceLayer",
+			"dijit/layout/BorderContainer", 
+			"dijit/layout/ContentPane",
+			"dojo/fx", 
+			"dojo/domReady!"], function(
+			connect, 
+			parser, 
+			TOC, 
+			Map, 
+			Extent,
+			FeatureLayer, 
+			ArcGISTiledMapServiceLayer, 
+			ArcGISDynamicMapServiceLayer){
             
               // call the parser to create the dijit layout dijits
               parser.parse(); // note djConfig.parseOnLoad = false;
-              var initialExtent = new esri.geometry.Extent({
+              var initialExtent = new Extent({
                 xmin: -9549126.170705408,
                 ymin: 4612089.574063576,
                 xmax: -9542304.165930964,
@@ -67,28 +87,28 @@
                   "wkid": 102100
                 }
               });
-              map = new esri.Map("map", {
+              map = new Map("map", {
                 extent: initialExtent
               });
               
-              var basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
+              var basemap = new ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer");
               map.addLayer(basemap);
               
-              dynaLayer1 = new esri.layers.ArcGISDynamicMapServiceLayer("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/PublicSafety/PublicSafetyOperationalLayers/MapServer", {
+              dynaLayer1 = new ArcGISDynamicMapServiceLayer("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/PublicSafety/PublicSafetyOperationalLayers/MapServer", {
                 opacity: 0.8
               });
               
-              featLayer1 = new esri.layers.FeatureLayer("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Demographics/ESRI_Census_USA/MapServer/1", {
-                mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
+              featLayer1 = new FeatureLayer("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Demographics/ESRI_Census_USA/MapServer/1", {
+                mode: FeatureLayer.MODE_SNAPSHOT,
                 outFields: ["POP07_SQMI"]//,
               });
               featLayer1.setDefinitionExpression("STCOFIPS='21111'"); //Louisville, KY
-              var h = dojo.connect(map, 'onLayersAddResult', function(results){
+              var h = map.on('layers-add-result', function(results){
                 // overwrite the default visibility of service.
                 // TOC will honor the overwritten value.
                 dynaLayer1.setVisibleLayers([2, 5, 8, 11]);
                 try {
-                  toc = new agsjs.dijit.TOC({
+                  toc = new TOC({
                     map: map,
                     layerInfos: [{
                       layer: featLayer1,
@@ -101,12 +121,15 @@
                     }]
                   }, 'tocDiv');
                   toc.startup();
-                  dojo.connect(toc, 'onLoad', function(){
+                  var h = toc.on('load', function(){
                     if (console) 
                       console.log('TOC loaded');
-                    dojo.byId("FindNodeByLayer").disabled = false;
+                    dojo.byId("ChangeFeatureRenderer").disabled = false;
+					dojo.byId("SetVisibleLayersProgramatically").disabled = false;
+					dojo.byId("FindNodeByLayer").disabled = false;
+					dojo.byId("InsertNewLayer").disabled = false;
                   });
-                  dojo.disconnect(h);
+                 
                 } catch (e) {
                   alert(e);
                 }
@@ -118,7 +141,7 @@
               //resize the map when the browser resizes - view the 'Resizing and repositioning the map' section in
               //the following help topic for more details http://help.esri.com/EN/webapi/javascript/arcgis/help/jshelp_start.htm#jshelp/inside_guidelines.htm      
               var resizeTimer;
-              dojo.connect(map, 'onLoad', function(theMap){
+              map.on('load', function(theMap){
                 dojo.connect(dijit.byId('map'), 'resize', function(){ //resize the map if the div is resized
                   clearTimeout(resizeTimer);
                   resizeTimer = setTimeout(function(){
@@ -180,8 +203,8 @@
         </script>
     </head>
     <body class="claro">
-        <div id="content" data-dojo-type="dijit.layout.BorderContainer" design="headline" gutters="true" style="width: 100%; height: 100%; margin: 0;">
-            <div id="header" data-dojo-type="dijit.layout.ContentPane" region="top">
+        <div id="content" data-dojo-type="dijit/layout/BorderContainer" design="headline" gutters="true" style="width: 100%; height: 100%; margin: 0;">
+            <div id="header" data-dojo-type="dijit/layout/ContentPane" region="top">
                 <div>
                     <b>Table Of Content (TOC/Legend) Widget</b>
                     <a href='toc.html'>Classic Style </a>
@@ -196,13 +219,13 @@
                     </li>
                     <li>
                         Click 
-                        <button onclick="testChangeFeatureLayerRenderer()">
+                        <button id="ChangeFeatureRenderer" disabled="disabled" onclick="testChangeFeatureLayerRenderer()">
                             ChangeFeatureRenderer
                         </button>, notice TOC refreshed to reflect the new renderer of FeatureLayer. 
                     </li>
                     <li>
                         Click 
-                        <button onclick="testSetVisibleLayersProgramatically()">
+                        <button id="SetVisibleLayersProgramatically" disabled="disabled" onclick="testSetVisibleLayersProgramatically()">
                             SetVisibleLayersProgramatically
                         </button>
                         to programatically turn layer on/off, notice TOC automatically sync with model(no refresh needed).
@@ -216,18 +239,18 @@
                     </li>
                     <li>
                         Click 
-                        <button onclick="testInsertNewLayer()">
+                        <button id="InsertNewLayer" disabled="disabled" onclick="testInsertNewLayer()">
                             InsertNewLayer
                         </button>
                         to programmtically insert a layer then refresh TOC.
                     </li>
                 </ul>
             </div>
-            <div data-dojo-type="dijit.layout.ContentPane" id="leftPane" region="left" splitter="true">
+            <div data-dojo-type="dijit/layout/ContentPane" id="leftPane" region="left" splitter="true">
                 <div id="tocDiv">
                 </div>
             </div>
-            <div id="map" data-dojo-type="dijit.layout.ContentPane" region="center">
+            <div id="map" data-dojo-type="dijit/layout/ContentPane" region="center">
             </div>
         </div>
     </body>

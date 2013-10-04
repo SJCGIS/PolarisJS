@@ -5,6 +5,8 @@
  * <p>A TOC (Table of Contents) widget for ESRI ArcGIS Server JavaScript API. The namespace is <code>agsjs</code></p>
  */
 // change log: 
+// 2013-09-23: Secure service support: Integrated Windows, Token, or via Proxy (IWA or Token); listen to rootLayer onLoad if not already loaded.
+// 2013-09-05: JSAPI 3.6. Treat root FeatureLayer same as a layer inside a map service, i.e. move the symbol inline if there is only one symbol.
 // 2013-08-05: nested groups fix, findTOCNode, onLoad event, css change to a new folder and in sample, added autoToggle option
 // 2013-07-24: FeatureLayer, JSAPI3.5, removed a few functionalities: uniqueValueRenderer generated checkboxes; dynamically created layer from TOC config.
 // 2012-08-21: fix dojo.fx load that caused IE has to refresh to see TOC.
@@ -21,7 +23,7 @@
 
 // reference: http://dojotoolkit.org/reference-guide/quickstart/writingWidgets.html
 
-define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Templated','dojox/gfx','dojo/fx/Toggler','dijit/form/Slider'], function(declare, _Widget,_Templated, gfx, Toggler){
+define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Templated','dojo/Evented','dojox/gfx','dojo/fx/Toggler','dijit/form/Slider'], function(declare, _Widget,_Templated, Evented, gfx, Toggler){
 ///dojo.provide('agsjs.dijit.TOC');
 ///dojo.require("dojo.fx.Toggler");
 ///dojo.require('dijit._Widget');
@@ -138,12 +140,23 @@ define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Template
       dojo.addClass(this.rowNode, 'agsjsTOCRootLayer');
       dojo.addClass(this.labelNode, 'agsjsTOCRootLayerLabel');
       var title = this.rootLayerTOC.config.title;
+	  // if it is '' then it means we do not title to be shown, i.e. not indent.
       if (title === '') {
         // we do not want to show the first level, typically in the case of a single map service
         esri.hide(this.rowNode);
         rootLayer.show();
         this.rootLayerTOC._currentIndent--;
-      }
+      } else if (title === undefined){
+	  	// no title is set, try to find default
+	  	if (rootLayer.name){
+			// this is a featureLayer
+			title = rootLayer.name;
+		} else {
+			var start = rootLayer.url.toLowerCase().indexOf('/rest/services/');
+          	var end = rootLayer.url.toLowerCase().indexOf('/mapserver', start);
+          	title = rootLayer.url.substring(start + 15, end);
+		}
+	  }
       rootLayer.collapsed = this.rootLayerTOC.config.collapsed;
       if (this.rootLayerTOC.config.slider) {
         this.sliderNode = dojo.create('div', {
@@ -188,7 +201,10 @@ define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Template
             anode.innerHTML = af;
             this._createChildrenNodes(legs, 'legend');
           } else {
-            this._createChildrenNodes([rootLayer.renderer], 'legend');
+            //this._createChildrenNodes([rootLayer.renderer], 'legend');
+			this._setIconNode(rootLayer.renderer, this.iconNode, this);
+			dojo.destroy(this.containerNode);
+            this.containerNode = null;
           }
           
         } else {
@@ -254,7 +270,7 @@ define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Template
     // set url or replace node
     _setIconNode: function(rendLeg, iconNode, tocNode){
       var src = this._getLegendIconUrl(rendLeg);
-      if (!src) {//} || this.rootLayerTOC.info.mode == 'layers') {
+      if (!src) {
         if (rendLeg.symbol) {
           var w = this.rootLayerTOC.tocWidget.swatchSize[0];
           var h = this.rootLayerTOC.tocWidget.swatchSize[1];
@@ -317,6 +333,11 @@ define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Template
             // resolve relative url
             src = this.rootLayer.url + '/' + this.serviceLayer.id + '/images/' + src;
           }
+		  if (this.rootLayer.credential && this.rootLayer.credential.token ){
+		  	src = src + "?token=" + this.rootLayer.credential.token;
+		  } else if (esri.config.defaults.io.alwaysUseProxy){
+		  	src = esri.config.defaults.io.proxyUrl+ "?"+src;
+		  }
         }
       }
       return src;
@@ -547,12 +568,6 @@ define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Template
     postCreate: function(){
       if ((this.rootLayer instanceof (esri.layers.ArcGISDynamicMapServiceLayer) ||
       this.rootLayer instanceof (esri.layers.ArcGISTiledMapServiceLayer))) {
-        // if it is '' then it means we do not title to be shown, i.e. not indent.
-        if (this.config.title === undefined) {
-          var start = this.rootLayer.url.toLowerCase().indexOf('/rest/services/');
-          var end = this.rootLayer.url.toLowerCase().indexOf('/mapserver', start);
-          this.config.title = this.rootLayer.url.substring(start + 15, end);
-        }
         if (this._legendResponse) {
           this._createRootLayerTOC();
         } else {
@@ -646,19 +661,24 @@ define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Template
     
       // sometimes IE may fail next step
       ///this._rootLayerNode = new agsjs.dijit._TOCNode({
-	  this._rootLayerNode = new _TOCNode({
-        rootLayerTOC: this,
-        rootLayer: this.rootLayer
-      });
-      this._rootLayerNode.placeAt(this.domNode);
-      this._visHandler = dojo.connect(this.rootLayer, "onVisibilityChange", this, "_adjustToState");
-      // this will make sure all TOC linked to a Map synchronized.
-      if (this.rootLayer instanceof (esri.layers.ArcGISDynamicMapServiceLayer)) {
-        this._visLayerHandler = dojo.connect(this.rootLayer, "setVisibleLayers", this, "_onSetVisibleLayers");
-      }
-      this._adjustToState();
-      this._loaded = true;
-      this.onLoad();
+	  if (this.rootLayer.loaded){
+		this._rootLayerNode = new _TOCNode({
+	      rootLayerTOC: this,
+	      rootLayer: this.rootLayer
+	    });
+	    this._rootLayerNode.placeAt(this.domNode);
+	    this._visHandler = dojo.connect(this.rootLayer, "onVisibilityChange", this, "_adjustToState");
+	    // this will make sure all TOC linked to a Map synchronized.
+	    if (this.rootLayer instanceof (esri.layers.ArcGISDynamicMapServiceLayer)) {
+	      this._visLayerHandler = dojo.connect(this.rootLayer, "setVisibleLayers", this, "_onSetVisibleLayers");
+	    }
+	    this._adjustToState();
+	    this._loaded = true;
+	    this.onLoad();
+	  } else {
+	  	dojo.connect(this.rootLayer, 'onLoad', dojo.hitch(this._createRootLayerTOC, this));
+	  }
+	  
     },
 	/**
 	 * @event
@@ -702,7 +722,7 @@ define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Template
   });
   
  // dojo.declare("agsjs.dijit.TOC", [dijit._Widget], {
-  var TOC = declare("agsjs.dijit.TOC", [_Widget],{
+  var TOC = declare("agsjs.dijit.TOC", [_Widget, Evented],{
     indentSize: 18,
     swatchSize: [30, 30],
     refreshDelay: 500,
@@ -781,6 +801,7 @@ define("agsjs/dijit/TOC", ['dojo/_base/declare','dijit/_Widget','dijit/_Template
       });
       if (loaded) {
         this.onLoad();
+		this.emit('load');
       }
     },
     _adjustToState: function(){

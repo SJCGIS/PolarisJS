@@ -6,12 +6,17 @@ define([
     "dijit/form/Button",
     "dojo/_base/lang",
     "dojo/_base/Color",
+    "dijit/ColorPalette",
+    "dijit/TooltipDialog",
+    "dijit/form/DropDownButton",
+    "dijit/form/NumberSpinner",
+    "dijit/form/Select",
     "esri/toolbars/draw",
     "esri/symbols/Font",
     "dojo/text!./Draw/templates/Draw.html",
     "dojo/dom",
     "dojo/dom-style"
-    ], function(declare, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Button, lang, Color, draw, Font, drawTemplate, dom, domStyle) {
+    ], function(declare, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Button, lang, Color, ColorPalette, TooltipDialog, DropDownButton, NumberSpinner, Select, draw, Font, drawTemplate, dom, domStyle) {
 
     //anonymous function to load CSS files required for this module
     (function() {
@@ -34,6 +39,7 @@ define([
         drawToolbar: null,
         graphics: null,
 	graphicType: null,
+	color: new Color([0,0,0]),
         postCreate: function() {
             this.inherited(arguments);
             this.drawToolbar = new esri.toolbars.Draw(this.map);
@@ -47,26 +53,42 @@ define([
         drawPoint: function() {
             //this.disconnectMapClick();
 	    this.graphicType = "point";
-	    domStyle.set("textAnnotation", "display", "none");
+	    domStyle.set("drawPointOptions", "display", "inline");
+	    domStyle.set("drawLineOptions", "display", "none");
+	    domStyle.set("drawFillOptions", "display", "none");
+	    domStyle.set("drawTextOptions", "display", "none");
             this.drawToolbar.activate(esri.toolbars.Draw.POINT);
         },
         drawLine: function() {
             //this.disconnectMapClick();
 	    this.graphicType = "polyline";
-	    domStyle.set("textAnnotation", "display", "none");
+	    domStyle.set("drawPointOptions", "display", "none");
+	    domStyle.set("drawLineOptions", "display", "inline");
+	    domStyle.set("drawFillOptions", "display", "none");
+	    domStyle.set("drawTextOptions", "display", "none");
             this.drawToolbar.activate(esri.toolbars.Draw.POLYLINE);
         },
         drawPolygon: function() {
             //this.disconnectMapClick();
 	    this.graphicType = "polygon";
-	    domStyle.set("textAnnotation", "display", "none");
+	    domStyle.set("drawPointOptions", "display", "none");
+	    domStyle.set("drawLineOptions", "display", "none");
+	    domStyle.set("drawFillOptions", "display", "inline");
+	    domStyle.set("drawTextOptions", "display", "none");
             this.drawToolbar.activate(esri.toolbars.Draw.POLYGON);
         },
 	drawText: function(){
 	    //this.disconnectMapClick();
 	    this.graphicType = "text";
-	    domStyle.set("textAnnotation", "display", "inline");	    
-	    this.drawToolbar.activate(esri.toolbars.Draw.POINT);
+	    domStyle.set("drawPointOptions", "display", "none");
+	    domStyle.set("drawLineOptions", "display", "none");
+	    domStyle.set("drawFillOptions", "display", "none");
+	    domStyle.set("drawTextOptions", "display", "inline");
+	    this.drawToolbar.activate(esri.toolbars.Draw.POINT, {showTooltips: false});
+	},
+	setColor: function(value){
+	    domStyle.set("drawColorButton_label", "color", value);
+	    this.color.setColor(new Color.fromHex(value));
 	},
         disconnectMapClick: function() {
             dojo.disconnect(this.mapClickEventHandle);
@@ -83,32 +105,64 @@ define([
             var symbol;
             switch(this.graphicType) {
             case "point":
-                symbol = new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_CIRCLE, 10, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 1), new Color([255, 0, 0, 1.0]));
+                symbol = new esri.symbol.SimpleMarkerSymbol({
+		    "type": "esriSMS",
+		    "style": dijit.byId("pointSymbolSelect").value,
+		    "color": this.color,
+		    "size": dijit.byId("pointSizeSelect").value
+		});	    
                 break;
             case "polyline":
-                symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2);
+                symbol = new esri.symbol.SimpleLineSymbol({
+		    "type": "esriSLS",
+		    "style": dijit.byId("lineStyleSelect").value,
+		    "color": this.color,
+		    "width": dijit.byId("lineSizeSelect").value
+		});
                 break;
             case "polygon":
-                symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.0]));
+		var fill = lang.clone(this.color);
+		fill.a = 0.5;
+                symbol = new esri.symbol.SimpleFillSymbol({
+		    "type": "esriSFS",
+		    "style": dijit.byId("fillTypeSelect").value,
+		    "color": fill,
+		    "outline": {
+			"type": "esriSLS",
+			"style": "esriSLSSolid",
+			"color": this.color,
+			"width": 2
+		    }
+		});
                 break;
 	    case "text":
 		var myText = dom.byId("annoText").value;
-		var font = new Font();
-		font.setSize("20");
-		font.setFamily("Arial");
-		font.setWeight(Font.WEIGHT_BOLDER)
-		symbol = new esri.symbol.TextSymbol(myText);
-		symbol.setFont(font);
-		symbol.setColor(new Color([255,0,0]));
+		symbol = new esri.symbol.TextSymbol({
+		    "type": "esriTS",
+		    "color": this.color,
+		    "font": {
+			"family": dijit.byId("textFontSelect").value,
+			"size": dijit.byId("textSizeSelect").value,
+			"weight": "bold",
+		    }
+		});
+		symbol.setText(myText);
 		break;	    
 	    default:
             }
             var graphic = new esri.Graphic(geometry, symbol);
             this.graphics.add(graphic);
         },
+	undoLastGraphic: function() {
+	    lastGraphic = this.graphics.graphics.pop();
+	    lastGraphic.hide();
+	},
         clearGraphics: function() {
             this.graphics.clear();
-	    domStyle.set("textAnnotation", "display", "none");
+	    domStyle.set("drawPointOptions", "display", "none");
+	    domStyle.set("drawLineOptions", "display", "none");
+	    domStyle.set("drawFillOptions", "display", "none");
+	    domStyle.set("drawTextOptions", "display", "none");
             this.drawToolbar.deactivate();
             //this.connectMapClick();
         }

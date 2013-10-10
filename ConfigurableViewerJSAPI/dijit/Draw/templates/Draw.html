@@ -1,29 +1,102 @@
 <div class="gis_DrawDijit">
-    <div class="formContainer">
-        <div style="padding:5px;">
-            <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'pointIcon',showLabel:true" data-dojo-attach-event="onClick:drawPoint">
+  <div class="formContainer">
+    <div style="padding:5px;">
+      <div data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'pointIcon',showLabel:true" data-dojo-attach-event="onClick:drawPoint">
                 Point
-            </div>
-            <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'lineIcon',showLabel:true" data-dojo-attach-event="onClick:drawLine">
+      </div>
+      <div data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'lineIcon',showLabel:true" data-dojo-attach-event="onClick:drawLine">
                 Line
-            </div>
-            <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'polyIcon',showLabel:true" data-dojo-attach-event="onClick:drawPolygon">
+      </div>
+      <div data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'polyIcon',showLabel:true" data-dojo-attach-event="onClick:drawPolygon">
                 Polygon
-            </div>
-            <div data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'textIcon',showLabel:true" data-dojo-attach-event="onClick:drawText">
+      </div>
+      <div data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'textIcon',showLabel:true" data-dojo-attach-event="onClick:drawText">
               Text
+      </div>
+      <div id="drawTools">
+        <div id="colorSelector">
+          <div data-dojo-type="dijit/form/DropDownButton" id="drawColorButton" data-dojo-props="label:'Color'">
+            <div data-dojo-type="dijit/TooltipDialog">
+              <div data-dojo-type="dijit/ColorPalette" data-dojo-props="palette:'3x4'" data-dojo-attach-event="onChange:setColor" data-dojo-attach-point="gridNode" id="colorPalette"></div>
             </div>
+          </div>
         </div>
-        <div id="drawOptions">
-          <div id="textAnnotation" style="display:none">
+        <div id="drawPointOptions" style="display:none" class="drawOptions">
+          <div>
+            <label for="pointSizeSelect">Size: </label>
+            <input id="pointSizeSelect" data-dojo-type="dijit/form/NumberSpinner" value="10" data-dojo-props="smallDelta:1, constraints:{min:5,max:20,places:0}" style="width:150px;" name="pointSizeSelect"/>
+          </div>
+          <div>
+            <label for="pointSymbolSelect">Symbol: </label>
+            <select name="pointSymbolSelect" id="pointSymbolSelect" value="esriSMSCircle" data-dojo-type="dijit/form/Select">
+              <option value="esriSMSCircle">Circle</option>
+              <option value="esriSMSSquare">Square</option>
+              <option value="esriSMSDiamond">Diamond</option>
+            </select>
+          </div>
+        </div>
+        <div id="drawLineOptions" style="display:none" class="drawOptions">
+          <div>
+            <label for="lineSizeSelect">Size: </label>
+            <input id="lineSizeSelect" data-dojo-type="dijit/form/NumberSpinner" value="2" data-dojo-props="smallDelta:1, constraints:{min:1,max:15,places:0}" style="width:150px;" name="lineSizeSelect"/>
+          </div>
+          <div>
+            <label for="lineStyleSelect">Style: </label>
+            <select name="lineStyleSelect" id="lineStyleSelect" value="esriSLSSolid" data-dojo-type="dijit/form/Select">
+              <option value="esriSLSSolid">Solid</option>
+              <option value="esriSLSDash">Dash</option>
+              <option value="esriSLSDot">Dot</option>
+              <option value="esriSLSDashDot">Dash Dot</option>
+              <option value="esriSLSDashDotDot">Dash Dot Dot</option>
+            </select>
+          </div>
+        </div>
+        <div id="drawFillOptions" style="display:none" class="drawOptions">
+          <div>
+            <label for="fillTypeSelect">Fill Type: </label>
+            <select name="fillTypeSelect" id="fillTypeSelect" value="esriSFSNull" data-dojo-type="dijit/form/Select">
+              <option value="esriSFSNull">None</option>
+              <option value="esriSFSSolid">Solid</option>
+              <!-- Removed the following options until the ability to change hatching color is added.
+              <option value="esriSFSBackwardDiagonal">Backward Diagonal</option>
+              <option value="esriSFSForwardDiagonal">Forward Diagonal</option>
+              <option value="esriSFSCross">Cross</option>
+              <option value="esriSFSDiagonalCross">Diagonal Cross</option>
+              <option value="esriSFSHorizontal">Horizontal</option>
+              <option value="esriSFSVertical">Vertical</option> -->
+            </select>
+          </div>
+        </div>
+        <div id="drawTextOptions" style="display:none" class="drawOptions">
+          <div>
+            <label for="textSizeOptions">Size: </label>
+            <input id="textSizeSelect" data-dojo-type="dijit/form/NumberSpinner" value="20" data-dojo-props="smallDelta:1, constraints:{min:10,max:36,places:0}" style="width:150px;" name="textSizeSelect"/>
+          </div>
+          <div>
+            <label for="textFontSelect">Font: </label>
+            <select id="textFontSelect" data-dojo-type="dijit/form/Select" value="Arial" name="textFontSelect">
+              <option value="Arial">Arial</option>
+              <option value="Arial Black">Arial Black</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Tahoma">Tahoma</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Verdana">Verdana</option>
+            </select>
+          </div>
+          <div>
             <label for="annoText">Text: </label>
             <input type="text" name="annoText" data-dojo-type="dijit/form/TextBox" id="annoText" />
           </div>
         </div>
+      </div>
     </div>
-    <div class="buttonActionBar">
-        <button data-dojo-type="dijit.form.Button" data-dojo-props="iconClass:'clearIcon',showLabel:true" data-dojo-attach-event="onClick:clearGraphics">
-            Clear Drawing
-        </button>
-    </div>
+  </div>
+  <div class="buttonActionBar">
+    <button data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'undoIcon', showLabel:true" data-dojo-attach-event="onClick:undoLastGraphic">
+      Undo
+    </button>
+    <button data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'clearIcon',showLabel:true" data-dojo-attach-event="onClick:clearGraphics">
+             Clear Drawing
+    </button>
+  </div>
 </div>

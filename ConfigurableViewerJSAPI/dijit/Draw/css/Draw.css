@@ -35,6 +35,12 @@
     height: 16px;
 }
 
+.gis_DrawDijit .colorIcon {
+    background-color: white;
+    width: 16px;
+    height: 16px;
+}
+
 .gis_DrawDijit .formContainer {
     border: 1px solid #bbb;
     margin-bottom: -1px;
@@ -47,4 +53,18 @@
     padding: 3px 0px 2px 0px;
     text-align: right;
     width: 100%;
+}
+
+.gis_DrawDijit .drawOptions label {
+    float: left;
+    width: 75px;
+}
+
+.gis_DrawDijit .drawOptions select {
+    float: left;
+    width: 150px;
+}
+
+.gis_DrawDijit .drawOptions div {
+    clear: left;
 }

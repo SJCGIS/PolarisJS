@@ -153,6 +153,10 @@ define([
             var graphic = new esri.Graphic(geometry, symbol);
             this.graphics.add(graphic);
         },
+	undoLastGraphic: function() {
+	    lastGraphic = this.graphics.graphics.pop();
+	    lastGraphic.hide();
+	},
         clearGraphics: function() {
             this.graphics.clear();
 	    domStyle.set("drawPointOptions", "display", "none");

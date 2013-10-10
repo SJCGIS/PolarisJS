@@ -35,6 +35,12 @@
     height: 16px;
 }
 
+.gis_DrawDijit .colorIcon {
+    background-color: white;
+    width: 16px;
+    height: 16px;
+}
+
 .gis_DrawDijit .formContainer {
     border: 1px solid #bbb;
     margin-bottom: -1px;

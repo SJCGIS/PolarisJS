@@ -533,6 +533,21 @@
        popupHandler = map.on("click", response.clickEventListener);
        console.log("Popups should be enabled");
      }
+     function closeToolPane(){
+       measurement.clearResult();
+       /* The measurement widget does not have a deactivate function, so we must
+       set all possible measure tools to false */
+       measurement.setTool("area", false);
+       measurement.setTool("distance", false);
+       measurement.setTool("location", false);
+       /* Deactivate draw toolbar */
+       draw.drawToolbar.deactivate();
+       /* Re-enable popups */
+       enablePopups();
+     }
+     function openToolPane(){
+       disablePopups();
+     }
     </script>
   </head>
   
@@ -588,14 +603,14 @@
             </div>
           </div>
         </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Measure" data-dojo-id="measurePane" onShow="disablePopups()" onHide="enablePopups()">
+        <div data-dojo-type="dijit/layout/ContentPane" title="Measure" data-dojo-id="measurePane" onHide="closeToolPane()" onShow="openToolPane()">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div id="measureDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit.layout.ContentPane" title="Print" id="printPane">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Draw" id="drawPane" onHide="closeToolPane()" onShow="openToolPane()">
         </div>
-        <div data-dojo-type="dijit.layout.ContentPane" title="Draw" id="drawPane" onShow="disablePopups()" onHide="enablePopups()">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Print" id="printPane">
         </div>
       </div>
       <div id="map" data-dojo-type="dijit/layout/ContentPane"

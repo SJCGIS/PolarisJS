@@ -294,8 +294,9 @@
                /* Zoom to feature when row is clicked on Search grid */
                grid.on("onRowClick", onRowClickHandler);
 
-               /* We need to disable popups when the measure tools are shown */
+               /* We need to disable popups when the measure or draw panes are open */
                popupHandler = response.clickEventHandle;
+               leftAccordion.watch("selectedChildWidget", accordionHandler);
 
                /* Bug workaround where measure location tool is deactivated after a point is measured.
                We want the tool to remain active until the panel is closed.
@@ -497,8 +498,8 @@
            
 
            function extentHistoryChangeHandler() {
-             dom.byId("prevExtent").disabled = navToolbar.isFirstExtent();
-             dom.byId("nextExtent").disabled = navToolbar.isLastExtent();
+             registry.byId("prevExtent").disabled = navToolbar.isFirstExtent();
+             registry.byId("nextExtent").disabled = navToolbar.isLastExtent();
          }
            
 
@@ -523,6 +524,33 @@
                map.setExtent(graphicExtent);
            }
          }
+           function accordionHandler(attr, closedPane, openPane){
+             console.log("The closed pane was " + closedPane.id + " and the opened pane was " + openPane.id);
+             /* When the measure or draw panes are closed, deactivate the tools */
+             switch(closedPane.id){
+               case 'measurePane':
+                   measurement.clearResult();
+                   measurement.setTool("area", false);
+                   measurement.setTool("distance", false);
+                   measurement.setTool("location", false);
+                   break;
+               case 'drawPane':
+                   draw.drawToolbar.deactivate();
+                   break;
+               }
+             /* Disable popups when the measurePane or drawPane is opened. Otherwise, enable popups */
+             switch(openPane.id){
+               case 'measurePane':
+                   disablePopups();
+                   break;
+               case 'drawPane':
+                   disablePopups();
+                   break;
+               case 'default':
+                   enablePopups();
+                   break;
+           }
+         }
        });
        function disablePopups(){
          popupHandler.remove();
@@ -532,21 +560,6 @@
      function enablePopups(){
        popupHandler = map.on("click", response.clickEventListener);
        console.log("Popups should be enabled");
-     }
-     function closeToolPane(){
-       measurement.clearResult();
-       /* The measurement widget does not have a deactivate function, so we must
-       set all possible measure tools to false */
-       measurement.setTool("area", false);
-       measurement.setTool("distance", false);
-       measurement.setTool("location", false);
-       /* Deactivate draw toolbar */
-       draw.drawToolbar.deactivate();
-       /* Re-enable popups */
-       enablePopups();
-     }
-     function openToolPane(){
-       disablePopups();
      }
     </script>
   </head>
@@ -578,18 +591,18 @@
       </div>
       <div data-dojo-type="dijit/layout/AccordionContainer"
            data-dojo-props="minSize:20, region:'leading', splitter:true, layoutPriority:3"
-           style="width:400px;" id="leftAccordion">
-        <div data-dojo-type="dijit/layout/ContentPane" title="Legend" id="legendPane">
+           style="width:400px;" id="leftAccordion" data-dojo-id="leftAccordion">
+        <div data-dojo-type="dijit/layout/ContentPane" title="Legend" id="legendPane" data-dojo-id="legendPane">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div id="legendDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Map Contents" id="mapContentsPane">
+        <div data-dojo-type="dijit/layout/ContentPane" title="Map Contents" id="mapContentsPane" data-dojo-id="mapContentsPane">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div id="tocDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Search" id="searchPane" selected="true">
+        <div data-dojo-type="dijit/layout/ContentPane" title="Search" id="searchPane" data-dojo-id="searchPane" selected="true">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div data-dojo-type="dijit/form/Form" id="searchForm" data-dojo-id="searchForm" action=""
                  method="">
@@ -603,14 +616,14 @@
             </div>
           </div>
         </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Measure" data-dojo-id="measurePane" onHide="closeToolPane()" onShow="openToolPane()">
+        <div data-dojo-type="dijit/layout/ContentPane" title="Measure" id="measurePane" data-dojo-id="measurePane">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div id="measureDiv"></div>
           </div>
         </div>
-        <div data-dojo-type="dijit.layout.ContentPane" title="Draw" id="drawPane" onHide="closeToolPane()" onShow="openToolPane()">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Draw" id="drawPane" data-dojo-id="drawPane">
         </div>
-        <div data-dojo-type="dijit.layout.ContentPane" title="Print" id="printPane">
+        <div data-dojo-type="dijit.layout.ContentPane" title="Print" id="printPane" data-dojo-id="printPane">
         </div>
       </div>
       <div id="map" data-dojo-type="dijit/layout/ContentPane"

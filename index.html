@@ -86,6 +86,15 @@
      .navToolbarButton {
        background: url(images/csg-51e0975dc237a.png) no-repeat top left;
      }
+
+     .info-tip {
+       background: #5BC0DE;
+       color: white;
+       font-size: small;
+       padding: 5px;
+       display: none;
+       margin: 10px 0;
+     }
      
      .navToolbarButton-annotate{ background-position: 0 0; width: 25px; height: 25px; } 
      .navToolbarButton-fullExtent{ background-position: -75px 0; width: 25px; height: 25px; } 
@@ -146,6 +155,7 @@
        "dojo/aspect",
        "dojo/dom",
        "dojo/dom-construct",
+       "dojo/dom-style",
        "dojo/on",
        "dojo/keys",
        "dojo/parser",
@@ -195,6 +205,7 @@
          aspect,
          dom,
          domConstruct,
+         domStyle,
          on,
          keys,
          parser,
@@ -537,18 +548,21 @@
                case 'drawPane':
                    draw.drawToolbar.deactivate();
                    break;
+               default:
                }
              /* Disable popups when the measurePane or drawPane is opened. Otherwise, enable popups */
              switch(openPane.id){
                case 'measurePane':
                    disablePopups();
+                   domStyle.set(dom.byId("measureTip"), "display", "block");
                    break;
                case 'drawPane':
                    disablePopups();
+                   domStyle.set(dom.byId("drawTip"), "display", "block");
                    break;
-               case 'default':
+               default:
+                   console.log("No tool panes were opened");
                    enablePopups();
-                   break;
            }
          }
        });
@@ -619,6 +633,7 @@
         <div data-dojo-type="dijit/layout/ContentPane" title="Measure" id="measurePane" data-dojo-id="measurePane">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
             <div id="measureDiv"></div>
+            <div class="info-tip" id="measureTip">Tip: Identify pop-ups are disabled when the Measure or Draw panes are opened. Open a different pane to view Identify pop-ups again.</div>
           </div>
         </div>
         <div data-dojo-type="dijit.layout.ContentPane" title="Draw" id="drawPane" data-dojo-id="drawPane">

@@ -371,12 +371,12 @@
            function constructPrint(){
              print = new Print({
                map: map,
-               printTaskURL: "http://50.18.118.2:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
+               printTaskURL: "http://50.18.118.2:6080/arcgis/rest/services/SJCWebMapPrinter/GPServer/Export%20Web%20Map",
                authorText: "Printed from Polaris Property Search - San Juan County WA",
                copyrightText: "This data has been compiled for San Juan County. Various official and unofficial sources were used to gather this information. Every effort was made to ensure the accuracy of this data, however, no guarantee is given or implied as to the accuracy of said data.",
                defaultTitle: "My Map",
                defaultFormat: "PDF",
-               defaultLayout: "Letter ANSI A Landscape"               
+               defaultLayout: "Letter_Landscape"               
            }, domConstruct.create("div"));
              print.placeAt("printPane");
          }

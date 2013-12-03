@@ -274,8 +274,8 @@
              }
            });
              
-             var mapDeferred = arcgisUtils.createMap("f78d6ef1e6ee4b709d1a94679fbff631", "map", {
-               geometryServiceURL: "http://www.sjcgis.org/Polaris/rest/services/Geometry/GeometryServer"
+             var mapDeferred = arcgisUtils.createMap("cf47d72e5f0e4f02aa8b35a2e9b6ac98", "map", {
+               geometryServiceURL: "http://www.sjcgis.org/arcgis/rest/services/Utilities/Geometry/GeometryServer"
            });
              mapDeferred.then(function(appResponse) {
                response = appResponse;
@@ -322,6 +322,7 @@
              constructMeasure(response);
              constructPrint();
              constructDraw();
+             constructDisclaimer(response);
          }
 
 
@@ -394,13 +395,18 @@
            }, dom.byId("measureDiv"));
              measurement.startup();
          }
+           
+           function constructDisclaimer(response){
+             var disclaimerText = domConstruct.toDom(response.itemInfo.item.licenseInfo);
+             domConstruct.place(disclaimerText, "disclaimerPane");
+         }            
 
            function constructMapElements(){
              var scaleBar = new Scalebar({
                map: map,
                scalebarUnit: 'english'
            });
-             var ovMapBaseLayer = new ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/Polaris/rest/services/Island_Outlines/MapServer");
+             var ovMapBaseLayer = new ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/arcgis/rest/services/Polaris/Shorelines/MapServer");
              var overviewMap = new OverviewMap({
                map: map,
                height: 200,
@@ -415,7 +421,7 @@
                spatialReference:  map.spatialReference
            });
              map.addLayer(findGraphicsLayer);
-             findTask = new FindTask("http://www.sjcgis.org/Polaris/rest/services/PolarisJS/LocationSearch/MapServer");
+             findTask = new FindTask("http://www.sjcgis.org/arcgis/rest/services/Polaris/LocationSearch/MapServer");
              // Create find parameters
              findParams = new FindParameters();
              findParams.returnGeometry = true;
@@ -653,6 +659,8 @@
         <div data-dojo-type="dijit/layout/ContentPane" title="Draw" id="drawPane" data-dojo-id="drawPane">
         </div>
         <div data-dojo-type="dijit/layout/ContentPane" title="Print" id="printPane" data-dojo-id="printPane">
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane" title="Disclaimer on Use" id="disclaimerPane" data-dojo-id="disclaimerPane">
         </div>
       </div>
       <div id="map" data-dojo-type="dijit/layout/ContentPane"

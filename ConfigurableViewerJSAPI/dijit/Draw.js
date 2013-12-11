@@ -86,6 +86,30 @@ define([
 	    domStyle.set("drawTextOptions", "display", "inline");
 	    this.drawToolbar.activate(esri.toolbars.Draw.POINT, {showTooltips: false});
 	},
+	drawCircle: function(){
+	    this.graphicType = "polygon";
+	    domStyle.set("drawPointOptions", "display", "none");
+	    domStyle.set("drawLineOptions", "display", "none");
+	    domStyle.set("drawFillOptions", "display", "inline");
+	    domStyle.set("drawTextOptions", "display", "none");
+            this.drawToolbar.activate(esri.toolbars.Draw.CIRCLE);
+	},
+	drawFreehandLine: function(){
+	    this.graphicType = "polyline";
+	    domStyle.set("drawPointOptions", "display", "none");
+	    domStyle.set("drawLineOptions", "display", "inline");
+	    domStyle.set("drawFillOptions", "display", "none");
+	    domStyle.set("drawTextOptions", "display", "none");
+            this.drawToolbar.activate(esri.toolbars.Draw.FREEHAND_POLYLINE);
+	},
+	drawFreehandPolygon: function(){
+	    this.graphicType = "polygon";
+	    domStyle.set("drawPointOptions", "display", "none");
+	    domStyle.set("drawLineOptions", "display", "none");
+	    domStyle.set("drawFillOptions", "display", "inline");
+	    domStyle.set("drawTextOptions", "display", "none");
+            this.drawToolbar.activate(esri.toolbars.Draw.FREEHAND_POLYGON);
+	},
 	setColor: function(value){
 	    domStyle.set("drawColorButton_label", "color", value);
 	    this.color.setColor(new Color.fromHex(value));

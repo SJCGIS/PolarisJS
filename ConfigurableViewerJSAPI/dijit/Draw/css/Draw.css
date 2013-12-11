@@ -1,6 +1,20 @@
 .gis_DrawDijit {
 }
 
+.gis_DrawDijit .circleDrawIcon {
+    background-image: url(../images/toolbar_icons.png);
+    background-position: -390px 0;
+    width: 16px;
+    height: 16px;
+}
+
+.gis_DrawDijit .freehandDrawIcon {
+    background-image: url(../images/toolbar_icons.png);
+    background-position: -102px 0;
+    width: 16px;
+    height: 16px;
+}
+
 .gis_DrawDijit .polyIcon {
     background-image: url(../images/toolbar_icons.png);
     background-position: -68px 0;

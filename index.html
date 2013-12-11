@@ -98,7 +98,7 @@
      
      .navToolbarButton-annotate{ background-position: 0 0; width: 25px; height: 25px; } 
      .navToolbarButton-fullExtent{ background-position: -75px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-identity{ background-position: -150px 0; width: 25px; height: 25px; } 
+     .navToolbarButton-identify{ background-position: -150px 0; width: 25px; height: 25px; } 
      .navToolbarButton-measure{ background-position: -225px 0; width: 25px; height: 25px; } 
      .navToolbarButton-nextExtent .disabled{ background-position: -300px 0; width: 25px; height: 25px; } 
      .navToolbarButton-nextExtent{ background-position: -375px 0; width: 25px; height: 25px; } 
@@ -280,6 +280,8 @@
              mapDeferred.then(function(appResponse) {
                response = appResponse;
                map = response.map;
+               /* We disable panning so that the pan tool must be used instead. This eliminates confusion when the identify tool is active */
+               map.disablePan();
 
                /* Let's create a Finder for locating features in the map layers */
                constructFindTask();
@@ -303,8 +305,9 @@
                /* Zoom to feature when row is clicked on Search grid */
                grid.on("onRowClick", onRowClickHandler);
 
-               /* We need to disable popups when the measure or draw panes are open */
+               /* We need to disable popups until the identify button is toggled on */
                popupHandler = response.clickEventHandle;
+               popupHandler.remove();
                leftAccordion.watch("selectedChildWidget", accordionHandler);
 
                /* Bug workaround where measure location tool is deactivated after a point is measured.
@@ -343,6 +346,11 @@
              on(registry.byId("pan"), "click", function(){
                clearToggleButtons("pan");
                navToolbar.activate(esri.toolbars.Navigation.PAN);
+           });
+             on(registry.byId("identify"), "click", function(){
+               clearToggleButtons("identify");
+               navToolbar.deactivate();
+               enablePopups();
            });
          }
 
@@ -394,6 +402,18 @@
                defaultLengthUnit: Units.FEET,
            }, dom.byId("measureDiv"));
              measurement.startup();
+             aspect.before(measurement.area, "onClick", function(){
+               clearToggleButtons(measurement.area.id);
+           });
+             aspect.before(measurement.distance, "onClick", function(){
+               clearToggleButtons(measurement.distance.id);
+           });
+             aspect.before(measurement.location, "onClick", function(){
+               clearToggleButtons(measurement.location.id);
+           });
+             measurement.on("measure-end", function(evt){
+               measurement.setTool(evt.toolName, false);
+           });
          }
            
            function constructDisclaimer(response){
@@ -566,7 +586,7 @@
                    break;
                default:
                }
-             /* Disable popups when the measurePane or drawPane is opened. Otherwise, enable popups */
+             /* Disable popups when the measurePane or drawPane is opened. Otherwise, enable popups 
              switch(openPane.id){
                case 'measurePane':
                    disablePopups();
@@ -580,13 +600,17 @@
                    console.log("No tool panes were opened");
                    enablePopups();
            }
+              */
          }
            function clearToggleButtons(button){
+             disablePopups();
              registry.byId("zoomIn").set('checked',false);
              registry.byId("zoomOut").set('checked', false);
              registry.byId("pan").set('checked', false);
+             registry.byId("identify").set('checked', false);
              registry.byId(button).set('checked',true);
          }
+           
        });
        function disablePopups(){
          popupHandler.remove();
@@ -621,6 +645,7 @@
           <div data-dojo-type="dijit/form/Button" id="nextExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-nextExtent',
                onClick:function(){navToolbar.zoomToNextExtent();}"></div>
           <div data-dojo-type="dijit/form/ToggleButton" id="pan" data-dojo-id="pan" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-pan'"></div>
+          <div data-dojo-type="dijit/form/ToggleButton" id="identify" data-dojo-id="identify" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-identify'"></div>
         </div>
       </div>
       <div data-dojo-type="dijit/layout/AccordionContainer"

@@ -161,9 +161,9 @@
          showStepNumbers: false,
          steps: [
            {
-             element: "#map",
-             intro: "To start this quick tutorial, we'll look at the Map window. There are multiple ways to interact and personalize the map.",
-             position: "left"
+             element: "#topPane",
+             intro: "Welcome to Polaris. There are multiple ways to interact and personalize the map for your needs. We'll review them in this brief tutorial.",
+             position: "bottom"
            },{
              element: "#leftAccordion_splitter",
              intro: "If the map window is too small, you can click and drag this bar to the left to resize it.",
@@ -214,6 +214,9 @@
              element: "#printPane_wrapper",
              intro: "To create a printable map of the map view, use the Print tool. You can customize the print layout and give your map a title.",
              position: "right"
+           },{
+             element: "#help",
+             intro: "Thanks for using Polaris. If you have more questions, please click the 'Contact Us' button in the Help menu."
            }
          ]
        });
@@ -723,6 +726,9 @@
               </div>
               <div data-dojo-type="dijit/MenuItem" data-dojo-props="onClick:function() {aboutDialog.show();}">
                 About
+              </div>
+              <div data-dojo-type="dijit/MenuItem" onclick="window.location.href='mailto:sjcgis@sanjuanco.com'">
+                Contact Us
               </div>
             </div>
           </div>

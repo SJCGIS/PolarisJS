@@ -229,6 +229,7 @@
      var map, initialExtent, navToolbar;
      var findTask, findParams, grid, measurement;
      var findGraphicsLayer;
+     var selectedGraphicsLayer;
      var zoomSymbol, draw, print;
      var response, popupHandler;
      var store;
@@ -332,7 +333,7 @@
              config.defaults.io.proxyUrl = "/proxy/proxy.ashx";
 
              grid = new (declare([Grid, Selection]))({
-               selectionMode: "single",
+               selectionMode: "extended",
                noDataMessage: "No Results Found",
                loadingMessage: "Searching...",
                columns: {
@@ -342,6 +343,7 @@
            }, "grid");
 
              grid.on("dgrid-select", function(e){rowSelectHandler(e)});
+             grid.on("dgrid-deselect", function(e){rowDeselectHandler(e)});
              on(dom.byId("searchText"), 'keydown', function(e){
                if (e.keyCode == keys.ENTER) {
                  doSearch(dom.byId('searchText').value);
@@ -522,7 +524,10 @@
              findGraphicsLayer = new GraphicsLayer({
                spatialReference:  map.spatialReference
            });
-             map.addLayer(findGraphicsLayer);
+             selectedGraphicsLayer = new GraphicsLayer({
+               spatialReference: map.spatialReference
+           });
+             map.addLayers([findGraphicsLayer,selectedGraphicsLayer]);
              findTask = new FindTask("http://www.sjcgis.org/arcgis/rest/services/Polaris/LocationSearch/MapServer");
              // Create find parameters
              findParams = new FindParameters();
@@ -619,43 +624,49 @@
 
            function clearSearch(){
              findGraphicsLayer.clear();
+             selectedGraphicsLayer.clear();
              dom.byId('grid').style.visibility="hidden";
              dom.byId('searchText').value = "";
              
              store = new Memory({data:{identifier:"", items:[]}});
              grid.setStore(store);
-         }
-           
+         }           
 
            function extentHistoryChangeHandler() {
              registry.byId("prevExtent").disabled = navToolbar.isFirstExtent();
              registry.byId("nextExtent").disabled = navToolbar.isLastExtent();
          }
-           
+
+           function rowDeselectHandler(evt){
+             var rows = evt.rows;
+             array.forEach(rows, function(row){
+               selectedGraphicsLayer.remove(row.data.graphic);
+           });
+             var selectedFeaturesExtent = esri.graphicsExtent(selectedGraphicsLayer.graphics);
+             if(!selectedFeaturesExtent){
+               map.centerAndZoom(selectedGraphicsLayer.graphics[0].geometry, 8);
+           } else {
+               map.setExtent(selectedFeaturesExtent, true);
+           }         
+         } 
 
            function rowSelectHandler(evt){
              findGraphicsLayer.clear();
-             var row = evt.rows[0];
-             var clickedRowGraphic = row.data.graphic;
-             //zoomToSelectedRow(clickedRowGraphic);
-             findGraphicsLayer.add(clickedRowGraphic);
-             if(clickedRowGraphic.geometry.type == "point") {
-               map.centerAndZoom(clickedRowGraphic.geometry,8);
+             var rows = evt.rows;
+             array.forEach(rows, function(row){
+               var clickedRowGraphic = row.data.graphic;
+               clickedRowGraphic.attr("rowID", row.id);
+               //zoomToSelectedRow(clickedRowGraphic);
+               selectedGraphicsLayer.add(clickedRowGraphic);
+           });
+             var selectedFeaturesExtent = esri.graphicsExtent(selectedGraphicsLayer.graphics);
+             if(!selectedFeaturesExtent){
+               map.centerAndZoom(selectedGraphicsLayer.graphics[0].geometry, 8);
            } else {
-               var graphicExtent = clickedRowGraphic.geometry.getExtent();
-               map.setExtent(graphicExtent, true);
+               map.setExtent(selectedFeaturesExtent, true);
            }
          }
 
-           function zoomToSelectedRow(clickedRowGraphic){
-             findGraphicsLayer.add(clickedRowGraphic);
-             if(clickedRowGraphic.geometry.type == "point") {
-               map.centerAndZoom(clickedRowGraphic.geometry,8);
-           } else {
-               var graphicExtent = clickedRowGraphic.geometry.getExtent();
-               map.setExtent(graphicExtent);
-           }
-         }
            function accordionHandler(attr, closedPane, openPane){
              console.log("The closed pane was " + closedPane.id + " and the opened pane was " + openPane.id);
              /* When the measure or draw panes are closed, deactivate the tools */

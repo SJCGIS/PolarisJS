@@ -129,22 +129,25 @@ define([
             var symbol;
             switch(this.graphicType) {
             case "point":
+		var pointColor = lang.clone(this.color);
                 symbol = new esri.symbol.SimpleMarkerSymbol({
 		    "type": "esriSMS",
 		    "style": dijit.byId("pointSymbolSelect").value,
-		    "color": this.color,
+		    "color": pointColor,
 		    "size": dijit.byId("pointSizeSelect").value
 		});	    
                 break;
             case "polyline":
+		var lineColor = lang.clone(this.color);
                 symbol = new esri.symbol.SimpleLineSymbol({
 		    "type": "esriSLS",
 		    "style": dijit.byId("lineStyleSelect").value,
-		    "color": this.color,
+		    "color": lineColor,
 		    "width": dijit.byId("lineSizeSelect").value
 		});
                 break;
             case "polygon":
+		var outline = lang.clone(this.color);
 		var fill = lang.clone(this.color);
 		fill.a = 0.5;
                 symbol = new esri.symbol.SimpleFillSymbol({
@@ -154,20 +157,21 @@ define([
 		    "outline": {
 			"type": "esriSLS",
 			"style": "esriSLSSolid",
-			"color": this.color,
+			"color": outline,
 			"width": 2
 		    }
 		});
                 break;
 	    case "text":
+		var textColor = lang.clone(this.color);
 		var myText = dom.byId("annoText").value;
 		symbol = new esri.symbol.TextSymbol({
 		    "type": "esriTS",
-		    "color": this.color,
+		    "color": textColor,
 		    "font": {
 			"family": dijit.byId("textFontSelect").value,
 			"size": dijit.byId("textSizeSelect").value,
-			"weight": "bold",
+			"weight": "bold"
 		    }
 		});
 		symbol.setText(myText);

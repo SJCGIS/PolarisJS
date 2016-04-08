@@ -7,7 +7,7 @@ define([
     "dijit/form/FilteringSelect",
     "dijit/form/ValidationTextBox",
     "dijit/form/NumberTextBox",
-    "dijit/form/Button",git
+    "dijit/form/Button",
     "dijit/form/CheckBox",
     "dijit/ProgressBar",
     "dijit/form/DropDownButton",

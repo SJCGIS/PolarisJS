@@ -1,791 +1,783 @@
 <!DOCTYPE html>
-<html> 
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=7, IE=9, IE=10">
-    <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
-    on iOS devices-->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Polaris - San Juan County WA</title>
-    <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dojox/grid/resources/Grid.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dojox/grid/resources/claroGrid.css">
-    <link rel="stylesheet" type="text/css" href="/PolarisJS/agsjs/src/agsjs/css/agsjs.css" />
-    <link rel="stylesheet" type="text/css" href="/PolarisJS/lib/introjs/minified/introjs.min.css" />
-    <style type="text/css">
-     @import "dojox/layout/resources/FloatingPane.css";
-     @import "dojox/layout/resources/ResizeHandle.css";
-    </style>
-    
-
-    <style>
-     #scaleDiv .agsTOCOutofScale {
-       display: none;
-     }
-
-     .dgrid {
-       height: 15em;
-     }
-
-     .dgrid-scroller {
-       overflow:auto !important;
-     }
-     .agsjsTOCRootLayerLabel {
-       font-size: small;
-     }
-     .agsjsTOCServiceLayerLabel {
-       font-size: small;
-     }
-     .agsjsTOCLegendLabel {
-       font-size: small;
-     }
-     .dijitButtonFocused {
-       border: 1px solid #769DC0;
-     }
-
-     html, body {
-       height:100%;
-       width:100%;
-       margin:0;
-       padding:0;
-       font: small "Arial", sans-serif;
-     }
-     #borderContainerTwo {
-       width:100%;
-       height:100%;
-     }
-     #map {
-       height:100%;
-       width:100%;
-       overflow:hidden;
-     }
-     .layersDiv {
-       background: #3d5d72;
-     }
-     #leftAccordion {
-       width: 25%;
-       height: 100%;
-     }
-     #paneHeader {
-       background: url(images/header.png) repeat-x;
-       color: white;
-       border-bottom: solid 1px #B5BCC7;
-       text-align: center;
-       height: 30px;
-       margin: 0;
-       overflow: auto;
-       font-size: 16px;
-       padding: 8px 5px;
-     }
-     .esriScalebarLabel {
-       color: white;
-     }
-     .esriLegendServiceLabel {
-       display:none;
-     }
-     .esriLegendGroupLayer {
-       display:none;
-     }
-     .navToolbarButton {
-       background: url(images/csg-51e0975dc237a.png) no-repeat top left;
-     }
-
-     .info-tip {
-       background: #5BC0DE;
-       color: white;
-       font-size: small;
-       padding: 5px;
-       display: none;
-       margin: 10px 0;
-     }
-     
-     .navToolbarButton-annotate{ background-position: 0 0; width: 25px; height: 25px; } 
-     .navToolbarButton-fullExtent{ background-position: -75px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-identify{ background-position: -150px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-measure{ background-position: -225px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-nextExtent .disabled{ background-position: -300px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-nextExtent{ background-position: -375px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-pan{ background-position: -450px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-prevExtent .disabled{ background-position: -525px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-prevExtent{ background-position: -600px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-print{ background-position: -675px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-zoomIn{ background-position: -750px 0; width: 25px; height: 25px; } 
-     .navToolbarButton-zoomOut{ background-position: -825px 0; width: 25px; height: 25px; }
-
-     #topPane {
-       color: white;
-       text-align: right;
-       font-family: Arial;
-       font-size: 10px;
-       font-style: italic;
-       background: url('images/bluemarble.gif') no-repeat left top, #1e5799; /* Old browsers */
-       /* IE9 SVG, needs conditional override of 'filter' to 'none' */
-       background: url('images/bluemarble.gif') no-repeat left top, url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFlNTc5OSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDIwMDA1IiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iNzUlIiBzdG9wLWNvbG9yPSIjNDI2ODhjIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
-       background: url('images/bluemarble.gif') no-repeat left top, -moz-linear-gradient(left, #1e5799 0%, #020005 0%, #42688c 75%); /* FF3.6+ */
-       background: url('images/bluemarble.gif') no-repeat left top, -webkit-gradient(linear, left top, right top, color-stop(0%,#1e5799), color-stop(0%,#020005), color-stop(75%,#42688c)); /* Chrome,Safari4+ */
-       background: url('images/bluemarble.gif') no-repeat left top, -webkit-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* Chrome10+,Safari5.1+ */
-       background: url('images/bluemarble.gif') no-repeat left top, -o-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* Opera 11.10+ */
-       background: url('images/bluemarble.gif') no-repeat left top, -ms-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* IE10+ */
-       background: url('images/bluemarble.gif') no-repeat left top, linear-gradient(to right, #1e5799 0%,#020005 0%,#42688c 75%); /* W3C */
-       filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#42688c',GradientType=1 ); /* IE6-8 */
-     }
-
-    </style>
-
-    <script>dojoConfig = {
-       /* isDebug: true,
-       has: {
-       "dojo-firebug": true,
-       "dojo-debug-messages": true
-       }, */
-       packages: [
-         {
-           "name":"agsjs",
-           "location": "/PolarisJS/agsjs/src/agsjs"
-         },
-         {
-           "name":"configurableviewer",
-           "location": "/PolarisJS/ConfigurableViewerJSAPI"
-         }
-       ]
-     }
-    </script>
-    <script src="/PolarisJS/lib/introjs/minified/intro.min.js"></script>
-    <script type="text/javascript">
-     function startIntro() {
-       var intro = introJs();
-       intro.setOptions({
-         keyboardNavigation: false,
-         exitOnOverlayClick: false,
-         showStepNumbers: false,
-         steps: [
-           {
-             element: "#topPane",
-             intro: "Welcome to Polaris. There are multiple ways to interact and personalize the map for your needs. We'll review them in this brief tutorial.",
-             position: "bottom"
-           },{
-             element: "#leftAccordion_splitter",
-             intro: "If the map window is too small, you can click and drag this bar to the left to resize it.",
-             position: "right"
-           },{
-             element: "#navToolbar",
-             intro: "You can use the tools on the Navigation Toolbar to navigate the map."
-           },{
-             element: "#zoomTools",
-             intro: "To zoom in or out of an area select one of these tools and click and drag a box on the map."
-           },{
-             element: "#map_zoom_slider",
-             intro: "Alternatively, you can click one of these buttons to zoom in or out. Or you can hover your cursor over the map and use the mouse wheel to zoom in or out.",
-             position: "right"
-           },{
-             element: "#fullExtent",
-             intro: "Clicking on the Full Extent button zooms the map to its default position."
-           }, {
-             element: "#extentTools",
-             intro: "Clicking on the Previous Extent and Next Extent buttons will zoom the map to the previous or next extent. If there is no previous or next extent the button does nothing.",
-           }, {
-             element: "#pan",
-             intro: "To pan around the map, select the Pan tool and click and drag the map around."
-           },{
-             element: "#identify",
-             intro: "To get more information on a layer on the map, select the Identify tool and click on a location on the map. You may need to zoom in or turn on a layer in Map Contents to get a layer to appear first."
-             },{
-             element: "#legendPane_wrapper",
-             intro: "Click here to open the Legend. The layers in the Legend may change as you zoom in or out or turn on layers in the Map Contents.",
-             position: "right"
-           },{
-             element: "#mapContentsPane_wrapper",
-             intro: "Click here to open the Map Contents. Here you can turn on or off different layers. Click on the plus sign next to a layer category to see sublayers. Some layers may not be visible at certain scales, these layers will appear greyed out.",
-             position: "right"
-           },{
-             element: "#searchPane_wrapper",
-             intro: "Click here to open the Search tool. Here you can search for addresses, parcels, roads or islands. Clicking on a row in the results list will zoom the map to that location.",
-             position: "right"
-           },{
-             element: "#measurePane_wrapper",
-             intro: "The Measure tools are located here. You can measure an area, a distance or find coordinates of a point.",
-             position: "right"
-           },{
-             element: "#drawPane_wrapper",
-             intro: "With the Draw tools you can annotate the map. You may select the color, size and type of tool to draw on the map.",
-             position: "right"
-           },{
-             element: "#printPane_wrapper",
-             intro: "To create a printable map of the map view, use the Print tool. You can customize the print layout and give your map a title.",
-             position: "right"
-           },{
-             element: "#help",
-             intro: "Thanks for using Polaris. If you have more questions, please click the 'Contact Us' button in the Help menu."
-           }
-         ]
-       });
-       intro.start();
-     }         
-    </script>
-    <script src="http://js.arcgis.com/3.8/"></script>
-    <script>  
-
-     var map, initialExtent, navToolbar;
-     var findTask, findParams, grid, measurement;
-     var findGraphicsLayer;
-     var selectedGraphicsLayer;
-     var zoomSymbol, draw, print;
-     var response, popupHandler;
-     var store;
-
-     require([
-       "dojo/aspect",
-       "dojo/dom",
-       "dojo/dom-construct",
-       "dojo/on",
-       "dojo/keys",
-       "dojo/parser",
-       "dojo/ready",
-       "dojo/_base/array",
-       "dojo/_base/Color",
-       "dojo/_base/declare",
-       "dojo/_base/event",
-       "dojo/store/Memory",
-       "dgrid/OnDemandGrid",
-       "dgrid/Selection",
-       "esri/map",
-       "esri/arcgis/utils",
-       "esri/config",
-       "esri/dijit/Legend",
-       "esri/dijit/Measurement",
-       "esri/dijit/OverviewMap",
-       "esri/dijit/Scalebar",
-       "esri/graphic",
-       "esri/units",
-       "esri/layers/ArcGISDynamicMapServiceLayer",
-       "esri/layers/GraphicsLayer",
-       "esri/symbols/PictureMarkerSymbol",
-       "esri/symbols/SimpleLineSymbol",
-       "esri/symbols/SimpleMarkerSymbol",
-       "esri/symbols/SimpleFillSymbol",
-       "esri/tasks/FindTask",
-       "esri/tasks/FindParameters",
-       "esri/tasks/GeometryService",
-       "esri/toolbars/navigation",
-       "esri/urlUtils",
-       "dijit/layout/ContentPane",
-       "dijit/layout/BorderContainer",
-       "dijit/layout/AccordionContainer",
-       "dijit/Dialog",
-       "dijit/form/Form",
-       "dijit/form/Button",
-       "dijit/registry",
-       "dijit/Toolbar",
-       "agsjs/dijit/TOC",
-       "configurableviewer/dijit/Print",
-       "configurableviewer/dijit/Draw",
-       "dojo/domReady!"],
-             function(
-         aspect,
-         dom, 
-         domConstruct,
-         on,
-         keys, 
-         parser,
-         ready,
-         array,
-         Color,
-         declare,
-         event,
-         Memory,
-         Grid,
-         Selection,
-         Map,
-         arcgisUtils,
-         config,
-         Legend,
-         Measurement,
-         OverviewMap,
-         Scalebar,
-         Graphic,
-         Units,
-         ArcGISDynamicMapServiceLayer,
-         GraphicsLayer,
-         PictureMarkerSymbol,
-         SimpleLineSymbol,
-         SimpleMarkerSymbol,
-         SimpleFillSymbol,
-         FindTask,
-         FindParameters,
-         GeometryService,
-         Navigation,
-         urlUtils,
-         ContentPane,
-         BorderContainer,
-         AccordionContainer,
-         Dialog,
-         Form,
-         Button,
-         registry,
-         Toolbar,
-         TOC,
-         Print,
-         Draw) {
-         ready(function(){
-           parser.parse();
-           config.defaults.geometryService = new GeometryService("http://www.sjcgis.org/arcgis/rest/services/Utilities/Geometry/GeometryServer");
-             config.defaults.io.proxyUrl = "/proxy/proxy.ashx";
-
-             grid = new (declare([Grid, Selection]))({
-               selectionMode: "extended",
-               noDataMessage: "No Results Found",
-               loadingMessage: "Searching...",
-               columns: {
-                 "foundFieldName": "Type",
-                 "value": "Value"
-             }
-           }, "grid");
-
-             grid.on("dgrid-select", function(e){rowSelectHandler(e)});
-             grid.on("dgrid-deselect", function(e){rowDeselectHandler(e)});
-             on(dom.byId("searchText"), 'keydown', function(e){
-               if (e.keyCode == keys.ENTER) {
-                 doSearch(dom.byId('searchText').value);
-                 event.stop(e);
-             }
-           });
-             
-             var mapDeferred = arcgisUtils.createMap("cf47d72e5f0e4f02aa8b35a2e9b6ac98", "map", {
-               geometryServiceURL: "http://www.sjcgis.org/arcgis/rest/services/Utilities/Geometry/GeometryServer"
-           });
-             mapDeferred.then(function(appResponse) {
-               response = appResponse;
-               map = response.map;
-               /* We disable panning so that the pan tool must be used instead. This eliminates confusion when the identify tool is active */
-               map.disablePan();
-
-               /* Let's create a Finder for locating features in the map layers */
-               constructFindTask();
-
-               /* Do we have a URL parameter to search for? If so, send it to the findTask */
-               var params = urlUtils.urlToObject(document.location.href);
-               if(params.query && params.query.find){
-                 console.log("URL Query Find found");
-                 dom.byId('searchText').value=params.query.find;
-                 doSearch(params.query.find);
-             }
-               
-               /* When the basemap has loaded, let's add scalebar and overview map */
-               map.on("load", constructMapElements());
-               
-               
-               /* After all map layers have been added, let's create the navigation toolbar and side panels */
-               map.on("layers-add-result", constructNavToolbar());
-               map.on("layers-add-result", constructSidePanels(response));
-               
-               /* We need to disable popups until the identify button is toggled on */
-               popupHandler = response.clickEventHandle;
-               popupHandler.remove();
-               leftAccordion.watch("selectedChildWidget", accordionHandler);
-
-               /* Bug workaround where measure location tool is deactivated after a point is measured.
-               We want the tool to remain active until the panel is closed.
-               measurement.on("measure-end", function(evt){
-               measurement.setTool(evt.toolName, true);
-               }); */
-
-           });
-         });
-
-           function constructSidePanels(response){
-             constructLegend(response);
-             constructToc(response);
-             constructMeasure(response);
-             constructPrint();
-             constructDraw();
-             constructDisclaimer(response);
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=7, IE=9, IE=10">
+        <!--The viewport meta tag is used to improve the presentation and behavior of the samples
+        on iOS devices-->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Polaris - San Juan County WA</title>
+        <link rel="stylesheet" href="http://js.arcgis.com/3.16/dojo/resources/dojo.css">
+        <link rel="stylesheet" href="http://js.arcgis.com/3.16/dijit/themes/claro/claro.css">
+        <link rel="stylesheet" href="http://js.arcgis.com/3.16/dgrid/css/dgrid.css">
+        <link rel="stylesheet" href="http://js.arcgis.com/3.16/dgrid/css/skins/claro.css">
+        <link rel="stylesheet" href="http://js.arcgis.com/3.16/esri/css/esri.css">
+        <link rel="stylesheet" type="text/css" href="./agsjs/build/agsjs/css/agsjs.css" />
+        <link rel="stylesheet" type="text/css" href="./lib/introjs/minified/introjs.min.css" />
+        <style>
+         #scaleDiv .agsTOCOutofScale {
+             display: none;
          }
 
-
-           function constructNavToolbar(){
-             zoomSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,new                                                           SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color("black"), 2),
-                                               new Color([255,255,255,0.5]));
-             navToolbar = new Navigation(map);
-             navToolbar.setZoomSymbol(zoomSymbol);
-             navToolbar.on("extent-history-change", extentHistoryChangeHandler);
-             on(registry.byId("zoomIn"), "click", function(){
-               clearToggleButtons("zoomIn");
-               navToolbar.activate(esri.toolbars.Navigation.ZOOM_IN);
-           });
-             on(registry.byId("zoomOut"), "click", function(){
-               clearToggleButtons("zoomOut");
-               navToolbar.activate(esri.toolbars.Navigation.ZOOM_OUT);
-           });
-             on(registry.byId("pan"), "click", function(){
-               clearToggleButtons("pan");
-               navToolbar.activate(esri.toolbars.Navigation.PAN);
-           });
-             on(registry.byId("identify"), "click", function(){
-               clearToggleButtons("identify");
-               navToolbar.deactivate();
-               enablePopups();
-           });
-             aboutDialog = new Dialog({
-               title: "About",
-               content: response.itemInfo.item.description,
-               style: "width: 50%"
-           });
+         .dgrid {
+             height: 15em;
          }
 
-           function constructLegend(response){
-             var layerInfo = arcgisUtils.getLegendLayers(response);
-             var legend = new Legend({
-               map:map,
-               layerInfos: layerInfo
-           },"legendDiv");
-             legend.startup();
+         .dgrid-scroller {
+             overflow:auto !important;
          }
-           function constructToc(response){
-             var layerInfo = arcgisUtils.getLegendLayers(response);
-             array.map(layerInfo, function(layer){
-               layer.collapsed=true;
-           });
-             layerInfo.reverse();
-             var toc = new TOC({
-               map:map,
-               layerInfos: layerInfo
-           }, "tocDiv");
-             toc.startup();
+         .agsjsTOCRootLayerLabel {
+             font-size: small;
+         }
+         .agsjsTOCServiceLayerLabel {
+             font-size: small;
+         }
+         .agsjsTOCLegendLabel {
+             font-size: small;
+         }
+         .dijitButtonFocused {
+             border: 1px solid #769DC0;
          }
 
-           function constructPrint(){
-             print = new Print({
-               map: map,
-               printTaskURL: "http://www.sjcgis.org/arcgis/rest/services/Tools/ExportWebMap/GPServer/Export%20Web%20Map",
-               authorText: "Printed from Polaris Property Search - San Juan County WA",
-               copyrightText: "This data has been compiled for San Juan County. Various official and unofficial sources were used to gather this information. Every effort was made to ensure the accuracy of this data, however, no guarantee is given or implied as to the accuracy of said data.",
-               defaultTitle: "My Map",
-               defaultFormat: "PDF",
-               defaultLayout: "Letter_Landscape"               
-           }, domConstruct.create("div"));
-             print.placeAt("printPane");
+         html, body {
+             height:100%;
+             width:100%;
+             margin:0;
+             padding:0;
+             font: small "Arial", sans-serif;
+         }
+         #borderContainerTwo {
+             width:100%;
+             height:100%;
+         }
+         #map {
+             height:100%;
+             width:100%;
+             overflow:hidden;
+         }
+         .layersDiv {
+             background: #3d5d72;
+         }
+         #leftAccordion {
+             width: 25%;
+             height: 100%;
+         }
+         #paneHeader {
+             background: url(images/header.png) repeat-x;
+             color: white;
+             border-bottom: solid 1px #B5BCC7;
+             text-align: center;
+             height: 30px;
+             margin: 0;
+             overflow: auto;
+             font-size: 16px;
+             padding: 8px 5px;
+         }
+         .esriScalebarLabel {
+             color: white;
+         }
+         .esriLegendServiceLabel {
+             display:none;
+         }
+         .esriLegendGroupLayer {
+             display:none;
+         }
+         .navToolbarButton {
+             background: url(images/csg-51e0975dc237a.png) no-repeat top left;
          }
 
-           function constructDraw(){
-             /* TODO: Replace with Template Picker
-             & use items rather than Feature Layers */
-             draw = new Draw({
-               map: map
-           }, domConstruct.create("div"));
-             draw.placeAt("drawPane");
-             aspect.after(draw.drawToolbar, "activate", function(){
-               clearToggleButtons();
-           });
+         .info-tip {
+             background: #5BC0DE;
+             color: white;
+             font-size: small;
+             padding: 5px;
+             display: none;
+             margin: 10px 0;
          }
 
-           function constructMeasure(response){
-             measurement = new Measurement({
-               map: map,
-               defaultAreaUnit: Units.ACRES,
-               defaultLengthUnit: Units.FEET,
-           }, dom.byId("measureDiv"));
-             measurement.startup();
-             aspect.before(measurement.area, "onClick", function(){
-               clearToggleButtons(measurement.area.id);
-           });
-             aspect.before(measurement.distance, "onClick", function(){
-               clearToggleButtons(measurement.distance.id);
-           });
-             aspect.before(measurement.location, "onClick", function(){
-               clearToggleButtons(measurement.location.id);
-           });
-             measurement.on("measure-end", function(evt){
-               measurement.setTool(evt.toolName, false);
-           });
-         }
-           
-           function constructDisclaimer(response){
-             var disclaimerText = domConstruct.toDom(response.itemInfo.item.licenseInfo);
-             domConstruct.place(disclaimerText, "disclaimerPane");
-         }            
+         .navToolbarButton-annotate{ background-position: 0 0; width: 25px; height: 25px; }
+         .navToolbarButton-fullExtent{ background-position: -75px 0; width: 25px; height: 25px; }
+         .navToolbarButton-identify{ background-position: -150px 0; width: 25px; height: 25px; }
+         .navToolbarButton-measure{ background-position: -225px 0; width: 25px; height: 25px; }
+         .navToolbarButton-nextExtent .disabled{ background-position: -300px 0; width: 25px; height: 25px; }
+         .navToolbarButton-nextExtent{ background-position: -375px 0; width: 25px; height: 25px; }
+         .navToolbarButton-pan{ background-position: -450px 0; width: 25px; height: 25px; }
+         .navToolbarButton-prevExtent .disabled{ background-position: -525px 0; width: 25px; height: 25px; }
+         .navToolbarButton-prevExtent{ background-position: -600px 0; width: 25px; height: 25px; }
+         .navToolbarButton-print{ background-position: -675px 0; width: 25px; height: 25px; }
+         .navToolbarButton-zoomIn{ background-position: -750px 0; width: 25px; height: 25px; }
+         .navToolbarButton-zoomOut{ background-position: -825px 0; width: 25px; height: 25px; }
 
-           function constructMapElements(){
-             var scaleBar = new Scalebar({
-               map: map,
-               scalebarUnit: 'english'
-           });
-             var ovMapBaseLayer = new ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/arcgis/rest/services/Polaris/Shorelines/MapServer");
-             var overviewMap = new OverviewMap({
-               map: map,
-               height: 200,
-               width: 200,
-               baseLayer: ovMapBaseLayer,
-           }, dom.byId("overviewMapDiv"));
-             overviewMap.startup();
-         }
-           
-           function constructFindTask(){
-             findGraphicsLayer = new GraphicsLayer({
-               spatialReference:  map.spatialReference
-           });
-             selectedGraphicsLayer = new GraphicsLayer({
-               spatialReference: map.spatialReference
-           });
-             map.addLayers([findGraphicsLayer,selectedGraphicsLayer]);
-             findTask = new FindTask("http://www.sjcgis.org/arcgis/rest/services/Polaris/LocationSearch/MapServer");
-             // Create find parameters
-             findParams = new FindParameters();
-             findParams.returnGeometry = true;
-             /* Enter the id number of the layers to search  */
-             findParams.layerIds = [4,1,0,2,3];
-             /* Enter the names of the fields to search over the layers */
-             findParams.searchFields = ["FULLADDR", "Road_Name", "PIN", "NAME"];
-             findParams.outSpatialReference = map.spatialReference;
-             var searchButton = new Button({
-               label: "Search",
-               onClick: function(){doSearch(dom.byId('searchText').value);}
-           }, "searchButton");
-             var clearButton = new Button({
-               label: "Clear",
-               onClick: function(){clearSearch();}
-           }, "clearButton");
+         #topPane {
+             color: white;
+             text-align: right;
+             font-family: Arial;
+             font-size: 10px;
+             font-style: italic;
+             background: url('images/bluemarble.gif') no-repeat left top, #1e5799; /* Old browsers */
+             /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+             background: url('images/bluemarble.gif') no-repeat left top, url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFlNTc5OSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDIwMDA1IiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iNzUlIiBzdG9wLWNvbG9yPSIjNDI2ODhjIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+             background: url('images/bluemarble.gif') no-repeat left top, -moz-linear-gradient(left, #1e5799 0%, #020005 0%, #42688c 75%); /* FF3.6+ */
+             background: url('images/bluemarble.gif') no-repeat left top, -webkit-gradient(linear, left top, right top, color-stop(0%,#1e5799), color-stop(0%,#020005), color-stop(75%,#42688c)); /* Chrome,Safari4+ */
+             background: url('images/bluemarble.gif') no-repeat left top, -webkit-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* Chrome10+,Safari5.1+ */
+             background: url('images/bluemarble.gif') no-repeat left top, -o-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* Opera 11.10+ */
+             background: url('images/bluemarble.gif') no-repeat left top, -ms-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* IE10+ */
+             background: url('images/bluemarble.gif') no-repeat left top, linear-gradient(to right, #1e5799 0%,#020005 0%,#42688c 75%); /* W3C */
+             filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#42688c',GradientType=1 ); /* IE6-8 */
          }
 
-           function doSearch(searchText) {
-             // Set search text to value in box
-             findParams.searchText = searchText;
-             dom.byId('searchIndicator').style.visibility="visible";
-             findTask.execute(findParams,showResults);
+        </style>
+
+        <script>dojoConfig = {
+            /* isDebug: true,
+               has: {
+               "dojo-firebug": true,
+               "dojo-debug-messages": true
+               }, */
+            packages: [
+                {
+                    "name":"agsjs",
+                    "location": location.pathname.replace(/[^\/]+$/, '') + "agsjs/build/agsjs"
+                },
+                {
+                    "name":"configurableviewer",
+                    "location": location.pathname.replace(/[^\/]+$/, '') + "ConfigurableViewerJSAPI"
+                }
+            ]
+         }
+        </script>
+        <script src="lib/introjs/minified/intro.min.js"></script>
+        <script type="text/javascript">
+         function startIntro() {
+             var intro = introJs();
+             intro.setOptions({
+                 keyboardNavigation: false,
+                 exitOnOverlayClick: false,
+                 showStepNumbers: false,
+                 steps: [
+                     {
+                         element: "#topPane",
+                         intro: "Welcome to Polaris. There are multiple ways to interact and personalize the map for your needs. We'll review them in this brief tutorial.",
+                         position: "bottom"
+                     },{
+                         element: "#leftAccordion_splitter",
+                         intro: "If the map window is too small, you can click and drag this bar to the left to resize it.",
+                         position: "right"
+                     },{
+                         element: "#navToolbar",
+                         intro: "You can use the tools on the Navigation Toolbar to navigate the map."
+                     },{
+                         element: "#zoomTools",
+                         intro: "To zoom in or out of an area select one of these tools and click and drag a box on the map."
+                     },{
+                         element: "#map_zoom_slider",
+                         intro: "Alternatively, you can click one of these buttons to zoom in or out. Or you can hover your cursor over the map and use the mouse wheel to zoom in or out.",
+                         position: "right"
+                     },{
+                         element: "#fullExtent",
+                         intro: "Clicking on the Full Extent button zooms the map to its default position."
+                     }, {
+                         element: "#extentTools",
+                         intro: "Clicking on the Previous Extent and Next Extent buttons will zoom the map to the previous or next extent. If there is no previous or next extent the button does nothing.",
+                     }, {
+                         element: "#pan",
+                         intro: "To pan around the map, select the Pan tool and click and drag the map around."
+                     },{
+                         element: "#identify",
+                         intro: "To get more information on a layer on the map, select the Identify tool and click on a location on the map. You may need to zoom in or turn on a layer in Map Contents to get a layer to appear first."
+                     },{
+                         element: "#legendPane_wrapper",
+                         intro: "Click here to open the Legend. The layers in the Legend may change as you zoom in or out or turn on layers in the Map Contents.",
+                         position: "right"
+                     },{
+                         element: "#mapContentsPane_wrapper",
+                         intro: "Click here to open the Map Contents. Here you can turn on or off different layers. Click on the plus sign next to a layer category to see sublayers. Some layers may not be visible at certain scales, these layers will appear greyed out.",
+                         position: "right"
+                     },{
+                         element: "#searchPane_wrapper",
+                         intro: "Click here to open the Search tool. Here you can search for addresses, parcels, roads or islands. Clicking on a row in the results list will zoom the map to that location.",
+                         position: "right"
+                     },{
+                         element: "#measurePane_wrapper",
+                         intro: "The Measure tools are located here. You can measure an area, a distance or find coordinates of a point.",
+                         position: "right"
+                     },{
+                         element: "#drawPane_wrapper",
+                         intro: "With the Draw tools you can annotate the map. You may select the color, size and type of tool to draw on the map.",
+                         position: "right"
+                     },{
+                         element: "#printPane_wrapper",
+                         intro: "To create a printable map of the map view, use the Print tool. You can customize the print layout and give your map a title.",
+                         position: "right"
+                     },{
+                         element: "#help",
+                         intro: "Thanks for using Polaris. If you have more questions, please click the 'Contact Us' button in the Help menu."
+                     }
+                 ]
+             });
+             intro.start();
+         }
+        </script>
+        <script src="http://js.arcgis.com/3.16/"></script>
+        <script>
+         var map, initialExtent, navToolbar;
+         var findTask, findParams, grid, measurement;
+         var findGraphicsLayer;
+         var selectedGraphicsLayer;
+         var zoomSymbol, draw, print;
+         var response, popupHandler;
+         var store;
+
+         require([
+             "dojo/aspect",
+             "dojo/dom",
+             "dojo/dom-construct",
+             "dojo/on",
+             "dojo/keys",
+             "dojo/parser",
+             "dojo/ready",
+             "dojo/_base/array",
+             "dojo/_base/Color",
+             "dojo/_base/declare",
+             "dojo/_base/event",
+             "dojo/store/Memory",
+             "dgrid/OnDemandGrid",
+             "dgrid/Selection",
+             "esri/map",
+             "esri/arcgis/utils",
+             "esri/config",
+             "esri/dijit/Legend",
+             "esri/dijit/Measurement",
+             "esri/dijit/OverviewMap",
+             "esri/dijit/Scalebar",
+             "esri/graphic",
+             "esri/units",
+             "esri/layers/ArcGISDynamicMapServiceLayer",
+             "esri/layers/GraphicsLayer",
+             "esri/symbols/PictureMarkerSymbol",
+             "esri/symbols/SimpleLineSymbol",
+             "esri/symbols/SimpleMarkerSymbol",
+             "esri/symbols/SimpleFillSymbol",
+             "esri/tasks/FindTask",
+             "esri/tasks/FindParameters",
+             "esri/tasks/GeometryService",
+             "esri/toolbars/navigation",
+             "esri/urlUtils",
+             "dijit/layout/ContentPane",
+             "dijit/layout/BorderContainer",
+             "dijit/layout/AccordionContainer",
+             "dijit/Dialog",
+             "dijit/form/Form",
+             "dijit/form/Button",
+             "dijit/registry",
+             "dijit/Toolbar",
+             "agsjs/dijit/TOC",
+             "configurableviewer/dijit/Print",
+             "configurableviewer/dijit/Draw",
+             "dojo/domReady!"],
+                 function(
+                     aspect,
+                     dom,
+                     domConstruct,
+                     on,
+                     keys,
+                     parser,
+                     ready,
+                     array,
+                     Color,
+                     declare,
+                     event,
+                     Memory,
+                     Grid,
+                     Selection,
+                     Map,
+                     arcgisUtils,
+                     config,
+                     Legend,
+                     Measurement,
+                     OverviewMap,
+                     Scalebar,
+                     Graphic,
+                     Units,
+                     ArcGISDynamicMapServiceLayer,
+                     GraphicsLayer,
+                     PictureMarkerSymbol,
+                     SimpleLineSymbol,
+                     SimpleMarkerSymbol,
+                     SimpleFillSymbol,
+                     FindTask,
+                     FindParameters,
+                     GeometryService,
+                     Navigation,
+                     urlUtils,
+                     ContentPane,
+                     BorderContainer,
+                     AccordionContainer,
+                     Dialog,
+                     Form,
+                     Button,
+                     registry,
+                     Toolbar,
+                     TOC,
+                     Print,
+                     Draw) {
+                         ready(function(){
+                             parser.parse();
+                             config.defaults.geometryService = new GeometryService("http://www.sjcgis.org/arcgis/rest/services/Utilities/Geometry/GeometryServer");
+                             config.defaults.io.proxyUrl = "/proxy/proxy.ashx";
+
+                             grid = new (declare([Grid, Selection]))({
+                                 selectionMode: "extended",
+                                 noDataMessage: "No Results Found",
+                                 loadingMessage: "Searching...",
+                                 columns: {
+                                     "foundFieldName": "Type",
+                                     "value": "Value"
+                                 }
+                             }, "grid");
+
+                             grid.on("dgrid-select", function(e){rowSelectHandler(e)});
+                             grid.on("dgrid-deselect", function(e){rowDeselectHandler(e)});
+                             on(dom.byId("searchText"), 'keydown', function(e){
+                                 if (e.keyCode == keys.ENTER) {
+                                     doSearch(dom.byId('searchText').value);
+                                     event.stop(e);
+                                 }
+                             });
+
+                             var mapDeferred = arcgisUtils.createMap("cf47d72e5f0e4f02aa8b35a2e9b6ac98", "map", {
+                                 geometryServiceURL: "http://www.sjcgis.org/arcgis/rest/services/Utilities/Geometry/GeometryServer"
+                             });
+                             mapDeferred.then(function(appResponse) {
+                                 response = appResponse;
+                                 map = response.map;
+                                 /* We disable panning so that the pan tool must be used instead. This eliminates confusion when the identify tool is active */
+                                 map.disablePan();
+
+                                 /* Let's create a Finder for locating features in the map layers */
+                                 constructFindTask();
+
+                                 /* Do we have a URL parameter to search for? If so, send it to the findTask */
+                                 var params = urlUtils.urlToObject(document.location.href);
+                                 if(params.query && params.query.find){
+                                     console.log("URL Query Find found");
+                                     dom.byId('searchText').value=params.query.find;
+                                     doSearch(params.query.find);
+                                 }
+
+                                 /* When the basemap has loaded, let's add scalebar and overview map */
+                                 map.on("load", constructMapElements());
+
+
+                                 /* After all map layers have been added, let's create the navigation toolbar and side panels */
+                                 map.on("layers-add-result", constructNavToolbar());
+                                 map.on("layers-add-result", constructSidePanels(response));
+
+                                 /* We need to disable popups until the identify button is toggled on */
+                                 popupHandler = response.clickEventHandle;
+                                 popupHandler.remove();
+                                 leftAccordion.watch("selectedChildWidget", accordionHandler);
+
+                                 /* Bug workaround where measure location tool is deactivated after a point is measured.
+                                    We want the tool to remain active until the panel is closed.
+                                    measurement.on("measure-end", function(evt){
+                                    measurement.setTool(evt.toolName, true);
+                                    }); */
+
+                             });
+                         });
+
+                         function constructSidePanels(response){
+                             constructLegend(response);
+                             constructToc(response);
+                             constructMeasure(response);
+                             constructPrint();
+                             constructDraw();
+                             constructDisclaimer(response);
+                         }
+
+
+                         function constructNavToolbar(){
+                             zoomSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,new                                                           SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color("black"), 2),
+                                                               new Color([255,255,255,0.5]));
+                             navToolbar = new Navigation(map);
+                             navToolbar.setZoomSymbol(zoomSymbol);
+                             navToolbar.on("extent-history-change", extentHistoryChangeHandler);
+                             on(registry.byId("zoomIn"), "click", function(){
+                                 clearToggleButtons("zoomIn");
+                                 navToolbar.activate(esri.toolbars.Navigation.ZOOM_IN);
+                             });
+                             on(registry.byId("zoomOut"), "click", function(){
+                                 clearToggleButtons("zoomOut");
+                                 navToolbar.activate(esri.toolbars.Navigation.ZOOM_OUT);
+                             });
+                             on(registry.byId("pan"), "click", function(){
+                                 clearToggleButtons("pan");
+                                 navToolbar.activate(esri.toolbars.Navigation.PAN);
+                             });
+                             on(registry.byId("identify"), "click", function(){
+                                 clearToggleButtons("identify");
+                                 navToolbar.deactivate();
+                                 enablePopups();
+                             });
+                             aboutDialog = new Dialog({
+                                 title: "About",
+                                 content: response.itemInfo.item.description,
+                                 style: "width: 50%"
+                             });
+                         }
+
+                         function constructLegend(response){
+                             var layerInfo = arcgisUtils.getLegendLayers(response);
+                             var legend = new Legend({
+                                 map:map,
+                                 layerInfos: layerInfo
+                             },"legendDiv");
+                             legend.startup();
+                         }
+                         function constructToc(response){
+                             var layerInfo = arcgisUtils.getLegendLayers(response);
+                             array.map(layerInfo, function(layer){
+                                 layer.collapsed=true;
+                             });
+                             layerInfo.reverse();
+                             var toc = new TOC({
+                                 map:map,
+                                 layerInfos: layerInfo
+                             }, "tocDiv");
+                             toc.startup();
+                         }
+
+                         function constructPrint(){
+                             print = new Print({
+                                 map: map,
+                                 printTaskURL: "http://www.sjcgis.org/arcgis/rest/services/Tools/ExportWebMap/GPServer/Export%20Web%20Map",
+                                 authorText: "Printed from Polaris Property Search - San Juan County WA",
+                                 copyrightText: "This data has been compiled for San Juan County. Various official and unofficial sources were used to gather this information. Every effort was made to ensure the accuracy of this data, however, no guarantee is given or implied as to the accuracy of said data.",
+                                 defaultTitle: "My Map",
+                                 defaultFormat: "PDF",
+                                 defaultLayout: "Letter_Landscape"
+                             }, domConstruct.create("div"));
+                             print.placeAt("printPane");
+                         }
+
+                         function constructDraw(){
+                             /* TODO: Replace with Template Picker
+                                & use items rather than Feature Layers */
+                             draw = new Draw({
+                                 map: map
+                             }, domConstruct.create("div"));
+                             draw.placeAt("drawPane");
+                             aspect.after(draw.drawToolbar, "activate", function(){
+                                 navToolbar.deactivate();
+                                 clearToggleButtons();
+                             });
+                         }
+
+                         function constructMeasure(response){
+                             measurement = new Measurement({
+                                 map: map,
+                                 defaultAreaUnit: Units.ACRES,
+                                 defaultLengthUnit: Units.FEET,
+                             }, dom.byId("measureDiv"));
+                             measurement.startup();
+                             measurement.on("tool-change", function(evt) {
+                                 clearToggleButtons();
+                                 navToolbar.deactivate();
+                             });
+                             measurement.on("measure-end", function(evt){
+                                 measurement.setTool(evt.toolName, false);
+                             });
+                         }
+
+                         function constructDisclaimer(response){
+                             var disclaimerText = domConstruct.toDom(response.itemInfo.item.licenseInfo);
+                             domConstruct.place(disclaimerText, "disclaimerPane");
+                         }
+
+                         function constructMapElements(){
+                             var scaleBar = new Scalebar({
+                                 map: map,
+                                 scalebarUnit: 'english'
+                             });
+                             var ovMapBaseLayer = new ArcGISDynamicMapServiceLayer("http://www.sjcgis.org/arcgis/rest/services/Polaris/Shorelines/MapServer");
+                             var overviewMap = new OverviewMap({
+                                 map: map,
+                                 height: 200,
+                                 width: 200,
+                                 baseLayer: ovMapBaseLayer,
+                             }, dom.byId("overviewMapDiv"));
+                             overviewMap.startup();
+                         }
+
+                         function constructFindTask(){
+                             findGraphicsLayer = new GraphicsLayer({
+                                 spatialReference:  map.spatialReference
+                             });
+                             selectedGraphicsLayer = new GraphicsLayer({
+                                 spatialReference: map.spatialReference
+                             });
+                             map.addLayers([findGraphicsLayer,selectedGraphicsLayer]);
+                             findTask = new FindTask("http://www.sjcgis.org/arcgis/rest/services/Polaris/LocationSearch/MapServer");
+                             // Create find parameters
+                             findParams = new FindParameters();
+                             findParams.returnGeometry = true;
+                             /* Enter the id number of the layers to search  */
+                             findParams.layerIds = [4,1,0,2,3];
+                             /* Enter the names of the fields to search over the layers */
+                             findParams.searchFields = ["FULLADDR", "Road_Name", "PIN", "NAME"];
+                             findParams.outSpatialReference = map.spatialReference;
+                             var searchButton = new Button({
+                                 label: "Search",
+                                 onClick: function(){doSearch(dom.byId('searchText').value);}
+                             }, "searchButton");
+                             var clearButton = new Button({
+                                 label: "Clear",
+                                 onClick: function(){clearSearch();}
+                             }, "clearButton");
+                         }
+
+                         function doSearch(searchText) {
+                             // Set search text to value in box
+                             findParams.searchText = searchText;
+                             dom.byId('searchIndicator').style.visibility="visible";
+                             findTask.execute(findParams,showResults);
+                         }
+
+                         function showResults(results) {
+                             dom.byId('searchIndicator').style.visibility="hidden";
+                             dom.byId('grid').style.visibility="visible";
+                             //Show the results of FindTask using the FindResult returned by the doFind function
+                             findGraphicsLayer.clear(); //Clear existing graphics from map
+                             var polygonSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL, new
+                                 SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0,255,255]), 4),
+                                                                      new Color([0,255,255,0.25]));
+                             var lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                                                                   new Color([98,194,204]),2);
+                             var markerSymbol = new PictureMarkerSymbol({
+                                 "url": "images/pin-red-28x28.png",
+                                 "height": 20,
+                                 "width": 20,
+                                 "type": "picturemarkersymbol"
+                             });
+                             //Create array of result attributes and add graphics to map
+                             var data = dojo.map(results, function(result, id){
+                                 var graphic = new esri.Graphic(result.feature.toJson());
+                                 var marker;
+                                 switch (graphic.geometry.type) {
+                                     case "point":
+                                         graphic.setSymbol(markerSymbol);
+                                         marker = new Graphic(graphic.geometry, markerSymbol);
+                                         break;
+                                     case "polyline":
+                                         graphic.setSymbol(lineSymbol);
+                                         marker = new Graphic(result.feature.geometry, lineSymbol);
+                                         break;
+                                     case "polygon":
+                                         graphic.setSymbol(polygonSymbol);
+                                         marker = new Graphic(result.feature.geometry, polygonSymbol);
+                                         break;
+                                 }
+                                 findGraphicsLayer.add(marker);
+                                 var attribs = result.feature.attributes;
+                                 attribs.id = id;
+                                 attribs.foundFieldName = result.foundFieldName;
+                                 attribs.value = result.value;
+                                 attribs.layerName = result.layerName;
+                                 attribs.graphic = graphic;
+                                 attribs.marker = marker;
+                                 return attribs;
+                             });
+
+                             store = new Memory({
+                                 data: data
+                             });
+                             grid.setStore(store);
+
+                             /* Now we want to zoom to the found features. But when there is only
+                                one result from the find, the esriGraphicsExtent is null. This may be
+                                a bug. So we form a switch based on the number of found features and
+                                handle it differently if the number is 0, 1 or more than 1. */
+                             switch (findGraphicsLayer.graphics.length) {
+                                 case 0:
+                                     map.setExtent(initialExtent);
+                                     break;
+                                 case 1:
+                                     findGraphicsLayer.clear();
+                                     zoomToSelectedRow(grid.getItem(0).graphic[0]);
+                                     break;
+                                 default:
+                                     var foundFeaturesExtent = esri.graphicsExtent(findGraphicsLayer.graphics);
+                                     map.setExtent(foundFeaturesExtent,true);
+                             }
+                         }
+
+                         function clearSearch(){
+                             findGraphicsLayer.clear();
+                             selectedGraphicsLayer.clear();
+                             dom.byId('grid').style.visibility="hidden";
+                             dom.byId('searchText').value = "";
+
+                             store = new Memory({data:{identifier:"", items:[]}});
+                             grid.setStore(store);
+                         }
+
+                         function extentHistoryChangeHandler() {
+                             registry.byId("prevExtent").disabled = navToolbar.isFirstExtent();
+                             registry.byId("nextExtent").disabled = navToolbar.isLastExtent();
+                         }
+
+                         function rowDeselectHandler(evt){
+                             var rows = evt.rows;
+                             array.forEach(rows, function(row){
+                                 selectedGraphicsLayer.remove(row.data.graphic);
+                             });
+                             var selectedFeaturesExtent = esri.graphicsExtent(selectedGraphicsLayer.graphics);
+                             if(!selectedFeaturesExtent){
+                                 map.centerAndZoom(selectedGraphicsLayer.graphics[0].geometry, 8);
+                             } else {
+                                 map.setExtent(selectedFeaturesExtent, true);
+                             }
+                         }
+
+                         function rowSelectHandler(evt){
+                             findGraphicsLayer.clear();
+                             var rows = evt.rows;
+                             array.forEach(rows, function(row){
+                                 var clickedRowGraphic = row.data.graphic;
+                                 clickedRowGraphic.attr("rowID", row.id);
+                                 //zoomToSelectedRow(clickedRowGraphic);
+                                 selectedGraphicsLayer.add(clickedRowGraphic);
+                             });
+                             var selectedFeaturesExtent = esri.graphicsExtent(selectedGraphicsLayer.graphics);
+                             if(!selectedFeaturesExtent){
+                                 map.centerAndZoom(selectedGraphicsLayer.graphics[0].geometry, 8);
+                             } else {
+                                 map.setExtent(selectedFeaturesExtent, true);
+                             }
+                         }
+
+                         function accordionHandler(attr, closedPane, openPane){
+                             console.log("The closed pane was " + closedPane.id + " and the opened pane was " + openPane.id);
+                             /* When the measure or draw panes are closed, deactivate the tools */
+                             clearToggleButtons();
+                             navToolbar.deactivate();
+                             switch(closedPane.id){
+                                 case 'measurePane':
+                                     measurement.clearResult();
+                                     measurement.setTool("area", false);
+                                     measurement.setTool("distance", false);
+                                     measurement.setTool("location", false);
+                                     break;
+                                 case 'drawPane':
+                                     draw.drawToolbar.deactivate();
+                                     break;
+                                 default:
+                             }
+                         }
+                         function clearToggleButtons(button){
+                             disablePopups();
+                             registry.byId("zoomIn").set('checked',false);
+                             registry.byId("zoomOut").set('checked', false);
+                             registry.byId("pan").set('checked', false);
+                             registry.byId("identify").set('checked', false);
+                             if (button) registry.byId(button).set('checked',true);
+                         }
+                 });
+         function disablePopups(){
+             popupHandler.remove();
+             console.log("Popups should be disabled");
          }
 
-           function showResults(results) {
-             dom.byId('searchIndicator').style.visibility="hidden";
-             dom.byId('grid').style.visibility="visible";
-             //Show the results of FindTask using the FindResult returned by the doFind function
-             findGraphicsLayer.clear(); //Clear existing graphics from map
-             var polygonSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL, new
-                                                      SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0,255,255]), 4),
-                                                      new Color([0,255,255,0.25]));
-             var lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-                                                   new Color([98,194,204]),2);
-             var markerSymbol = new PictureMarkerSymbol({
-               "url": "images/pin-red-28x28.png",
-               "height": 20,
-               "width": 20,
-               "type": "picturemarkersymbol"
-           });
-             //Create array of result attributes and add graphics to map
-             var data = dojo.map(results, function(result, id){
-               var graphic = new esri.Graphic(result.feature.toJson());
-               var marker;
-               switch (graphic.geometry.type) {
-               case "point":
-                 graphic.setSymbol(markerSymbol);
-                 marker = new Graphic(graphic.geometry, markerSymbol);
-                 break;
-               case "polyline":
-                 graphic.setSymbol(lineSymbol);
-                 marker = new Graphic(result.feature.geometry, lineSymbol);
-                 break;
-               case "polygon":
-                 graphic.setSymbol(polygonSymbol);
-                 marker = new Graphic(result.feature.geometry, polygonSymbol);
-                 break;
-             }
-               findGraphicsLayer.add(marker);
-               var attribs = result.feature.attributes;
-               attribs.id = id;
-               attribs.foundFieldName = result.foundFieldName;
-               attribs.value = result.value;
-               attribs.layerName = result.layerName;
-               attribs.graphic = graphic;
-               attribs.marker = marker;
-               return attribs;
-           });
-
-             store = new Memory({
-               data: data
-           });
-             grid.setStore(store);
-
-             /* Now we want to zoom to the found features. But when there is only 
-             one result from the find, the esriGraphicsExtent is null. This may be
-             a bug. So we form a switch based on the number of found features and
-             handle it differently if the number is 0, 1 or more than 1. */
-             switch (findGraphicsLayer.graphics.length) {
-             case 0:
-               map.setExtent(initialExtent);
-               break;
-             case 1:
-               findGraphicsLayer.clear();
-               zoomToSelectedRow(grid.getItem(0).graphic[0]);
-               break;
-               default:
-               var foundFeaturesExtent = esri.graphicsExtent(findGraphicsLayer.graphics);
-               map.setExtent(foundFeaturesExtent,true);
-           }
+         function enablePopups(){
+             popupHandler = map.on("click", response.clickEventListener);
+             console.log("Popups should be enabled");
          }
 
-           function clearSearch(){
-             findGraphicsLayer.clear();
-             selectedGraphicsLayer.clear();
-             dom.byId('grid').style.visibility="hidden";
-             dom.byId('searchText').value = "";
-             
-             store = new Memory({data:{identifier:"", items:[]}});
-             grid.setStore(store);
-         }           
+        </script>
+    </head>
 
-           function extentHistoryChangeHandler() {
-             registry.byId("prevExtent").disabled = navToolbar.isFirstExtent();
-             registry.byId("nextExtent").disabled = navToolbar.isLastExtent();
-         }
+    <body class="claro">
 
-           function rowDeselectHandler(evt){
-             var rows = evt.rows;
-             array.forEach(rows, function(row){
-               selectedGraphicsLayer.remove(row.data.graphic);
-           });
-             var selectedFeaturesExtent = esri.graphicsExtent(selectedGraphicsLayer.graphics);
-             if(!selectedFeaturesExtent){
-               map.centerAndZoom(selectedGraphicsLayer.graphics[0].geometry, 8);
-           } else {
-               map.setExtent(selectedFeaturesExtent, true);
-           }         
-         } 
-
-           function rowSelectHandler(evt){
-             findGraphicsLayer.clear();
-             var rows = evt.rows;
-             array.forEach(rows, function(row){
-               var clickedRowGraphic = row.data.graphic;
-               clickedRowGraphic.attr("rowID", row.id);
-               //zoomToSelectedRow(clickedRowGraphic);
-               selectedGraphicsLayer.add(clickedRowGraphic);
-           });
-             var selectedFeaturesExtent = esri.graphicsExtent(selectedGraphicsLayer.graphics);
-             if(!selectedFeaturesExtent){
-               map.centerAndZoom(selectedGraphicsLayer.graphics[0].geometry, 8);
-           } else {
-               map.setExtent(selectedFeaturesExtent, true);
-           }
-         }
-
-           function accordionHandler(attr, closedPane, openPane){
-             console.log("The closed pane was " + closedPane.id + " and the opened pane was " + openPane.id);
-             /* When the measure or draw panes are closed, deactivate the tools */
-             switch(closedPane.id){
-             case 'measurePane':
-               measurement.clearResult();
-               measurement.setTool("area", false);
-               measurement.setTool("distance", false);
-               measurement.setTool("location", false);
-               break;
-             case 'drawPane':
-               draw.drawToolbar.deactivate();
-               break;
-               default:
-           }
-         }
-           function clearToggleButtons(button){
-             disablePopups();
-             registry.byId("zoomIn").set('checked',false);
-             registry.byId("zoomOut").set('checked', false);
-             registry.byId("pan").set('checked', false);
-             registry.byId("identify").set('checked', false);
-             registry.byId(button).set('checked',true);
-         }           
-       });
-       function disablePopups(){
-         popupHandler.remove();
-         console.log("Popups should be disabled");
-     }
-     
-     function enablePopups(){
-       popupHandler = map.on("click", response.clickEventListener);
-       console.log("Popups should be enabled");
-     }
-     
-    </script>
-  </head>
-  
-  <body class="claro">
-    
-    <div id="borderContainerTwo" data-dojo-type="dijit/layout/BorderContainer"
-         data-dojo-props="gutters:false, liveSplitters:false">
-      <div id="topPane" class="titleBar" data-dojo-type="dijit/layout/ContentPane" 
-           data-dojo-props="region:'top', splitter:false, layoutPriority:1">
-        <h1>San Juan County - Polaris Property Search</h1>
-      </div>
-      <div id="toolBarPane" data-dojo-type="dijit/layout/ContentPane"
-           data-dojo-props="region:'top', splitter:false, layoutPriority:2">
-        <div id="navToolbar" data-dojo-type="dijit/Toolbar">
-          <span class="helpDoc" id="zoomTools">
-            <div data-dojo-type="dijit/form/ToggleButton" id="zoomIn" data-dojo-id="zoomIn" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomIn'"></div>
-            <div data-dojo-type="dijit/form/ToggleButton" id="zoomOut" data-dojo-id="zoomOut" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomOut'"></div>
-          </span>
-          <div data-dojo-type="dijit/form/Button" id="fullExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-fullExtent',
-               onClick:function(){navToolbar.zoomToFullExtent();}"></div>
-          <span class="helpDoc" id="extentTools">
-            <div data-dojo-type="dijit/form/Button" id="prevExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-prevExtent',
-               onClick:function(){navToolbar.zoomToPrevExtent();}"></div>
-            <div data-dojo-type="dijit/form/Button" id="nextExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-nextExtent',
-               onClick:function(){navToolbar.zoomToNextExtent();}"></div>
-          </span>
-          <div data-dojo-type="dijit/form/ToggleButton" id="pan" data-dojo-id="pan" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-pan'"></div>
-          <div data-dojo-type="dijit/form/ToggleButton" id="identify" data-dojo-id="identify" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-identify'"></div>
-          <div data-dojo-type="dijit/form/DropDownButton" id="help" data-dojo-id="help" label="Help">
-            <div data-dojo-type="dijit/DropDownMenu" id="helpMenu">
-              <div data-dojo-type="dijit/MenuItem" data-dojo-props="onClick:function(){startIntro();}">
-                Tutorial
-              </div>
-              <div data-dojo-type="dijit/MenuItem" data-dojo-props="onClick:function() {aboutDialog.show();}">
-                About
-              </div>
-              <div data-dojo-type="dijit/MenuItem" onclick="window.location.href='mailto:sjcgis@sanjuanco.com'">
-                Contact Us
-              </div>
+        <div id="borderContainerTwo" data-dojo-type="dijit/layout/BorderContainer"
+             data-dojo-props="gutters:false, liveSplitters:false">
+            <div id="topPane" class="titleBar" data-dojo-type="dijit/layout/ContentPane"
+                 data-dojo-props="region:'top', splitter:false, layoutPriority:1">
+                <h1>San Juan County - Polaris Property Search</h1>
             </div>
-          </div>
-        </div>
-      </div>
-      <div data-dojo-type="dijit/layout/AccordionContainer"
-           data-dojo-props="minSize:20, region:'leading', splitter:true, layoutPriority:3" id="leftAccordion" data-dojo-id="leftAccordion">
-        <div data-dojo-type="dijit/layout/ContentPane" title="Legend" id="legendPane" data-dojo-id="legendPane">
-          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
-            <div id="legendDiv"></div>
-          </div>
-        </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Map Contents" id="mapContentsPane" data-dojo-id="mapContentsPane">
-          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
-            <div id="tocDiv"></div>
-          </div>
-        </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Search" id="searchPane" data-dojo-id="searchPane" selected="true">
-          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
-            <div data-dojo-type="dijit/form/Form" id="searchForm" data-dojo-id="searchForm" action=""
-                 method="">
-              <label for="searchText">Enter an Address, Parcel Number, Road or Island to Search:</label><br />
-              <input type="text" id="searchText" name="searchText" required="true"
-                     data-dojo-type="dijit/form/ValidationTextBox" />
-              <span id="searchIndicator" style="visibility:hidden;">Searching... <img src="images/loading.gif"></span>
-              <br />
-              <button id="searchButton" type="Submit"</button><button id="clearButton" type="Reset"></button>
-                <div id="grid" style="visibility:hidden;"></div>
+            <div id="toolBarPane" data-dojo-type="dijit/layout/ContentPane"
+                 data-dojo-props="region:'top', splitter:false, layoutPriority:2">
+                <div id="navToolbar" data-dojo-type="dijit/Toolbar">
+                    <span class="helpDoc" id="zoomTools">
+                        <div data-dojo-type="dijit/form/ToggleButton" id="zoomIn" data-dojo-id="zoomIn" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomIn'"></div>
+                        <div data-dojo-type="dijit/form/ToggleButton" id="zoomOut" data-dojo-id="zoomOut" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomOut'"></div>
+                    </span>
+                    <div data-dojo-type="dijit/form/Button" id="fullExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-fullExtent',
+                                                                                             onClick:function(){navToolbar.zoomToFullExtent();}"></div>
+                    <span class="helpDoc" id="extentTools">
+                        <div data-dojo-type="dijit/form/Button" id="prevExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-prevExtent',
+                                                                                                 onClick:function(){navToolbar.zoomToPrevExtent();}"></div>
+                        <div data-dojo-type="dijit/form/Button" id="nextExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-nextExtent',
+                                                                                                 onClick:function(){navToolbar.zoomToNextExtent();}"></div>
+                    </span>
+                    <div data-dojo-type="dijit/form/ToggleButton" id="pan" data-dojo-id="pan" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-pan'"></div>
+                    <div data-dojo-type="dijit/form/ToggleButton" id="identify" data-dojo-id="identify" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-identify'"></div>
+                    <div data-dojo-type="dijit/form/DropDownButton" id="help" data-dojo-id="help" label="Help">
+                        <div data-dojo-type="dijit/DropDownMenu" id="helpMenu">
+                            <div data-dojo-type="dijit/MenuItem" data-dojo-props="onClick:function(){startIntro();}">
+                                Tutorial
+                            </div>
+                            <div data-dojo-type="dijit/MenuItem" data-dojo-props="onClick:function() {aboutDialog.show();}">
+                                About
+                            </div>
+                            <div data-dojo-type="dijit/MenuItem" onclick="window.location.href='mailto:sjcgis@sanjuanco.com'">
+                                Contact Us
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div data-dojo-type="dijit/layout/AccordionContainer"
+                 data-dojo-props="minSize:20, region:'leading', splitter:true, layoutPriority:3" id="leftAccordion" data-dojo-id="leftAccordion">
+                <div data-dojo-type="dijit/layout/ContentPane" title="Legend" id="legendPane" data-dojo-id="legendPane">
+                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+                        <div id="legendDiv"></div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Map Contents" id="mapContentsPane" data-dojo-id="mapContentsPane">
+                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+                        <div id="tocDiv"></div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Search" id="searchPane" data-dojo-id="searchPane" selected="true">
+                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+                        <div data-dojo-type="dijit/form/Form" id="searchForm" data-dojo-id="searchForm" action=""
+                             method="">
+                            <label for="searchText">Enter an Address, Parcel Number, Road or Island to Search:</label><br />
+                            <input type="text" id="searchText" name="searchText" required="true"
+                                   data-dojo-type="dijit/form/ValidationTextBox" />
+                            <span id="searchIndicator" style="visibility:hidden;">Searching... <img src="images/loading.gif"></span>
+                            <br />
+                            <button id="searchButton" type="Submit"</button><button id="clearButton" type="Reset"></button>
+                            <div id="grid" style="visibility:hidden;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Measure" id="measurePane" data-dojo-id="measurePane">
+                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+                        <div id="measureDiv"></div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Draw" id="drawPane" data-dojo-id="drawPane">
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Print" id="printPane" data-dojo-id="printPane">
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Disclaimer on Use" id="disclaimerPane" data-dojo-id="disclaimerPane">
+                </div>
+            </div>
+            <div id="map" data-dojo-type="dijit/layout/ContentPane"
+                 data-dojo-props="region:'center'">
+            </div>
         </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Measure" id="measurePane" data-dojo-id="measurePane">
-          <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
-            <div id="measureDiv"></div>
-          </div>
-        </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Draw" id="drawPane" data-dojo-id="drawPane">
-        </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Print" id="printPane" data-dojo-id="printPane">
-        </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Disclaimer on Use" id="disclaimerPane" data-dojo-id="disclaimerPane">
-        </div>
-      </div>
-      <div id="map" data-dojo-type="dijit/layout/ContentPane"
-           data-dojo-props="region:'center'">
-      </div>
-    </div>
-  </body>
+    </body>
 </html>

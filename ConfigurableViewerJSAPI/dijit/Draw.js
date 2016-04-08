@@ -19,8 +19,9 @@ define([
     ], function(declare, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Button, lang, Color, ColorPalette, TooltipDialog, DropDownButton, NumberSpinner, Select, draw, Font, drawTemplate, dom, domStyle) {
 
     //anonymous function to load CSS files required for this module
-    (function() {
-        var css = [require.toUrl("/PolarisJS/ConfigurableViewerJSAPI/dijit/Draw/css/Draw.css")];
+        (function() {
+            var path = location.pathname.replace(/[^\/]+$/, '');
+        var css = [require.toUrl(path + "ConfigurableViewerJSAPI/dijit/Draw/css/Draw.css")];
         var head = document.getElementsByTagName("head").item(0),
             link;
         for(var i = 0, il = css.length; i < il; i++) {
@@ -135,7 +136,7 @@ define([
 		    "style": dijit.byId("pointSymbolSelect").value,
 		    "color": pointColor,
 		    "size": dijit.byId("pointSizeSelect").value
-		});	    
+		});
                 break;
             case "polyline":
 		var lineColor = lang.clone(this.color);
@@ -175,7 +176,7 @@ define([
 		    }
 		});
 		symbol.setText(myText);
-		break;	    
+		break;
 	    default:
             }
             var graphic = new esri.Graphic(geometry, symbol);

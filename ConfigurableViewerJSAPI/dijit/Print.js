@@ -7,7 +7,7 @@ define([
     "dijit/form/FilteringSelect",
     "dijit/form/ValidationTextBox",
     "dijit/form/NumberTextBox",
-    "dijit/form/Button",
+    "dijit/form/Button",git
     "dijit/form/CheckBox",
     "dijit/ProgressBar",
     "dijit/form/DropDownButton",
@@ -25,8 +25,9 @@ define([
     ], function(declare, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Form, FilteringSelect, ValidationTextBox, NumberTextBox, Button, CheckBox, ProgressBar, DropDownButton, TooltipDialog, RadioButton, PrintTask, Memory, lang, array, Style, domConstruct, domClass, printTemplate, printResultTemplate) {
 
     //anonymous function to load CSS files required for this module
-    (function() {
-        var css = [require.toUrl("/PolarisJS/ConfigurableViewerJSAPI/dijit/Print/css/Print.css")];
+        (function() {
+            var path = location.pathname.replace(/[^\/]+$/, '');
+        var css = [require.toUrl(path + "ConfigurableViewerJSAPI/dijit/Print/css/Print.css")];
         var head = document.getElementsByTagName("head").item(0),
             link;
         for(var i = 0, il = css.length; i < il; i++) {

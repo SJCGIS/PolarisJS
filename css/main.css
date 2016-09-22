@@ -1,0 +1,110 @@
+#scaleDiv .agsTOCOutofScale {
+  display: none;
+}
+
+.dgrid {
+  height: 15em;
+}
+
+.dgrid-scroller {
+  overflow:auto !important;
+}
+.agsjsTOCRootLayerLabel {
+  font-size: small;
+}
+.agsjsTOCServiceLayerLabel {
+  font-size: small;
+}
+.agsjsTOCLegendLabel {
+  font-size: small;
+}
+.dijitButtonFocused {
+  border: 1px solid #769DC0;
+}
+
+html, body {
+  height:100%;
+  width:100%;
+  margin:0;
+  padding:0;
+  font: small "Arial", sans-serif;
+}
+#borderContainerTwo {
+  width:100%;
+  height:100%;
+}
+#map {
+  height:100%;
+  width:100%;
+  overflow:hidden;
+}
+.layersDiv {
+  background: #3d5d72;
+}
+#leftAccordion {
+  width: 25%;
+  height: 100%;
+}
+#paneHeader {
+  background: url(../images/header.png) repeat-x;
+  color: white;
+  border-bottom: solid 1px #B5BCC7;
+  text-align: center;
+  height: 30px;
+  margin: 0;
+  overflow: auto;
+  font-size: 16px;
+  padding: 8px 5px;
+}
+.esriScalebarLabel {
+  color: white;
+}
+.esriLegendServiceLabel {
+  display:none;
+}
+.esriLegendGroupLayer {
+  display:none;
+}
+.navToolbarButton {
+  background: url(../images/csg-51e0975dc237a.png) no-repeat top left;
+}
+
+.info-tip {
+  background: #5BC0DE;
+  color: white;
+  font-size: small;
+  padding: 5px;
+  display: none;
+  margin: 10px 0;
+}
+
+.navToolbarButton-annotate{ background-position: 0 0; width: 25px; height: 25px; }
+.navToolbarButton-fullExtent{ background-position: -75px 0; width: 25px; height: 25px; }
+.navToolbarButton-identify{ background-position: -150px 0; width: 25px; height: 25px; }
+.navToolbarButton-measure{ background-position: -225px 0; width: 25px; height: 25px; }
+.navToolbarButton-nextExtent .disabled{ background-position: -300px 0; width: 25px; height: 25px; }
+.navToolbarButton-nextExtent{ background-position: -375px 0; width: 25px; height: 25px; }
+.navToolbarButton-pan{ background-position: -450px 0; width: 25px; height: 25px; }
+.navToolbarButton-prevExtent .disabled{ background-position: -525px 0; width: 25px; height: 25px; }
+.navToolbarButton-prevExtent{ background-position: -600px 0; width: 25px; height: 25px; }
+.navToolbarButton-print{ background-position: -675px 0; width: 25px; height: 25px; }
+.navToolbarButton-zoomIn{ background-position: -750px 0; width: 25px; height: 25px; }
+.navToolbarButton-zoomOut{ background-position: -825px 0; width: 25px; height: 25px; }
+
+#topPane {
+  color: white;
+  text-align: right;
+  font-family: Arial;
+  font-size: 10px;
+  font-style: italic;
+  background: url('../images/bluemarble.gif') no-repeat left top, #1e5799; /* Old browsers */
+  /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+  background: url('../images/bluemarble.gif') no-repeat left top, url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFlNTc5OSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDIwMDA1IiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iNzUlIiBzdG9wLWNvbG9yPSIjNDI2ODhjIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+  background: url('../images/bluemarble.gif') no-repeat left top, -moz-linear-gradient(left, #1e5799 0%, #020005 0%, #42688c 75%); /* FF3.6+ */
+  background: url('../images/bluemarble.gif') no-repeat left top, -webkit-gradient(linear, left top, right top, color-stop(0%,#1e5799), color-stop(0%,#020005), color-stop(75%,#42688c)); /* Chrome,Safari4+ */
+  background: url('../images/bluemarble.gif') no-repeat left top, -webkit-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* Chrome10+,Safari5.1+ */
+  background: url('../images/bluemarble.gif') no-repeat left top, -o-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* Opera 11.10+ */
+  background: url('../images/bluemarble.gif') no-repeat left top, -ms-linear-gradient(left, #1e5799 0%,#020005 0%,#42688c 75%); /* IE10+ */
+  background: url('../images/bluemarble.gif') no-repeat left top, linear-gradient(to right, #1e5799 0%,#020005 0%,#42688c 75%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#42688c',GradientType=1 ); /* IE6-8 */
+}

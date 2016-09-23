@@ -1,0 +1,18 @@
+{
+  "name": "polaris",
+  "version": "2.0.0",
+  "description": "Polaris is the go-to web application for San Juan County WA citizens and employees to get information on property, critical areas, and other maps.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SJCGIS/PolarisJS.git"
+  },
+  "author": "Nick Peihl <sjcgis@sanjuanco.com> (http://sjcgis.org/)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/SJCGIS/PolarisJS/issues"
+  },
+  "homepage": "https://github.com/SJCGIS/PolarisJS#readme"
+}

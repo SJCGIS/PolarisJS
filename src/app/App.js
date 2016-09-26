@@ -277,7 +277,7 @@ define([
       measurement = new Measurement({
         map: map,
         defaultAreaUnit: Units.ACRES,
-        defaultLengthUnit: Units.FEET,
+        defaultLengthUnit: Units.FEET
       }, dom.byId('measureDiv'))
       measurement.startup()
       measurement.on('tool-change', lang.hitch(this, 'navigationChangeHandler'))
@@ -298,7 +298,7 @@ define([
         map: map,
         height: 200,
         width: 200,
-        baseLayer: ovMapBaseLayer,
+        baseLayer: ovMapBaseLayer
       }, dom.byId('overviewMapDiv'))
       overviewMap.startup()
     },

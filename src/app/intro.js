@@ -28,7 +28,7 @@ function startIntro() {
         intro: 'Clicking on the Full Extent button zooms the map to its default position.'
       }, {
         element: '#extentTools',
-        intro: 'Clicking on the Previous Extent and Next Extent buttons will zoom the map to the previous or next extent. If there is no previous or next extent the button does nothing.',
+        intro: 'Clicking on the Previous Extent and Next Extent buttons will zoom the map to the previous or next extent. If there is no previous or next extent the button does nothing.'
       }, {
         element: '#pan',
         intro: 'To pan around the map, select the Pan tool and click and drag the map around.'

@@ -4,7 +4,7 @@
  * @fileoverview
  * <p>A TOC (Table of Contents) widget for ESRI ArcGIS Server JavaScript API. The namespace is <code>agsjs</code></p>
  */
-// change log:
+// change log: 
 // 2014-04-04: fire event 'toc-node-checked' (classic onTOCNodeChecked) on click on check box. {rootLayer,serviceLayer, checked}
 // 2013-10-17: TOC.on('load') event style, clean up src and sample AMD style, JSAPI 3.7.
 // 2013-09-23: Secure service support: Integrated Windows, Token, or via Proxy (IWA or Token); listen to rootLayer onLoad if not already loaded.
@@ -16,7 +16,7 @@
 // 2012-07-23: sync and honor setVisibleLayers.
 // 2012-07-19: xdomain build
 // 2012-07-18: upgrade to JSAPI v3.0
-// 2012-02-02: fix IE7&8 problem when there is "all other value"(default symbol)
+// 2012-02-02: fix IE7&8 problem when there is "all other value"(default symbol) 
 // 2011-12-20: refresh method
 // 2011-11-04: v1.06: uniquevalue renderer check on/off using definitions. group layer on/off. change css class name. inline style as default. deprecate standard style
 // 2011-08-11: support for not showing legend or layer list; slider at service level config; removed style background.
@@ -25,7 +25,7 @@
 
 // reference: http://dojotoolkit.org/reference-guide/quickstart/writingWidgets.html
 
-define("agsjs/dijit/TOC",
+define("agsjs/dijit/TOC", 
 ['dojo/_base/declare',
 "dojo/has",
 "dojo/aspect",
@@ -44,11 +44,10 @@ define("agsjs/dijit/TOC",
  "esri/symbols/jsonUtils",
  "esri/geometry/scaleUtils",
  "esri/config",
- "esri/request",
  "esri/layers/ArcGISDynamicMapServiceLayer",
  "esri/layers/ArcGISTiledMapServiceLayer",
  "dojo/_base/sniff"], function(
-  declare,
+  declare, 
   has,
   aspect,
   lang,
@@ -61,12 +60,11 @@ define("agsjs/dijit/TOC",
   _Templated,
   Evented,
   gfx,
-  coreFx,
+  coreFx, 
   Toggler,
   jsonUtils,
   scaleUtils,
   esriConfig,
-  esriRequest,
   ArcGISDynamicMapServiceLayer,
   ArcGISTiledMapServiceLayer){
 
@@ -85,7 +83,7 @@ define("agsjs/dijit/TOC",
     '<div data-dojo-attach-point="containerNode" style="display: none;"> </div></div>',
     // each node contains reference to rootLayer, servierLayer(layer within service), legend
     // the reason not to use a "type" property is because in the case of legend, it is necessary
-    // to access meta data of the serviceLayer and rootLayer as well.
+    // to access meta data of the serviceLayer and rootLayer as well. 
     rootLayer: null,
     serviceLayer: null,
     legend: null,
@@ -120,7 +118,7 @@ define("agsjs/dijit/TOC",
       if (!this._noCheckNode) {
         // typically _noCheckNode means it is a tiledlayer, or legend item that should not have a checkbox
         var chk;
-		//2013-10-17: do not want to load dijit form in this widget,
+		//2013-10-17: do not want to load dijit form in this widget, 
 		//but seems no good way to check if it is already been loaded by external code
 		// using AMD style without rely on classic dijit namespace.
 		// maybe will require TOC constructor explicitly set if want to plain HTML checkbox or dijit.form.CheckBox
@@ -150,10 +148,10 @@ define("agsjs/dijit/TOC",
           }
           return true;
         });
-        if (noneVisible)
+        if (noneVisible) 
           showChildren = false;
       }
-      if (this.data.collapsed)
+      if (this.data.collapsed) 
         showChildren = false;
       if (this.iconNode && this.iconNode.src == this.blank) {
         domClass.add(this.iconNode, 'dijitTreeExpando');
@@ -208,7 +206,7 @@ define("agsjs/dijit/TOC",
 						layoutAlign: 'right'
 					});
 					me.slider.placeAt(me.sliderNode);
-
+					
 					// the new on method lost context compare to the old-good connect.
 					//dojo .connect(rootLayer, 'onOpacityChange', this, function(op){
 					rootLayer.on('opacity-change', function(evt){
@@ -245,7 +243,7 @@ define("agsjs/dijit/TOC",
 			domConstruct.destroy(this.containerNode);
             this.containerNode = null;
           }
-
+          
         } else {
           domStyle.set(this.iconNode, 'visibility', 'hidden');
         }
@@ -273,7 +271,7 @@ define("agsjs/dijit/TOC",
           this._noCheckNode = true;
         }
         if (serviceLayer._legends && !this.rootLayerTOC.config.noLegend) {
-		  if (serviceLayer._legends.length == 1) {
+		  if (serviceLayer._legends.length == 1) { 
             this.iconNode.src = this._getLegendIconUrl(serviceLayer._legends[0]);
             domConstruct.destroy(this.containerNode);
             this.containerNode = null;
@@ -338,7 +336,7 @@ define("agsjs/dijit/TOC",
             }
           }
         } else {
-          if (console)
+          if (console) 
             console.log('no symbol in renderer');
         }
       } else {
@@ -361,7 +359,7 @@ define("agsjs/dijit/TOC",
         dx: w / 2,
         dy: h / 2
       });
-
+	 
     },
     _getLegendIconUrl: function(legend){
       var src = legend.url;
@@ -464,12 +462,12 @@ define("agsjs/dijit/TOC",
 		esri.show(this.domNode);
 	},
 	/** Hide TOC node
-	 *
+	 * 
 	 */
 	hide: function(){
 		esri.hide(this.domNode);
 	},
-    // change UI according to the state of map layers.
+    // change UI according to the state of map layers. 
     _adjustToState: function(){
       if (this.checkNode) {
         var checked = this.legend ? this.legend.visible : this.serviceLayer ? this.serviceLayer.visible : this.rootLayer ? this.rootLayer.visible : false;
@@ -505,12 +503,12 @@ define("agsjs/dijit/TOC",
     },
     _onClick: function(evt){
       var t = evt.target;
-	  var lay;
+	  var lay; 
       if (t == this.checkNode || dijit.getEnclosingWidget(t) == this.checkNode) {
         // 2013-07-23: remove this most complex checkable legend functionality to simplify the widget
         if (this.serviceLayer) {
           this.serviceLayer.visible = this.checkNode && this.checkNode.checked;
-          // if a sublayer is checked on, force it's group layer to be on.
+          // if a sublayer is checked on, force it's group layer to be on. 
           // 2013-08-01 handler multiple level of groups
           if (this.serviceLayer.visible) {
             lay = this.serviceLayer;
@@ -552,7 +550,7 @@ define("agsjs/dijit/TOC",
 			this._toggleContainer(this.checkNode && this.checkNode.checked);
         }
 		this.rootLayerTOC._adjustToState();
-
+        
       } else if (t == this.iconNode) {
         this._toggleContainer();
       }
@@ -598,7 +596,7 @@ define("agsjs/dijit/TOC",
       return null;
 	}
   });
-
+  
  var _RootLayerTOC = declare([_Widget], {
     _currentIndent: 0,
     rootLayer: null,
@@ -612,7 +610,7 @@ define("agsjs/dijit/TOC",
       this.config = params.config || {};
       this.rootLayer = params.config.layer;
       this.tocWidget = params.tocWidget;
-
+      
     },
     // extenstion point called by framework
     postCreate: function(){
@@ -627,9 +625,9 @@ define("agsjs/dijit/TOC",
         this._createRootLayerTOC();
       }
     },
-
+    
     _getLegendInfo: function(){
-
+    
       var url = '';
       if (this.rootLayer.version >= 10.01) {
         url = this.rootLayer.url + '/legend';
@@ -639,7 +637,7 @@ define("agsjs/dijit/TOC",
         var soap = this.rootLayer.url.substring(0, i) + this.rootLayer.url.substring(i + 5);
         url = url + '?soapUrl=' + escape(soap);
       }
-      var handle = esriRequest({
+      var handle = esri.request({
         url: url,
         content: {
           f: "json"
@@ -649,7 +647,7 @@ define("agsjs/dijit/TOC",
         load: lang.hitch(this, this._processLegendInfo),
         error: lang.hitch(this, this._processLegendError)
       });
-
+      
     },
     _processLegendError: function(err){
       this._createRootLayerTOC();
@@ -695,7 +693,7 @@ define("agsjs/dijit/TOC",
           }
         });
 		 //2012-07-21: if setVisibility is called before this widget is built, we want to use the actual visibility instead of the layerInfo.
-
+        
         //finalize the tree structure in _tocInfos, skipping all sublayers because they were nested already.
         var tocInfos = [];
         array.forEach(layer.layerInfos, function(layerInfo){
@@ -708,7 +706,7 @@ define("agsjs/dijit/TOC",
       this._createRootLayerTOC();
     },
     _createRootLayerTOC: function(){
-
+    
       // sometimes IE may fail next step
       ///this._rootLayerNode = new agsjs.dijit._TOCNode({
 	  if (this.rootLayer.loaded){
@@ -732,14 +730,14 @@ define("agsjs/dijit/TOC",
 	  	//dojo .connect(this.rootLayer, 'onLoad', dojo .hitch(this, this._createRootLayerTOC));
 		this.rootLayer.on('load', lang.hitch(this, this._createRootLayerTOC));
 	  }
-
+	  
     },
 	/**
 	 * @event
 	 */
     onLoad: function(){
     },
-
+	
     _refreshLayer: function(){
       var rootLayer = this.rootLayer;
       var timeout = this.tocWidget.refreshDelay;
@@ -777,16 +775,16 @@ define("agsjs/dijit/TOC",
         this._visLayerHandler.remove();
         this._visLayerHandler = null;
       }
-
+      
     }
   });
-
+  
   var TOC = declare("agsjs.dijit.TOC", [_Widget, Evented],{
     indentSize: 18,
     swatchSize: [30, 30],
     refreshDelay: 500,
     layerInfos: null,
-
+    
     /**
      * @name TOCLayerInfo
      * @class This is an object literal that specify the options for each map rootLayer layer.
@@ -805,8 +803,8 @@ define("agsjs/dijit/TOC",
      * @property {Object[]} [layerInfos] a subset of layers in the map to show in TOC. each object is a {@link TOCLayerInfo}
      * @property {Number} [indentSize] indent size of tree nodes. default to 18.
      */
-
-    /**
+	
+    /** 
      * Create a Table Of Contents (TOC)
      * @name TOC
      * @constructor
@@ -821,7 +819,7 @@ define("agsjs/dijit/TOC",
       }
       this.layerInfos = params.layerInfos;
 	  this.indentSize = params.indentSize || 18;
-
+	  
       lang.mixin(this, params);
     },
     // extension point
@@ -834,10 +832,10 @@ define("agsjs/dijit/TOC",
     onLoad: function(){
     },
 	/**@event
-	 *
+	 * 
 	 */
 	onTOCNodeChecked: function(rootLayer, serviceLayer, checked){
-
+		
 	},
     _createTOC: function(){
       domConstruct.empty(this.domNode);
@@ -891,7 +889,7 @@ define("agsjs/dijit/TOC",
       this._checkLoadHandler = null;
     },
 	/**
-	 * Find the TOC Node based on root layer and optional serviceLayer ID.
+	 * Find the TOC Node based on root layer and optional serviceLayer ID. 
 	 * @param {Object} layer root Layer of a map
 	 * @param {Object} serviceLayerId id of a ArcGIS Map Service Layer
 	 * @return {TOCNode} TOC node, it has public methods: collapse, expand, show, hide

@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=7, IE=9, IE=10">
-        <!--The viewport meta tag is used to improve the presentation and behavior of the samples
-             on iOS devices-->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8"> <!-- set character encoding for the document -->
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="application-name" content="Polaris Property Search">
+        <meta name="description" content="Polaris is the go-to web application for San Juan County WA citizens and employees to get information on property, critical areas, and other maps.">
+        <meta name="robots" content="index,follow,noodp"><!-- All Search Engines -->
+        <meta name="googlebot" content="index,follow"><!-- Google Specific -->
+        <meta name="subject" content="Property search web application for San Juan County WA">
+        <meta name="url" content="https://sjcgis.org/polaris">
+        <meta name="rating" content="General">
+        <meta name="ICBM" content="48.552524, -122.965851">
+        <meta name="geo.position" content="48.552524;-122.965851">
+        <meta name="geo.region" content="US-WA"><!-- Country code (ISO 3166-1): mandatory, state code (ISO 3166-2): optional; eg. content="US" / content="US-NY" -->
+        <meta name="geo.placename" content="San Juan County"><!-- eg. content="New York City" -->
         <title>Polaris - San Juan County WA</title>
-        <link rel="stylesheet" type="text/css" href="app/css/app.css">
+        <link href="app/css/app.css" rel="stylesheet">
     </head>
 
     <body class="claro">
@@ -89,8 +98,8 @@
                  data-dojo-props="region:'center'">
             </div>
         </div>
-        <script src="intro.js/minified/intro.min.js"></script>
-        <script src="app/intro.js" type="text/javascript"></script>
+        <script async src="intro.js/minified/intro.min.js"></script>
+        <script async src="app/intro.js" type="text/javascript"></script>
 
         <script>
          var path = location.pathname.replace(/[^\/]+$/, '')
@@ -117,7 +126,7 @@
          }
         </script>
         <script src="dojo/dojo.js"></script>
-        <script>
+        <script async>
          require(['app/App'], function (App) {
              App.startup()
          })

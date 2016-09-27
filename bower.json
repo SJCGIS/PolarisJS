@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "dependencies": {
     "esri": "arcgis-js-api#3.17.0",
-    "intro.js": "~2.3.0"
+    "intro-js": "~2.3.0"
   },
   "resolutions": {
     "dgrid": "0.3.17/esri-3.14.0",

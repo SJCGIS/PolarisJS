@@ -46,7 +46,7 @@ define([
   'agsjs/dijit/TOC',
   'cmv/dijit/Print',
   'cmv/dijit/Draw',
-  'introjs',
+  'intro-js',
   'dojo/domReady!'
 ], function (
   aspect,

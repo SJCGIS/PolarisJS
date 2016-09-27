@@ -98,6 +98,7 @@
                  data-dojo-props="region:'center'">
             </div>
         </div>
+        <!-- build:remove -->
         <script>
          var path = location.pathname.replace(/[^\/]+$/, '')
          dojoConfig = {
@@ -110,7 +111,6 @@
                  'dgrid',
                  'dijit',
                  'dojo',
-                 'dojo-themes',
                  'dojox',
                  'dstore',
                  'esri',
@@ -125,6 +125,7 @@
              ]
          }
         </script>
+        <!-- /build -->
         <script src="dojo/dojo.js"></script>
         <script async>
          require(['app/App'], function (App) {

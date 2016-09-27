@@ -11,7 +11,7 @@ define([
   "dijit/form/DropDownButton",
   "dijit/form/NumberSpinner",
   "dijit/form/Select",
-  "esri/Graphic",
+  "esri/graphic",
   "esri/layers/GraphicsLayer",
   "esri/toolbars/draw",
   "esri/symbols/Font",

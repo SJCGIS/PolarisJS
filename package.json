@@ -4,7 +4,8 @@
   "description": "Polaris is the go-to web application for San Juan County WA citizens and employees to get information on property, critical areas, and other maps.",
   "scripts": {
     "postinstall": "bower install",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "grunt clean",
+    "build": "grunt build"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,11 @@
   },
   "homepage": "https://github.com/SJCGIS/PolarisJS#readme",
   "devDependencies": {
-    "bower": "^1.7.9"
-  }
+    "bower": "^1.7.9",
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-dojo": "^1.1.2",
+    "grunt-processhtml": "^0.4.1"
+  },
+  "dojoBuild": "build.profile.json"
 }

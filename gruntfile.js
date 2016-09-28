@@ -59,18 +59,15 @@ module.exports = function (grunt) {
   grunt.registerTask('travis', ['build'])
 
   function writeServiceWorkerFile (rootDir, handleFetch, cb) {
-    debugger
     var config = {
       cacheId: packageJson.name,
       handleFetch: handleFetch,
       logger: grunt.log.writeIn,
       staticFileGlobs: [
-        rootDir + '/**.html',
-        rootDir + '/dojo/dojo.js',
-        rootDir + '/app/css/app.css',
-        rootDir + '/app/images/**.*',
-        rootDir + '/cmv/dijit/**/*.css',
-        rootDir + '/cmv/dijit/**/*.png'
+        rootDir + '/**/*.html', // html templates
+        rootDir + '/dojo/dojo.js', // dojo script
+        rootDir + '/**/*.css', // CSS
+        rootDir + '/**/*.+(gif|png|jpg)' // images
       ],
       stripPrefix: rootDir + '/',
       verbose: true

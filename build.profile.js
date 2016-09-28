@@ -106,12 +106,18 @@ var profile = {
         // include the app, set accordingly for your application
         'app/App',
         // dependencies of esri/map that will be requested if not included
+        'dgrid/TouchScroll',
+        'dgrid/util/has-css3',
+        'dgrid/util/touch',
+        'dojo/selector/lite',
         'dojox/gfx/path',
         'dojox/gfx/svg',
         'dojox/gfx/filters',
         'dojox/gfx/svgext',
         'dojox/gfx/shape',
-        'esri/dijit/Attribution'
+        'esri/dijit/Attribution',
+        'esri/layers/LayerDrawingOptions',
+        'xstyle/core/load-css'
       ],
       // You can define the locale for your application if you like
       includeLocales: ['en-us']

@@ -22,9 +22,15 @@ npm build
 ```
 This creates the necessary files in the `dist` folder. Copy and paste the contents of the `dist` folder to a web enabled location on a web server i.e. ` C:\inetpub\wwwroot\polaris`.
 
-## What's new?
+## Service Workers
 
-See the [Changelog](CHANGELOG.md)
+Starting in Polaris version 2.0 Service Workers will install JavaScript, CSS, and other application shell assets onto the client's web browser. This means subsequent loads of Polaris will load the application files directly from the web browser rather than downloading from the network even after closing and reopening the browser! Only the map images need to be downloaded which reduces the load time significantly for slower connections.
+
+For example, on a slow 2G network (250kb/s down), it takes 42 seconds for Polaris to load all the logic, styles, and map images. With the logic and styles automatically installed in the browser by the service worker, subsequent refreshes take only 15 seconds for downloading the map images! When we factor in the browser cache for map images Polaris refreshes in only 7 seconds.
+
+__Note:__ Service workers only work when the page is served by HTTPS. Service workers are [not available in IE, Safari, and Edge browsers](http://caniuse.com/#feat=serviceworkers). Pages loaded with HTTP or in an unsupported browser will fall back to using browser caches.
+
+[More on Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
 
 ## Contribute
 Everyone is welcome to contribute. Submit enhancement requests, bugs or comments on the [Issues](https://github.com/SJCGIS/PolarisJS/issues) page.

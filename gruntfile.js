@@ -15,8 +15,7 @@ module.exports = function (grunt) {
       },
       uncompressed: {
         src: [
-          'dist/**/*.uncompressed.js',
-          'dist/**/*.js.map'
+          'dist/**/*.uncompressed.js'
         ]
       }
     },

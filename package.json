@@ -6,7 +6,7 @@
     "postinstall": "bower install",
     "clean": "grunt clean",
     "build": "grunt build",
-    "travis": "grunt travis"
+    "travis": "grunt travis --verbose"
   },
   "repository": {
     "type": "git",

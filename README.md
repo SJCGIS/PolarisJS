@@ -18,7 +18,7 @@ Run the following commands:
 ``` shell
 git clone https://github.com/SJCGIS/PolarisJS.git
 npm install
-npm build
+npm run build
 ```
 This creates the necessary files in the `dist` folder. Copy and paste the contents of the `dist` folder to a web enabled location on a web server i.e. ` C:\inetpub\wwwroot\polaris`.
 

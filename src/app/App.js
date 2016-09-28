@@ -138,7 +138,7 @@ define([
         this.startTutorial()
       }))
 
-      var mapDeferred = arcgisUtils.createMap('cf47d72e5f0e4f02aa8b35a2e9b6ac98', 'map', {
+      var mapDeferred = arcgisUtils.createMap('77af8d9734044b808a4e33266ce3e63a', 'map', {
         geometryServiceURL: 'https://www.sjcgis.org/arcgis/rest/services/Utilities/Geometry/GeometryServer'
       })
 

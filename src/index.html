@@ -98,6 +98,7 @@
                  data-dojo-props="region:'center'">
             </div>
         </div>
+
         <!-- build:remove -->
         <script>
          var path = location.pathname.replace(/[^\/]+$/, '')
@@ -126,6 +127,7 @@
          }
         </script>
         <!-- /build -->
+
         <script src="dojo/dojo.js"></script>
         <script async>
          require(['app/App'], function (App) {
@@ -142,5 +144,8 @@
          ga('send', 'pageview');
 
         </script>
+        <!-- build:template
+             <script src="service-worker-registration.js"></script>
+        /build -->
     </body>
 </html>

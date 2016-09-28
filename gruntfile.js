@@ -22,7 +22,6 @@ module.exports = function (grunt) {
     },
     copy: {
       main: {
-        expand: true,
         src: 'src/service-worker-registration.js',
         dest: 'dist/service-worker-registration.js'
       }

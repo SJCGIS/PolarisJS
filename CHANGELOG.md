@@ -4,11 +4,12 @@ Notable changes to this project will be documented in this file, however changes
 
 The format is based on [Keep a Changelog](http://keepachangelog.com) and this project adheres to [Semantic Versioning](http://semver.org)
 
-## [Unreleased]
+## [2.0.0] - 2016-09-28
 ### Added
 - Add ability to create minimized builds using the Dojo build system
-- Add service worker support for JavaScript and CSS assets
+- Add service worker support for JavaScript, CSS, and image assets
 - Add grunt and npm tools for installation
+- Add license file
 
 ### Changed
 - Move JavaScript from inline to separate file

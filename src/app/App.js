@@ -352,7 +352,10 @@ define([
         defaultLengthUnit: Units.FEET
       }, dom.byId('measureDiv'))
       measurement.startup()
-      measurement.on('tool-change', lang.hitch(this, 'navigationChangeHandler'))
+      measurement.on('tool-change', lang.hitch(this, function (e) {
+        var button = e.target
+        this.navigationChangeHandler(button)
+      }))
     },
 
     constructDisclaimer: function (response) {

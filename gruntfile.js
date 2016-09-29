@@ -64,10 +64,17 @@ module.exports = function (grunt) {
       handleFetch: handleFetch,
       logger: grunt.log.writeIn,
       staticFileGlobs: [
-        rootDir + '/**/*.html', // html templates
-        rootDir + '/dojo/dojo.js', // dojo script
-        rootDir + '/**/*.css', // CSS
-        rootDir + '/**/*.+(gif|png|jpg)' // images
+        // root html
+        rootDir + '/*.html',
+        // html templates
+        rootDir + '/app/**/*.html',
+        // dojo script
+        rootDir + '/dojo/dojo.js',
+        // CSS
+        rootDir + '/app/**/*.css',
+        // images
+        rootDir + '/app/images/*.+(gif|png|jpg)',
+        rootDir + 'cmv/**/images/*.+(gif|png|jpg)'
       ],
       stripPrefix: rootDir + '/',
       runtimeCaching: [{

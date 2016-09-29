@@ -173,7 +173,6 @@ var profile = {
     "extend-dojo": 1
   },
   defaultConfig: {
-    parseOnLoad: true,
     deps: ['app/App'],
     hasCache: {
       'extend-esri': 0,

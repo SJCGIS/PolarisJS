@@ -24,8 +24,7 @@ define([
   "dojo/dom-construct",
   "dojo/dom-class",
   "dojo/text!./Print/templates/Print.html",
-  "dojo/text!./Print/templates/PrintResult.html",
-  "xstyle/css!./Print/css/Print.css"
+  "dojo/text!./Print/templates/PrintResult.html"
 ], function(declare, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Form, FilteringSelect, ValidationTextBox, NumberTextBox, Button, CheckBox, ProgressBar, DropDownButton, TooltipDialog, RadioButton, esriRequest, PrintTask, PrintParameters, PrintTemplate, Memory, lang, array, Style, domConstruct, domClass, printTemplate, printResultTemplate) {
 
   // Main print dijit

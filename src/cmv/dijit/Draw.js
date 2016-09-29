@@ -21,8 +21,7 @@ define([
   "esri/symbols/TextSymbol",
   "dojo/text!./Draw/templates/Draw.html",
   "dojo/dom",
-  "dojo/dom-style",
-  "xstyle/css!./Draw/css/Draw.css"
+  "dojo/dom-style"
 ], function(declare, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Button, lang, Color, ColorPalette, TooltipDialog, DropDownButton, NumberSpinner, Select, Graphic, GraphicsLayer, draw, Font, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, drawTemplate, dom, domStyle) {
 
   // main draw dijit

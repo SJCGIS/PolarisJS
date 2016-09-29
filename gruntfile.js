@@ -54,7 +54,7 @@ module.exports = function (grunt) {
     }
   })
 
-  grunt.registerTask('build', ['clean:build', 'copy', 'processhtml', 'dojo', 'clean:uncompressed', 'swPrecache'])
+  grunt.registerTask('build', ['clean:build', 'copy', 'processhtml', 'dojo', 'swPrecache'])
 
   grunt.registerTask('travis', ['build'])
 

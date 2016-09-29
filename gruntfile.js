@@ -70,6 +70,10 @@ module.exports = function (grunt) {
         rootDir + '/**/*.+(gif|png|jpg)' // images
       ],
       stripPrefix: rootDir + '/',
+      runtimeCaching: [{
+        urlPattern: /arcgis\.com\/sharing\/rest\/content/,
+        handler: 'fastest'
+      }],
       verbose: true
     }
 

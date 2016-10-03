@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="application-name" content="Polaris Property Search">
+        <meta name="description" content="Polaris is the go-to web application for San Juan County WA citizens and employees to get information on property, critical areas, and other maps.">
+        <meta name="robots" content="index,follow,noodp">
+        <meta name="googlebot" content="index,follow">
+        <meta name="subject" content="Property search web application for San Juan County WA">
+        <meta name="url" content="https://sjcgis.org/polaris">
+        <meta name="rating" content="General">
+        <meta name="ICBM" content="48.552524, -122.965851">
+        <meta name="geo.position" content="48.552524;-122.965851">
+        <meta name="geo.region" content="US-WA">
+        <meta name="geo.placename" content="San Juan County">
+        <title>Polaris - San Juan County WA</title>
+        <link href="app/css/app.css" rel="stylesheet">
+    </head>
+
+    <body class="claro">
+
+        <div id="borderContainerTwo" data-dojo-type="dijit/layout/BorderContainer"
+             data-dojo-props="gutters:false, liveSplitters:false">
+            <div id="topPane" class="titleBar" data-dojo-type="dijit/layout/ContentPane"
+                 data-dojo-props="region:'top', splitter:false, layoutPriority:1">
+                <h1>San Juan County - Polaris Property Search</h1>
+            </div>
+            <div id="toolBarPane" data-dojo-type="dijit/layout/ContentPane"
+                 data-dojo-props="region:'top', splitter:false, layoutPriority:2">
+                <div id="navToolbar" data-dojo-type="dijit/Toolbar">
+                    <span class="helpDoc" id="zoomTools">
+                        <div data-dojo-type="dijit/form/ToggleButton" id="zoomIn" data-dojo-id="zoomIn" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomIn'"></div>
+                        <div data-dojo-type="dijit/form/ToggleButton" id="zoomOut" data-dojo-id="zoomOut" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-zoomOut'"></div>
+                    </span>
+                    <div data-dojo-type="dijit/form/Button" id="fullExtent" data-dojo-id="fullExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-fullExtent'"></div>
+                    <span class="helpDoc" id="extentTools">
+                        <div data-dojo-type="dijit/form/Button" id="prevExtent" data-dojo-id="prevExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-prevExtent'"></div>
+                        <div data-dojo-type="dijit/form/Button" id="nextExtent" data-dojo-id="nextExtent" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-nextExtent'"></div>
+                    </span>
+                    <div data-dojo-type="dijit/form/ToggleButton" id="pan" data-dojo-id="pan" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-pan'"></div>
+                    <div data-dojo-type="dijit/form/ToggleButton" id="identify" data-dojo-id="identify" data-dojo-props="iconClass:'navToolbarButton navToolbarButton-identify'"></div>
+                    <div data-dojo-type="dijit/form/DropDownButton" id="help" data-dojo-id="help" label="Help">
+                        <div data-dojo-type="dijit/DropDownMenu" id="helpMenu">
+                            <div id="tutorial" data-dojo-id="tutorial" data-dojo-type="dijit/MenuItem">
+                                Tutorial
+                            </div>
+                            <div data-dojo-type="dijit/MenuItem" data-dojo-props="onClick:function() {aboutDialog.show();}">
+                                About
+                            </div>
+                            <div data-dojo-type="dijit/MenuItem" onclick="window.location.href='mailto:sjcgis@sanjuanco.com'">
+                                Contact Us
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-dojo-type="dijit/layout/AccordionContainer"
+                 data-dojo-props="minSize:20, region:'leading', splitter:true, layoutPriority:3" id="leftAccordion" data-dojo-id="leftAccordion">
+                <div data-dojo-type="dijit/layout/ContentPane" title="Legend" id="legendPane" data-dojo-id="legendPane">
+                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+                        <div id="legendDiv"></div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Map Contents" id="mapContentsPane" data-dojo-id="mapContentsPane">
+                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+                        <div id="tocDiv"></div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Search" id="searchPane" data-dojo-id="searchPane" selected="true">
+                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+                        <div data-dojo-type="dijit/form/Form" id="searchForm" data-dojo-id="searchForm" action=""
+                             method="">
+                            <label for="searchText">Enter an Address, Parcel Number, Road or Island to Search:</label><br />
+                            <input type="text" id="searchText" name="searchText" required="true"
+                                   data-dojo-type="dijit/form/ValidationTextBox" />
+                            <span id="searchIndicator" style="visibility:hidden;">Searching... <img src="app/images/loading.gif"></span>
+                            <br />
+                            <button id="searchButton" type="Submit"></button><button id="clearButton" type="Reset"></button>
+                            <div id="grid" style="visibility:hidden;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Measure" id="measurePane" data-dojo-id="measurePane">
+                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+                        <div id="measureDiv"></div>
+                    </div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Draw" id="drawPane" data-dojo-id="drawPane">
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Print" id="printPane" data-dojo-id="printPane">
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" title="Disclaimer on Use" id="disclaimerPane" data-dojo-id="disclaimerPane">
+                </div>
+            </div>
+            <div id="map" data-dojo-type="dijit/layout/ContentPane"
+                 data-dojo-props="region:'center'">
+            </div>
+        </div>
+
+        <!-- build:remove -->
+        <script>
+         var path = location.pathname.replace(/[^\/]+$/, '')
+         dojoConfig = {
+             async: true,
+             isDebug: true,
+             baseUrl: '.',
+             packages: [
+                 'app',
+                 'cmv',
+                 'dgrid',
+                 'dijit',
+                 'dojo',
+                 'dojox',
+                 'dstore',
+                 'esri',
+                 'moment',
+                 'put-selector',
+                 'xstyle',
+                 'agsjs', {
+                     name: 'intro-js',
+                     location: './intro-js',
+                     main: 'intro'
+                 }
+             ]
+         }
+        </script>
+        <!-- /build -->
+
+        <script src="dojo/dojo.js"></script>
+        <script async>
+         require(['app/App'], function (App) {
+             App.startup()
+         })
+        </script>
+        <script>
+         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                                  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+         ga('create', 'UA-62758796-1', 'auto');
+         ga('send', 'pageview');
+
+        </script>
+        <!-- build:template
+             <script src="service-worker-registration.js"></script>
+        /build -->
+    </body>
+</html>

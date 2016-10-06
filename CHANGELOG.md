@@ -4,6 +4,12 @@ Notable changes to this project will be documented in this file, however changes
 
 The format is based on [Keep a Changelog](http://keepachangelog.com) and this project adheres to [Semantic Versioning](http://semver.org)
 
+## [2.1.0] - 2016-10-06
+### Added
+- Add all json requests to service worker
+- Add level 0 aerial basemap tiles to service worker
+
+
 ## [2.0.0] - 2016-09-28
 ### Added
 - Add ability to create minimized builds using the Dojo build system

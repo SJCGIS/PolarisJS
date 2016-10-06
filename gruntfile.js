@@ -78,7 +78,10 @@ module.exports = function (grunt) {
       ],
       stripPrefix: rootDir + '/',
       runtimeCaching: [{
-        urlPattern: /arcgis\.com\/sharing\/rest\/content/,
+        urlPattern: /Aerial_Basemap\/MapServer\/tile\/0/,
+        handler: 'fastest'
+      }, {
+        urlPattern: /f=json/,
         handler: 'fastest'
       }],
       verbose: true

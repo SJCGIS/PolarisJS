@@ -192,6 +192,7 @@ define([
     },
 
     startTutorial: function () {
+      ga('send', 'event', 'Tutorial', 'Start')
       var tutorial = introJs()
       tutorial.setOptions({
         steps: [{
@@ -257,6 +258,7 @@ define([
     },
 
     navigationChangeHandler: function (div) {
+      ga('send', 'event', 'Navigation', 'Select Tool', div)
       var tool
       this.clearToggleButtons(div)
       switch (div) {
@@ -319,6 +321,15 @@ define([
         map:map,
         layerInfos: layerInfo
       }, 'tocDiv')
+      toc.on('toc-node-checked', function (e) {
+        var layerName
+        if (e.serviceLayer) {
+          layerName = e.rootLayer.id + ' - ' + e.serviceLayer.name
+        } else {
+          layerName = e.rootLayer.id
+        }
+        ga('send', 'event', 'Layer', layerName, e.checked.toString())
+      })
       toc.startup()
     },
 
@@ -332,6 +343,12 @@ define([
         defaultFormat: 'PDF',
         defaultLayout: 'Letter_Landscape'
       }, domConstruct.create('div'))
+      print.on('print-print', function (e) {
+        ga('send', 'event', 'Print', 'Print', e.title)
+      })
+      print.on('print-clear', function (e) {
+        ga('send', 'event', 'Print', 'Clear')
+      })
       print.placeAt('printPane')
     },
 
@@ -410,6 +427,7 @@ define([
       findParams.searchText = searchText
       dom.byId('searchIndicator').style.visibility='visible'
       findTask.execute(findParams, this.showResults)
+      ga('send', 'event', 'Search', 'Search', searchText)
     },
 
     showResults: function (results) {
@@ -488,6 +506,7 @@ define([
 
       store = new Memory({data:{identifier:'', items:[]}})
       grid.setStore(store)
+      ga('send', 'event','Search', 'Clear')
     },
 
     extentHistoryChangeHandler: function () {
@@ -527,6 +546,7 @@ define([
 
     accordionHandler: function (attr, closedPane, openPane) {
       console.log('The closed pane was ' + closedPane.id + ' and the opened pane was ' + openPane.id)
+      ga('send', 'event', 'Accordion', 'Open', openPane.id)
       /* When the measure or draw panes are closed, deactivate the tools */
       this.clearToggleButtons()
       navToolbar.deactivate()

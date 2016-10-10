@@ -172,10 +172,12 @@ define([
       }
       var graphic = new Graphic(geometry, symbol)
       this.graphics.add(graphic)
+      ga('send', 'event', 'Draw', 'Draw', this.graphicType)
     },
     undoLastGraphic: function() {
       lastGraphic = this.graphics.graphics.pop()
       lastGraphic.hide()
+      ga('send', 'event', 'Draw', 'Undo')
     },
     clearGraphics: function() {
       this.graphics.clear()
@@ -184,6 +186,7 @@ define([
       domStyle.set("drawFillOptions", "display", "none")
       domStyle.set("drawTextOptions", "display", "none")
       this.drawToolbar.deactivate()
+      ga('send', 'event', 'Draw', 'Clear')
       //this.connectMapClick()
     }
   })

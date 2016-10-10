@@ -155,6 +155,11 @@ define([
         result.startup()
         Style.set(this.clearActionBarNode, 'display', 'block')
         this.count++
+        this.emit('print-print', {
+          format: form.format,
+          layout: form.layout,
+          title: form.title
+        })
       } else {
         this.printSettingsFormDijit.validate()
       }
@@ -163,6 +168,7 @@ define([
       domConstruct.empty(this.printResultsNode)
       Style.set(this.clearActionBarNode, 'display', 'none')
       this.count = 1
+      this.emit('print-clear', {})
     }
   })
 

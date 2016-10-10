@@ -140,6 +140,14 @@
                                   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
+         function getServiceWorkerStatus() {
+             if ('serviceWorker' in navigator) {
+                 return navigator.serviceWorker.controller ? 'Controlled' : 'Supported'
+             } else {
+                 return 'Unsupported'
+             }
+         }
+         ga('set', 'dimension1', getServiceWorkerStatus())
          ga('create', 'UA-62758796-1', 'auto');
          ga('send', 'pageview');
 

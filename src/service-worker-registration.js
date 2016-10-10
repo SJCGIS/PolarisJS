@@ -1,5 +1,6 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js').then(function (reg) {
+    ga('send', 'event', 'ServiceWorker', 'Available', getServiceWorkerStatus())
     reg.onupdatefound = function () {
       var installingWorker = reg.installing
 
@@ -7,14 +8,15 @@ if ('serviceWorker' in navigator) {
         switch (installingWorker.state) {
         case 'installed':
           if (navigator.serviceWorker.controller) {
-            console.log('New or updated content is available')
+            ga('send', 'event', 'ServiceWorker', 'Installed', 'New or updated content is available')
           } else {
-            console.log('Content is cached')
+            ga('send', 'event', 'ServiceWorker', 'Installed', 'Content is cached')
           }
           break
 
         case 'redundant':
           console.error('The installing service worker became redundant')
+          ga('send', 'event', 'ServiceWorker', 'Redundant')
           break
         }
 
@@ -22,5 +24,6 @@ if ('serviceWorker' in navigator) {
     }
   }).catch(function (e) {
     console.error('Error during service worker registration: ', e)
+    ga('send', 'event', 'ServiceWorker', 'Error', e)
   })
 }

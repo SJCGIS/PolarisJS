@@ -4,6 +4,11 @@ Notable changes to this project will be documented in this file, however changes
 
 The format is based on [Keep a Changelog](http://keepachangelog.com) and this project adheres to [Semantic Versioning](http://semver.org)
 
+## [2.2.0] - 2016-10-10
+### Added
+- Add google analytics for service worker events
+- Add google analytics events to Polaris application
+
 ## [2.1.0] - 2016-10-06
 ### Added
 - Add all json requests to service worker

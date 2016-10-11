@@ -4,6 +4,10 @@ Notable changes to this project will be documented in this file, however changes
 
 The format is based on [Keep a Changelog](http://keepachangelog.com) and this project adheres to [Semantic Versioning](http://semver.org)
 
+## [2.2.1] - 2016-10-11
+### Changed
+- Change URL pattern for cached basemap
+
 ## [2.2.0] - 2016-10-10
 ### Added
 - Add google analytics for service worker events

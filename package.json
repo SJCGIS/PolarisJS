@@ -1,6 +1,6 @@
 {
   "name": "polaris",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Polaris is the go-to web application for San Juan County WA citizens and employees to get information on property, critical areas, and other maps.",
   "scripts": {
     "postinstall": "bower install",

@@ -1,6 +1,6 @@
 {
   "name": "polaris",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "dependencies": {
     "esri": "arcgis-js-api#3.17.0",
     "intro-js": "~2.3.0"

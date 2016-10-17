@@ -4,6 +4,10 @@ Notable changes to this project will be documented in this file, however changes
 
 The format is based on [Keep a Changelog](http://keepachangelog.com) and this project adheres to [Semantic Versioning](http://semver.org)
 
+## [2.2.2] - 2016-10-16
+### Fixed
+- ServiceWorker errors were not being sent to Google Analytics
+
 ## [2.2.1] - 2016-10-11
 ### Changed
 - Change URL pattern for cached basemap

@@ -24,6 +24,6 @@ if ('serviceWorker' in navigator) {
     }
   }).catch(function (e) {
     console.error('Error during service worker registration: ', e)
-    ga('send', 'event', 'ServiceWorker', 'Error', e)
+    ga('send', 'event', 'ServiceWorker', 'Error', e.message)
   })
 }

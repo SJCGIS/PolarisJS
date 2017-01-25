@@ -41,6 +41,7 @@ var profile = {
     'app',
     'cmv',
     'dgrid',
+    'dgrid1',
     'dijit',
     'dojo',
     'dojox',

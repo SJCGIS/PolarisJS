@@ -49,7 +49,6 @@ var profile = {
     'esri',
     'put-selector',
     'xstyle',
-    'agsjs',
     {
       name: 'moment',
       location: 'moment',

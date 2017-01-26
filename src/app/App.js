@@ -18,6 +18,7 @@ define([
   'esri/arcgis/utils',
   'esri/config',
   'esri/dijit/Legend',
+  'esri/dijit/LayerList',
   'esri/dijit/Measurement',
   'esri/dijit/OverviewMap',
   'esri/dijit/Scalebar',
@@ -43,7 +44,6 @@ define([
   'dijit/form/Button',
   'dijit/registry',
   'dijit/Toolbar',
-  'agsjs/dijit/TOC',
   'cmv/dijit/Print',
   'cmv/dijit/Draw',
   'intro-js',
@@ -68,6 +68,7 @@ define([
   arcgisUtils,
   config,
   Legend,
+  LayerList,
   Measurement,
   OverviewMap,
   Scalebar,
@@ -93,7 +94,6 @@ define([
   Button,
   registry,
   Toolbar,
-  TOC,
   Print,
   Draw,
   introJs
@@ -105,7 +105,7 @@ define([
   var findGraphicsLayer
   var selectedGraphicsLayer
   var zoomSymbol, draw, print
-  var response, popupHandler
+  var response
   var store
 
   return {
@@ -139,7 +139,8 @@ define([
       }))
 
       var mapDeferred = arcgisUtils.createMap('77af8d9734044b808a4e33266ce3e63a', 'map', {
-        geometryServiceURL: 'https://www.sjcgis.org/arcgis/rest/services/Utilities/Geometry/GeometryServer'
+        geometryServiceURL: 'https://www.sjcgis.org/arcgis/rest/services/Utilities/Geometry/GeometryServer',
+        usePopupManager: true
       })
 
       mapDeferred.then(lang.hitch(this, function (appResponse) {
@@ -168,9 +169,6 @@ define([
         map.on('layers-add-result', this.constructNavToolbar())
         map.on('layers-add-result', this.constructSidePanels(response))
 
-        /* We need to disable popups until the identify button is toggled on */
-        popupHandler = response.clickEventHandle
-        popupHandler.remove()
         leftAccordion.watch('selectedChildWidget', lang.hitch(this, 'accordionHandler'))
 
         /* Bug workaround where measure location tool is deactivated after a point is measured.
@@ -231,7 +229,7 @@ define([
           position: 'right'
         },{
           element: '#mapContentsPane_wrapper',
-          intro: 'Click here to open the Map Contents. Here you can turn on or off different layers. Click on the plus sign next to a layer category to see sublayers. Some layers may not be visible at certain scales, these layers will appear greyed out.',
+          intro: 'Click here to open the Map Contents. Here you can turn on or off different layers. Click on the arrow to the left of a layer category to toggle sublayers, view the legend, and change the layer opacity. Some layers may not be visible at certain scales, these layers will appear greyed out.',
           position: 'right'
         },{
           element: '#searchPane_wrapper',
@@ -312,23 +310,24 @@ define([
     },
 
     constructToc: function (response) {
-      var layerInfo = arcgisUtils.getLegendLayers(response)
-      array.map(layerInfo, function(layer){
-        layer.collapsed=true
-      })
-      layerInfo.reverse()
-      var toc = new TOC({
+      this.disablePopups()
+      var toc = new LayerList({
         map:map,
-        layerInfos: layerInfo
+        layers: arcgisUtils.getLegendLayers(response),
+        showLegend: true,
+        showOpacitySlider: true
       }, 'tocDiv')
-      toc.on('toc-node-checked', function (e) {
-        var layerName
-        if (e.serviceLayer) {
-          layerName = e.rootLayer.id + ' - ' + e.serviceLayer.name
-        } else {
-          layerName = e.rootLayer.id
-        }
-        ga('send', 'event', 'Layer', layerName, e.checked.toString())
+      toc.on('refresh', function (e) {
+
+      })
+      toc.on('toggle', function (e) {
+        // var layerName
+        // if (e.subLayerIndex) {
+        //   layerName = layerIndex + ' - ' + e.serviceLayer.name
+        // } else {
+        //   layerName = e.rootLayer.id
+        // }
+        // ga('send', 'event', 'Layer', layerName, e.checked.toString())
       })
       toc.startup()
     },
@@ -574,14 +573,12 @@ define([
     },
 
     disablePopups: function () {
-      if (typeof popupHandler === 'object') {
-        popupHandler.remove()
-      }
+      map.setInfoWindowOnClick(false)
       console.log('Popups should be disabled')
     },
 
     enablePopups: function () {
-      popupHandler = map.on('click', response.clickEventListener)
+      map.setInfoWindowOnClick(true)
       console.log('Popups should be enabled')
     }
   }

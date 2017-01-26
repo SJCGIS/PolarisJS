@@ -72,7 +72,7 @@ module.exports = function (grunt) {
         rootDir + '/app/**/*.html',
         // dojo script
         rootDir + '/dojo/dojo.js',
-        rootDir + '/esri/layers/VectorTileImpl.js',
+        rootDir + '/esri/layers/VectorTileLayerImpl.js',
         // CSS
         rootDir + '/app/**/*.css',
         // images

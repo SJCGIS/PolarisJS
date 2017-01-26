@@ -229,7 +229,7 @@ define([
           position: 'right'
         },{
           element: '#mapContentsPane_wrapper',
-          intro: 'Click here to open the Map Contents. Here you can turn on or off different layers. Click on the arrow to the left of a layer category to toggle sublayers, view the legend, and change the layer opacity. Some layers may not be visible at certain scales, these layers will appear greyed out.',
+          intro: 'Click here to open the Map Contents. Here you can turn on or off different layers. Click on the arrow to the right of a layer category to toggle sublayers, view the legend, and change the layer opacity. Some layers may not be visible at certain scales, these layers will appear greyed out.',
           position: 'right'
         },{
           element: '#searchPane_wrapper',

@@ -311,23 +311,21 @@ define([
 
     constructToc: function (response) {
       this.disablePopups()
+      var layerList = arcgisUtils.getLayerList(response)
       var toc = new LayerList({
         map:map,
-        layers: arcgisUtils.getLegendLayers(response),
+        layers: layerList,
         showLegend: true,
         showOpacitySlider: true
       }, 'tocDiv')
-      toc.on('refresh', function (e) {
-
-      })
       toc.on('toggle', function (e) {
-        // var layerName
-        // if (e.subLayerIndex) {
-        //   layerName = layerIndex + ' - ' + e.serviceLayer.name
-        // } else {
-        //   layerName = e.rootLayer.id
-        // }
-        // ga('send', 'event', 'Layer', layerName, e.checked.toString())
+        var layer = layerList[e.layerIndex]
+        if (!(e.subLayerIndex === null)) {
+          var sublayer = layer.layer.layerInfos[e.subLayerIndex]
+          ga('send', 'event', 'Sublayer Toggle', e.visible.toString(), layer.title + ' - ' + sublayer.name)
+        } else {
+          ga('send', 'event', 'Layer Toggle', e.visible.toString(), layer.title)
+        }
       })
       toc.startup()
     },

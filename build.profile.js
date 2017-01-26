@@ -82,7 +82,7 @@ var profile = {
   // Strips all calls to console functions within the code. You can also set this to "warn" to strip everything
   // but console.error, and any other truthy value to strip everything but console.warn and console.error.
   // This defaults to "normal" (strip all but warn and error) if not provided.
-  stripConsole: 'none', // if set to "all" will remove all console messages, include warnings and errors.
+  stripConsole: 'normal', // if set to "all" will remove all console messages, include warnings and errors.
 
   // The default selector engine is not included by default in a dojo.js build in order to make mobile builds
   // smaller. We add it back here to avoid that extra HTTP request. There is also an "acme" selector available; if
@@ -109,7 +109,11 @@ var profile = {
         'dgrid/TouchScroll',
         'dgrid/util/has-css3',
         'dgrid/util/touch',
+        'dijit/form/HorizontalSlider',
+        'dijit/form/HorizontalRuleLabels',
+        'dijit/form/HorizontalRule',
         'dojo/selector/lite',
+        'dojo/dnd/move',
         'dojox/gfx/path',
         'dojox/gfx/svg',
         'dojox/gfx/filters',
@@ -120,6 +124,12 @@ var profile = {
         'xstyle/core/load-css'
       ],
       // You can define the locale for your application if you like
+      includeLocales: ['en-us']
+    },
+    'esri/layers/VectorTileLayerImpl': {
+      include: [
+        'esri/layers/VectorTileLayerImpl'
+      ],
       includeLocales: ['en-us']
     }
   },

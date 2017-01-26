@@ -15,7 +15,8 @@ module.exports = function (grunt) {
       },
       uncompressed: {
         src: [
-          'dist/**/*.uncompressed.js'
+          'dist/**/*.uncompressed.js',
+          'dist/**/*.consoleStripped.js'
         ]
       }
     },
@@ -55,6 +56,7 @@ module.exports = function (grunt) {
   })
 
   grunt.registerTask('build', ['clean:build', 'copy', 'processhtml', 'dojo', 'swPrecache'])
+  grunt.registerTask('build:prod', ['build', 'clean:uncompressed'])
 
   grunt.registerTask('travis', ['build'])
 
@@ -70,6 +72,7 @@ module.exports = function (grunt) {
         rootDir + '/app/**/*.html',
         // dojo script
         rootDir + '/dojo/dojo.js',
+        rootDir + '/esri/layers/VectorTileImpl.js',
         // CSS
         rootDir + '/app/**/*.css',
         // images

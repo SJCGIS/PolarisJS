@@ -4,6 +4,19 @@ Notable changes to this project will be documented in this file, however changes
 
 The format is based on [Keep a Changelog](http://keepachangelog.com) and this project adheres to [Semantic Versioning](http://semver.org)
 
+## [2.3.0] - 2017-01-26
+### Fixed
+- Fix issue where info window was showing "No Information Available" on some map layers
+
+### Added
+- Add ability to change opacity of layers in Map Contents
+
+### Changed
+- Map contents widget uses the new Layer List dijit from ArcGIS JavaScript API
+- Change Google Analytics code to use with Layer List dijit
+- Update ArcGIS JavaScript API to v3.19.0
+- Update dependencies
+
 ## [2.2.2] - 2016-10-16
 ### Fixed
 - ServiceWorker errors were not being sent to Google Analytics

@@ -81,7 +81,7 @@ module.exports = function (grunt) {
       ],
       stripPrefix: rootDir + '/',
       runtimeCaching: [{
-        urlPattern: /Aerials_2013\/MapServer\/tile\/0/,
+        urlPattern: /Aerials_2016\/MapServer\/tile\/0/,
         handler: 'fastest'
       }, {
         urlPattern: /f=json/,
